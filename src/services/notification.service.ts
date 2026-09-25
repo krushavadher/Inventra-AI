@@ -51,7 +51,7 @@ export class NotificationService {
   }
 
   private sendEmailNotification(subject: string, body: string, severity: NotificationSeverity) {
-    // In production, uses nodemailer.sendMail({ from: 'alerts@stockmind.ai', to: userEmail, subject, html: ... })
+    // In production, uses nodemailer.sendMail({ from: 'alerts@inventra.ai', to: userEmail, subject, html: ... })
     console.log(`📧 [EMAIL DISPATCH] [${severity}] Subject: ${subject} | Body: ${body}`);
   }
 

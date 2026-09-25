@@ -1238,64 +1238,7 @@ export const InventoryPage: React.FC = () => {
         </div>
       )}
 
-      {/* SECTION 14: FLOATING AI COPILOT BOT */}
-      <div style={{ position: 'fixed', bottom: '24px', right: '24px', zIndex: 100 }}>
-        {!isCopilotOpen ? (
-          <button
-            onClick={() => setIsCopilotOpen(true)}
-            style={{ backgroundColor: '#6366F1', color: '#FFF', border: 'none', padding: '12px 20px', borderRadius: '30px', fontWeight: 800, fontSize: '14px', cursor: 'pointer', boxShadow: '0 8px 24px rgba(99, 102, 241, 0.4)', display: 'flex', alignItems: 'center', gap: '8px' }}
-          >
-            <span>🤖 Ask Inventra AI</span>
-          </button>
-        ) : (
-          <div style={{ width: '380px', height: '500px', backgroundColor: '#121215', border: '1px solid #27272A', borderRadius: '16px', display: 'flex', flexDirection: 'column', boxShadow: '0 12px 36px rgba(0,0,0,0.8)', overflow: 'hidden' }}>
-            <div style={{ padding: '14px 16px', backgroundColor: '#18181B', borderBottom: '1px solid #27272A', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <div style={{ fontWeight: 800, fontSize: '14px', color: '#FFF', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <span>🤖</span> Inventra AI Supply Chain Copilot
-              </div>
-              <button onClick={() => setIsCopilotOpen(false)} style={{ backgroundColor: 'transparent', color: '#A1A1AA', border: 'none', cursor: 'pointer', fontSize: '16px' }}>✕</button>
-            </div>
 
-            <div style={{ flex: 1, padding: '14px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '10px' }}>
-              {copilotMessages.map((msg, idx) => (
-                <div key={idx} style={{ alignSelf: msg.sender === 'user' ? 'flex-end' : 'flex-start', maxWidth: '85%', backgroundColor: msg.sender === 'user' ? '#6366F1' : '#18181B', color: '#FFF', padding: '10px 12px', borderRadius: '10px', fontSize: '12px' }}>
-                  {msg.text}
-                </div>
-              ))}
-            </div>
-
-            {/* Quick Prompt Chips */}
-            <div style={{ padding: '8px 12px', display: 'flex', gap: '6px', overflowX: 'auto', backgroundColor: '#09090B', borderTop: '1px solid #27272A' }}>
-              {['Restock items?', 'Critical stock', 'Procurement report'].map((chip, idx) => (
-                <button
-                  key={idx}
-                  onClick={() => handleCopilotSend(chip)}
-                  style={{ backgroundColor: '#27272A', color: '#A1A1AA', border: 'none', padding: '4px 8px', borderRadius: '12px', fontSize: '10px', cursor: 'pointer', whiteSpace: 'nowrap' }}
-                >
-                  {chip}
-                </button>
-              ))}
-            </div>
-
-            <div style={{ padding: '12px', backgroundColor: '#18181B', borderTop: '1px solid #27272A', display: 'flex', gap: '8px' }}>
-              <input
-                type="text"
-                placeholder="Ask anything about inventory..."
-                value={copilotInput}
-                onChange={(e) => setCopilotInput(e.target.value)}
-                onKeyDown={(e) => e.key === 'Enter' && handleCopilotSend()}
-                style={{ flex: 1, backgroundColor: '#09090B', border: '1px solid #27272A', color: '#FFF', padding: '8px 10px', borderRadius: '8px', fontSize: '12px' }}
-              />
-              <button
-                onClick={() => handleCopilotSend()}
-                style={{ backgroundColor: '#6366F1', color: '#FFF', border: 'none', padding: '8px 12px', borderRadius: '8px', cursor: 'pointer', fontWeight: 700 }}
-              >
-                Send
-              </button>
-            </div>
-          </div>
-        )}
-      </div>
 
       {/* MODAL 1: ADD PRODUCT */}
       {isAddModalOpen && (

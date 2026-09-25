@@ -1,0 +1,306 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+:root {
+  --bg-base: #0D1117;
+  --bg-surface: #151A21;
+  --accent-primary: #F0A828;
+  --accent-cool: #2BB4A0;
+  --accent-risk: #E5534B;
+  --text-primary: #E8EAED;
+  --text-muted: #8A94A3;
+  --border: #242B34;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background-color: var(--bg-base);
+  color: var(--text-primary);
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--text-muted);
+}
+
+/* Typography Hierarchy */
+.page-title {
+  font-size: 24px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.section-title {
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.kpi-label {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-muted);
+  /* Removed uppercase and letter-spacing per instructions */
+}
+
+/* Tabular figures for numbers */
+.kpi-value, .kpi-value-hero, .table-cell, .badge, .tabular-nums {
+  font-variant-numeric: tabular-nums;
+  font-family: 'Inter', monospace; /* Fallback to monospace if Inter doesn't trigger tabular nums */
+}
+
+.kpi-value-hero {
+  font-size: 32px;
+  font-weight: 600;
+  line-height: 1.1;
+  color: var(--text-primary);
+}
+
+.kpi-value {
+  font-size: 24px;
+  font-weight: 600;
+  line-height: 1.1;
+  color: var(--text-primary);
+}
+
+.subtext-muted {
+  font-size: 12px;
+  color: var(--text-muted);
+  font-weight: 400;
+}
+
+/* Panels / Containers */
+.glass-card {
+  /* Removed rounded borders and shadow for KPIs, per rules */
+  padding: 16px 0; /* Adjusted for minimal chrome */
+}
+
+.glass-card-hero {
+  /* Minimal chrome for hero KPI */
+  padding: 16px 0;
+}
+
+/* Explicit bordered containers for tables, lists, forms */
+.panel-bordered {
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 24px;
+}
+
+/* Buttons */
+.btn-primary {
+  background: var(--accent-primary);
+  color: #111; /* Dark text for contrast on amber */
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 13px;
+  cursor: pointer;
+  transition: opacity 0.2s;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  justify-content: center;
+}
+
+.btn-primary:hover {
+  opacity: 0.9;
+}
+
+.btn-secondary {
+  background: transparent;
+  color: var(--text-primary);
+  border: 1px solid var(--border);
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-weight: 500;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  justify-content: center;
+}
+
+.btn-secondary:hover {
+  background: var(--bg-surface);
+}
+
+.btn-danger {
+  background: transparent;
+  color: var(--accent-risk);
+  border: 1px solid rgba(229, 83, 75, 0.3); /* accent-risk alpha */
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-danger:hover {
+  background: rgba(229, 83, 75, 0.1);
+}
+
+/* Badges / Status Pills */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 500;
+  /* Badges use cool/risk colors, NOT primary amber */
+}
+
+.badge-success {
+  background: rgba(43, 180, 160, 0.15); /* accent-cool */
+  color: var(--accent-cool);
+}
+
+.badge-warning, .badge-danger {
+  background: rgba(229, 83, 75, 0.15); /* accent-risk */
+  color: var(--accent-risk);
+}
+
+.badge-info {
+  background: var(--bg-surface);
+  color: var(--text-muted);
+  border: 1px solid var(--border);
+}
+
+.badge-neutral {
+  background: var(--bg-surface);
+  color: var(--text-muted);
+  border: 1px solid var(--border);
+}
+
+/* Input / Select Styling */
+.input-dark {
+  background: var(--bg-base);
+  border: 1px solid var(--border);
+  color: var(--text-primary);
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-size: 13px;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.input-dark:focus {
+  border-color: var(--text-muted);
+}
+
+/* Tables */
+.table-header {
+  font-size: 12px;
+  font-weight: 500;
+  /* Removed uppercase */
+  color: var(--text-muted);
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--border);
+  text-align: left;
+}
+
+.table-row {
+  border-bottom: 1px solid var(--border);
+}
+
+.table-row:hover {
+  background: var(--bg-surface);
+}
+
+.table-cell {
+  padding: 12px 16px;
+  font-size: 13px;
+  color: var(--text-primary);
+  vertical-align: middle;
+}
+
+/* Skeleton Loading */
+@keyframes pulse {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 0.85; }
+}
+
+.skeleton-box {
+  background: var(--bg-surface);
+  border-radius: 4px;
+  animation: pulse 1.5s infinite ease-in-out;
+}
+
+/* Sidebar Navigation Button */
+.nav-item-btn {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 8px 12px;
+  border-radius: 6px;
+  border: none;
+  background: transparent;
+  color: var(--text-muted);
+  font-weight: 500;
+  font-size: 13px;
+  cursor: pointer;
+  text-align: left;
+  transition: all 0.2s;
+}
+
+.nav-item-btn:hover {
+  color: var(--text-primary);
+  background: var(--bg-surface);
+}
+
+.nav-item-btn.active {
+  color: var(--accent-primary);
+  background: rgba(240, 168, 40, 0.1); /* accent-primary alpha */
+}
+
+/* Empty State Container */
+.empty-state-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 48px 24px;
+  text-align: center;
+  background: transparent;
+  border: 1px dashed var(--border);
+  border-radius: 8px;
+}
+
+.empty-state-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 16px;
+  color: var(--text-muted);
+}

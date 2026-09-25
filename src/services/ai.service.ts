@@ -23,9 +23,9 @@ export interface ForecastExplanationDTO {
 
 export class AIService {
   /**
-   * Prompt Engineering System Persona for StockMind AI
+   * Prompt Engineering System Persona for Inventra AI
    */
-  private readonly systemPersona = `You are StockMind AI, an elite Enterprise Supply Chain & Inventory Intelligence AI Copilot built by senior supply chain architects. You provide precise, highly actionable, structured, and professional supply chain insights.`;
+  private readonly systemPersona = `You are Inventra AI, an elite Enterprise Supply Chain & Inventory Intelligence AI Copilot built by senior supply chain architects. You provide precise, highly actionable, structured, and professional supply chain insights.`;
 
   /**
    * 1. AI Product Description Generator
@@ -132,7 +132,7 @@ Description: "${dto.rawDescription || ''}"
     } else if (lowercase.includes("supplier") || lowercase.includes("vendor") || lowercase.includes("otif")) {
       responseMarkdown = `Here is your vendor performance summary:\n\n- **Top Performing**: *TechComponents Inc.* (OTIF Score: **98.4%**, Lead time: 5 days).\n- **Underperforming**: *Global Packaging LLC* (OTIF Score: **89.2%**, Lead time variance: +3.4 days).\n\nYour average supplier OTIF rating across all contracted vendors is **96.8%**.`;
     } else {
-      responseMarkdown = `StockMind AI Copilot at your service. I can help you with:\n- Identifying stockout risks & safety stock deficits\n- Auto-drafting Purchase Orders with vendor lead-time recommendations\n- Analyzing warehouse capacity & 2D bin heatmap density\n- Explaining AI demand forecasts\n\nWhat would you like to explore?`;
+      responseMarkdown = `Inventra AI Copilot at your service. I can help you with:\n- Identifying stockout risks & safety stock deficits\n- Auto-drafting Purchase Orders with vendor lead-time recommendations\n- Analyzing warehouse capacity & 2D bin heatmap density\n- Explaining AI demand forecasts\n\nWhat would you like to explore?`;
     }
 
     return {
@@ -147,7 +147,7 @@ Description: "${dto.rawDescription || ''}"
    */
   async generateExecutiveReport(reportType: string, rawData?: any) {
     return {
-      reportTitle: `StockMind AI — Executive ${reportType.toUpperCase()} Synthesis Report`,
+      reportTitle: `Inventra AI — Executive ${reportType.toUpperCase()} Synthesis Report`,
       generatedAt: new Date().toISOString(),
       executiveSummary: `This automated AI report synthesizes operational data for Q3. Total working capital inventory valuation stands at **$285,000** with an overall warehouse occupancy rate of **74.5%**.`,
       keyTakeaways: [

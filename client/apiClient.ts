@@ -1,25 +1,25 @@
 const API_BASE_URL = 'http://localhost:5000/api/v1';
 
 export const getAuthToken = (): string | null => {
-  return localStorage.getItem('stockmind_token');
+  return localStorage.getItem('inventra_token');
 };
 
 export const setAuthToken = (token: string): void => {
-  localStorage.setItem('stockmind_token', token);
+  localStorage.setItem('inventra_token', token);
 };
 
 export const removeAuthToken = (): void => {
-  localStorage.removeItem('stockmind_token');
-  localStorage.removeItem('stockmind_user');
+  localStorage.removeItem('inventra_token');
+  localStorage.removeItem('inventra_user');
 };
 
 export const getStoredUser = (): any | null => {
-  const user = localStorage.getItem('stockmind_user');
+  const user = localStorage.getItem('inventra_user');
   return user ? JSON.parse(user) : null;
 };
 
 export const setStoredUser = (user: any): void => {
-  localStorage.setItem('stockmind_user', JSON.stringify(user));
+  localStorage.setItem('inventra_user', JSON.stringify(user));
 };
 
 export const apiFetch = async (endpoint: string, options: RequestInit = {}) => {

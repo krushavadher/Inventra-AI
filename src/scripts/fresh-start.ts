@@ -48,7 +48,7 @@ export const freshStart = async () => {
     const passwordHash = await bcrypt.hash('admin123', 10);
     await UserModel.create({
       tenantId: tenant._id,
-      email: 'admin@stockmind.ai',
+      email: 'admin@inventra.ai',
       passwordHash,
       firstName: 'Admin',
       lastName: 'User',
@@ -59,7 +59,7 @@ export const freshStart = async () => {
     console.log('✨ FRESH START COMPLETE!');
     console.log('🔒 All inventory items, products, warehouses, suppliers, and movement logs have been completely wiped.');
     console.log('👤 Default Admin Login Credentials:');
-    console.log('   Email: admin@stockmind.ai');
+    console.log('   Email: admin@inventra.ai');
     console.log('   Password: admin123');
 
     await mongoose.disconnect();

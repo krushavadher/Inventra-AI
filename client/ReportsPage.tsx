@@ -34,18 +34,19 @@ export const ReportsPage: React.FC = () => {
   };
 
   return (
-    <div style={{ backgroundColor: '#09090B', color: '#F4F4F5', minHeight: '100vh', padding: '24px', fontFamily: 'Inter, sans-serif' }}>
+    <div style={{ backgroundColor: 'var(--bg-base)', color: 'var(--text-primary)', minHeight: '100vh', padding: '32px 40px' }}>
       {/* Header Bar */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '28px' }}>
         <div>
-          <h1 style={{ fontSize: '24px', fontWeight: 700, margin: 0 }}>Enterprise Reports & BI Export Center</h1>
-          <p style={{ color: '#A1A1AA', fontSize: '14px', margin: '4px 0 0 0' }}>Generate, schedule, and export business intelligence reports in PDF, Excel, and CSV formats.</p>
+          <h1 className="page-title">Enterprise Reports & BI Export Center</h1>
+          <p className="subtext-muted" style={{ marginTop: '4px' }}>Generate, schedule, and export business intelligence reports in PDF, Excel, and CSV formats.</p>
         </div>
         <button
           onClick={() => setIsScheduleModalOpen(true)}
-          style={{ backgroundColor: '#18181B', border: '1px solid #27272A', color: '#FFF', padding: '10px 18px', borderRadius: '8px', fontWeight: 600, cursor: 'pointer' }}
+          className="btn-secondary"
         >
-          ⏰ Schedule Automated Export
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          Schedule Automated Export
         </button>
       </div>
 
@@ -53,72 +54,54 @@ export const ReportsPage: React.FC = () => {
       <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '24px' }}>
         {/* Report Catalog Cards */}
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '16px' }}>
-          {reportCatalog.map((rep) => (
-            <div
-              key={rep.id}
-              onClick={() => setSelectedReport(rep.id)}
-              style={{
-                backgroundColor: '#18181B',
-                border: selectedReport === rep.id ? '2px solid #6366F1' : '1px solid #27272A',
-                padding: '20px',
-                borderRadius: '12px',
-                cursor: 'pointer',
-                transition: 'all 0.1s ease'
-              }}
-            >
-              <div style={{ fontSize: '12px', color: '#8B5CF6', fontWeight: 600, marginBottom: '6px' }}>{rep.category}</div>
-              <h3 style={{ fontSize: '16px', margin: '0 0 8px 0', color: '#FFF' }}>{rep.name}</h3>
-              <p style={{ fontSize: '13px', color: '#A1A1AA', margin: 0, lineHeight: 1.5 }}>{rep.description}</p>
-            </div>
-          ))}
+          {reportCatalog.map((rep) => {
+            const isSelected = selectedReport === rep.id;
+            return (
+              <div
+                key={rep.id}
+                onClick={() => setSelectedReport(rep.id)}
+                className="panel-bordered"
+                style={{
+                  padding: '20px',
+                  cursor: 'pointer',
+                  borderColor: isSelected ? 'var(--accent-cool)' : undefined,
+                  backgroundColor: isSelected ? 'var(--bg-surface)' : 'transparent',
+                  transition: 'border-color 0.15s ease'
+                }}
+              >
+                <span className="badge badge-info" style={{ marginBottom: '8px' }}>{rep.category}</span>
+                <h3 className="section-title" style={{ margin: '6px 0 8px 0', fontSize: '15px' }}>{rep.name}</h3>
+                <p className="subtext-muted" style={{ lineHeight: 1.5 }}>{rep.description}</p>
+              </div>
+            );
+          })}
         </div>
 
         {/* Export Controls & Format Selector */}
-        <div style={{ backgroundColor: '#18181B', border: '1px solid #27272A', padding: '24px', borderRadius: '14px', height: 'fit-content' }}>
-          <h3 style={{ margin: '0 0 16px 0', fontSize: '16px' }}>Export Configuration</h3>
+        <div className="panel-bordered" style={{ padding: '24px', height: 'fit-content' }}>
+          <h3 className="section-title" style={{ marginBottom: '16px' }}>Export Configuration</h3>
 
           <div style={{ marginBottom: '20px' }}>
-            <label style={{ fontSize: '12px', color: '#A1A1AA', display: 'block', marginBottom: '8px' }}>Select Format</label>
+            <label className="kpi-label" style={{ display: 'block', marginBottom: '8px' }}>Select Format</label>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '8px' }}>
               <button
                 onClick={() => setExportFormat('PDF')}
-                style={{
-                  backgroundColor: exportFormat === 'PDF' ? '#6366F1' : '#09090B',
-                  border: '1px solid #27272A',
-                  color: '#FFF',
-                  padding: '10px',
-                  borderRadius: '6px',
-                  fontWeight: 600,
-                  cursor: 'pointer'
-                }}
+                className={exportFormat === 'PDF' ? 'btn-primary' : 'btn-secondary'}
+                style={{ padding: '9px 6px', fontSize: '12px' }}
               >
                 📄 PDF
               </button>
               <button
                 onClick={() => setExportFormat('EXCEL')}
-                style={{
-                  backgroundColor: exportFormat === 'EXCEL' ? '#6366F1' : '#09090B',
-                  border: '1px solid #27272A',
-                  color: '#FFF',
-                  padding: '10px',
-                  borderRadius: '6px',
-                  fontWeight: 600,
-                  cursor: 'pointer'
-                }}
+                className={exportFormat === 'EXCEL' ? 'btn-primary' : 'btn-secondary'}
+                style={{ padding: '9px 6px', fontSize: '12px' }}
               >
                 📊 Excel
               </button>
               <button
                 onClick={() => setExportFormat('CSV')}
-                style={{
-                  backgroundColor: exportFormat === 'CSV' ? '#6366F1' : '#09090B',
-                  border: '1px solid #27272A',
-                  color: '#FFF',
-                  padding: '10px',
-                  borderRadius: '6px',
-                  fontWeight: 600,
-                  cursor: 'pointer'
-                }}
+                className={exportFormat === 'CSV' ? 'btn-primary' : 'btn-secondary'}
+                style={{ padding: '9px 6px', fontSize: '12px' }}
               >
                 📝 CSV
               </button>
@@ -127,17 +110,8 @@ export const ReportsPage: React.FC = () => {
 
           <button
             onClick={handleDownloadReport}
-            style={{
-              width: '100%',
-              backgroundColor: '#10B981',
-              color: '#FFF',
-              border: 'none',
-              padding: '12px',
-              borderRadius: '8px',
-              fontWeight: 700,
-              cursor: 'pointer',
-              fontSize: '14px'
-            }}
+            className="btn-primary"
+            style={{ width: '100%', padding: '12px' }}
           >
             Download {exportFormat} Report
           </button>
@@ -146,24 +120,24 @@ export const ReportsPage: React.FC = () => {
 
       {/* Schedule Export Modal */}
       {isScheduleModalOpen && (
-        <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.8)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-          <div style={{ backgroundColor: '#18181B', border: '1px solid #27272A', padding: '24px', borderRadius: '16px', width: '440px' }}>
-            <h3 style={{ margin: '0 0 16px 0', fontSize: '18px' }}>Schedule Automated Email Report</h3>
+        <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(13, 17, 23, 0.8)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 110 }}>
+          <div className="panel-bordered" style={{ padding: '24px', width: '440px' }}>
+            <h3 style={{ margin: '0 0 16px 0', fontSize: '18px', fontWeight: 600 }}>Schedule Automated Email Report</h3>
             <div style={{ marginBottom: '12px' }}>
-              <label style={{ fontSize: '12px', color: '#A1A1AA' }}>Recipient Email Addresses</label>
-              <input defaultValue="cpo@enterprise.com, finance@enterprise.com" style={{ width: '100%', padding: '8px', backgroundColor: '#09090B', border: '1px solid #27272A', color: '#FFF', borderRadius: '6px' }} />
+              <label className="kpi-label" style={{ display: 'block', marginBottom: '6px' }}>Recipient Email Addresses</label>
+              <input defaultValue="cpo@enterprise.com, finance@enterprise.com" className="input-dark" style={{ width: '100%' }} />
             </div>
             <div style={{ marginBottom: '12px' }}>
-              <label style={{ fontSize: '12px', color: '#A1A1AA' }}>Frequency</label>
-              <select style={{ width: '100%', padding: '8px', backgroundColor: '#09090B', border: '1px solid #27272A', color: '#FFF', borderRadius: '6px' }}>
+              <label className="kpi-label" style={{ display: 'block', marginBottom: '6px' }}>Frequency</label>
+              <select className="input-dark" style={{ width: '100%' }}>
                 <option>Every Monday at 8:00 AM</option>
                 <option>Daily at 6:00 PM</option>
                 <option>1st Day of Month</option>
               </select>
             </div>
             <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px', marginTop: '20px' }}>
-              <button onClick={() => setIsScheduleModalOpen(false)} style={{ padding: '8px 16px', backgroundColor: '#27272A', color: '#FFF', border: 'none', borderRadius: '6px', cursor: 'pointer' }}>Cancel</button>
-              <button onClick={() => setIsScheduleModalOpen(false)} style={{ padding: '8px 16px', backgroundColor: '#6366F1', color: '#FFF', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 600 }}>Save Schedule</button>
+              <button onClick={() => setIsScheduleModalOpen(false)} className="btn-secondary">Cancel</button>
+              <button onClick={() => setIsScheduleModalOpen(false)} className="btn-primary">Save Schedule</button>
             </div>
           </div>
         </div>

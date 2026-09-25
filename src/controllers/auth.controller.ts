@@ -9,7 +9,7 @@ const authService = new AuthService();
 // Zod Validation Schemas
 const registerSchema = z.object({
   companyName: z.string().min(2, 'Company name is required'),
-  tenantSlug: z.string().optional().default('stockmind-default'),
+  tenantSlug: z.string().optional().default('inventra-default'),
   firstName: z.string().min(1, 'First name is required'),
   lastName: z.string().min(1, 'Last name is required'),
   email: z.string().email('Invalid email address'),
@@ -18,13 +18,13 @@ const registerSchema = z.object({
 });
 
 const loginSchema = z.object({
-  tenantSlug: z.string().optional().default('stockmind-default'),
+  tenantSlug: z.string().optional().default('inventra-default'),
   email: z.string().email('Invalid email address'),
   password: z.string().min(1, 'Password is required')
 });
 
 const forgotPasswordSchema = z.object({
-  tenantSlug: z.string().optional().default('stockmind-default'),
+  tenantSlug: z.string().optional().default('inventra-default'),
   email: z.string().email('Invalid email address')
 });
 

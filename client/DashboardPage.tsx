@@ -57,87 +57,115 @@ export const DashboardPage: React.FC = () => {
   const activityLogs = data?.recentActivity ?? [];
 
   return (
-    <div style={{ backgroundColor: '#09090B', color: '#F4F4F5', minHeight: '100vh', padding: '24px', fontFamily: 'Inter, sans-serif' }}>
+    <div style={{ backgroundColor: 'var(--bg-base)', color: 'var(--text-primary)', minHeight: '100vh', padding: '32px 40px' }}>
       {/* Top Header */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '32px' }}>
         <div>
-          <h1 style={{ fontSize: '24px', fontWeight: 700, margin: 0 }}>StockMind AI — Executive Command Center</h1>
-          <p style={{ color: '#A1A1AA', fontSize: '14px', margin: '4px 0 0 0' }}>Real-time inventory valuation in Indian Rupees (₹), AI demand trajectory, and warehouse analytics.</p>
+          <h1 className="page-title">Executive Command Center</h1>
+          <p className="subtext-muted" style={{ marginTop: '4px' }}>Real-time inventory valuation in Indian Rupees (₹), AI demand trajectory, and warehouse analytics.</p>
         </div>
         <div style={{ display: 'flex', gap: '12px' }}>
           <button
             onClick={fetchDashboardSummary}
-            style={{ backgroundColor: '#27272A', border: '1px solid #3F3F46', color: '#FFF', padding: '10px 16px', borderRadius: '8px', cursor: 'pointer', fontWeight: 600 }}
+            className="btn-secondary"
           >
-            🔄 Refresh Live Metrics
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/></svg>
+            Refresh Metrics
           </button>
           <button
             onClick={() => setIsNotificationOpen(!isNotificationOpen)}
-            style={{ backgroundColor: '#18181B', border: '1px solid #27272A', color: '#FFF', padding: '10px 16px', borderRadius: '8px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px' }}
+            className="btn-primary"
+            style={{ position: 'relative' }}
           >
-            🔔 Alerts <span style={{ backgroundColor: '#F43F5E', color: '#FFF', borderRadius: '10px', padding: '2px 8px', fontSize: '12px', fontWeight: 700 }}>{lowStockAlerts}</span>
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+            Alerts
+            <span className="badge badge-danger" style={{ padding: '1px 6px', fontSize: '10px', marginLeft: '4px' }}>{lowStockAlerts}</span>
           </button>
         </div>
       </div>
 
-      {/* KPI Metric Cards Grid */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '16px', marginBottom: '24px' }}>
-        {/* Revenue Card */}
-        <div style={{ backgroundColor: '#18181B', border: '1px solid #27272A', padding: '20px', borderRadius: '12px' }}>
-          <div style={{ fontSize: '12px', color: '#A1A1AA' }}>Total YTD Revenue (INR)</div>
-          <div style={{ fontSize: '24px', fontWeight: 700, color: '#10B981', marginTop: '4px' }}>₹{totalRevenue.toLocaleString('en-IN')}</div>
-          <div style={{ fontSize: '12px', color: '#10B981', marginTop: '4px' }}>Real-Time Dynamic Sales</div>
+      {/* Loading Skeleton */}
+      {loading ? (
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '16px', marginBottom: '28px' }}>
+          {[1, 2, 3, 4, 5].map((n) => (
+            <div key={n} className="glass-card" style={{ padding: '20px', height: '110px' }}>
+              <div className="skeleton-box" style={{ width: '40%', height: '12px', marginBottom: '12px' }} />
+              <div className="skeleton-box" style={{ width: '70%', height: '28px', marginBottom: '8px' }} />
+              <div className="skeleton-box" style={{ width: '50%', height: '10px' }} />
+            </div>
+          ))}
         </div>
+      ) : (
+        /* KPI Metric Cards Grid - No chrome/borders */
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '32px', marginBottom: '40px' }}>
+          {/* Revenue Card (Hero Metric 1) */}
+          <div>
+            <div className="kpi-label">Total YTD Revenue (INR)</div>
+            <div className="kpi-value-hero" style={{ marginTop: '6px' }}>₹{totalRevenue.toLocaleString('en-IN')}</div>
+            <div style={{ marginTop: '8px' }}>
+              <span className="badge badge-success">● Real-Time Sales</span>
+            </div>
+          </div>
 
-        {/* Inventory Value Card */}
-        <div style={{ backgroundColor: '#18181B', border: '1px solid #27272A', padding: '20px', borderRadius: '12px' }}>
-          <div style={{ fontSize: '12px', color: '#A1A1AA' }}>Working Capital Inv. Value</div>
-          <div style={{ fontSize: '24px', fontWeight: 700, color: '#FFF', marginTop: '4px' }}>₹{totalInvValue.toLocaleString('en-IN')}</div>
-          <div style={{ fontSize: '12px', color: '#71717A', marginTop: '4px' }}>{totalOnHand.toLocaleString('en-IN')} units on hand</div>
-        </div>
+          {/* Inventory Value Card */}
+          <div>
+            <div className="kpi-label">Working Capital Inv. Value</div>
+            <div className="kpi-value" style={{ marginTop: '6px' }}>₹{totalInvValue.toLocaleString('en-IN')}</div>
+            <div className="subtext-muted" style={{ marginTop: '8px' }}>{totalOnHand.toLocaleString('en-IN')} units on hand</div>
+          </div>
 
-        {/* Orders Card */}
-        <div style={{ backgroundColor: '#18181B', border: '1px solid #27272A', padding: '20px', borderRadius: '12px' }}>
-          <div style={{ fontSize: '12px', color: '#A1A1AA' }}>Active Omnichannel Orders</div>
-          <div style={{ fontSize: '24px', fontWeight: 700, color: '#6366F1', marginTop: '4px' }}>{activeOrders} Orders</div>
-          <div style={{ fontSize: '12px', color: '#A1A1AA', marginTop: '4px' }}>{pendingPOs} POs Pending Approval</div>
-        </div>
+          {/* Orders Card (Hero Metric 2) */}
+          <div>
+            <div className="kpi-label">Active Omnichannel Orders</div>
+            <div className="kpi-value-hero" style={{ marginTop: '6px' }}>{activeOrders}</div>
+            <div style={{ marginTop: '8px', display: 'flex', gap: '6px' }}>
+              <span className="badge badge-warning">{pendingPOs} POs Pending</span>
+            </div>
+          </div>
 
-        {/* Warehouse Capacity Card */}
-        <div style={{ backgroundColor: '#18181B', border: '1px solid #27272A', padding: '20px', borderRadius: '12px' }}>
-          <div style={{ fontSize: '12px', color: '#A1A1AA' }}>Warehouse Occupancy</div>
-          <div style={{ fontSize: '24px', fontWeight: 700, color: '#F59E0B', marginTop: '4px' }}>{whCapacity}%</div>
-          {/* Progress Bar */}
-          <div style={{ width: '100%', backgroundColor: '#27272A', height: '6px', borderRadius: '3px', marginTop: '8px', overflow: 'hidden' }}>
-            <div style={{ width: `${Math.min(100, whCapacity)}%`, backgroundColor: '#F59E0B', height: '100%' }}></div>
+          {/* Warehouse Capacity Card */}
+          <div>
+            <div className="kpi-label">Warehouse Occupancy</div>
+            <div className="kpi-value" style={{ color: whCapacity > 85 ? 'var(--accent-risk)' : 'var(--accent-primary)', marginTop: '6px' }}>{whCapacity}%</div>
+            {/* Minimal Progress Bar */}
+            <div style={{ width: '100%', backgroundColor: 'var(--border)', height: '4px', borderRadius: '2px', marginTop: '10px', overflow: 'hidden' }}>
+              <div style={{ width: `${Math.min(100, whCapacity)}%`, backgroundColor: whCapacity > 85 ? 'var(--accent-risk)' : 'var(--accent-primary)', height: '100%', transition: 'width 0.4s ease' }} />
+            </div>
+          </div>
+
+          {/* Supplier Rating Card */}
+          <div>
+            <div className="kpi-label">Avg Supplier OTIF Rating</div>
+            <div className="kpi-value" style={{ color: 'var(--accent-cool)', marginTop: '6px' }}>{otifRating}%</div>
+            <div style={{ marginTop: '8px' }}>
+              <span className="badge badge-success">On-Time In-Full Score</span>
+            </div>
           </div>
         </div>
-
-        {/* Supplier Rating Card */}
-        <div style={{ backgroundColor: '#18181B', border: '1px solid #27272A', padding: '20px', borderRadius: '12px' }}>
-          <div style={{ fontSize: '12px', color: '#A1A1AA' }}>Avg Supplier OTIF Rating</div>
-          <div style={{ fontSize: '24px', fontWeight: 700, color: '#10B981', marginTop: '4px' }}>{otifRating}%</div>
-          <div style={{ fontSize: '12px', color: '#10B981', marginTop: '4px' }}>On-Time In-Full Scorecard</div>
-        </div>
-      </div>
+      )}
 
       {/* Main Charts & Activity Split View */}
       <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '24px' }}>
         {/* Left Column: AI Demand & Forecast Chart */}
-        <div style={{ backgroundColor: '#18181B', border: '1px solid #27272A', padding: '24px', borderRadius: '12px' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+        <div className="panel-bordered">
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
             <div>
-              <h3 style={{ margin: 0, fontSize: '16px' }}>AI Demand & Inventory Trajectory (30-Day Forecast)</h3>
-              <p style={{ fontSize: '12px', color: '#A1A1AA', margin: '4px 0 0 0' }}>Ensemble ML predicted demand vs actual historical sales (₹ Thousands).</p>
+              <h3 className="section-title">Demand & Inventory Trajectory</h3>
+              <p className="subtext-muted" style={{ marginTop: '2px' }}>Ensemble ML predicted demand vs actual historical sales (₹ Thousands).</p>
             </div>
             <div style={{ display: 'flex', gap: '16px', fontSize: '12px' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><div style={{ width: '12px', height: '3px', backgroundColor: '#6366F1' }}></div> Actual Sales</div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><div style={{ width: '12px', height: '3px', backgroundColor: '#8B5CF6' }}></div> AI Forecast</div>
+              {/* Legend kept as backup, but labels will be drawn on chart too */}
+              <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: 'var(--text-muted)' }}>
+                <div style={{ width: '10px', height: '10px', borderRadius: '2px', backgroundColor: 'var(--accent-cool)' }} /> Actual Sales
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: 'var(--text-muted)' }}>
+                <div style={{ width: '10px', height: '10px', borderRadius: '2px', border: '2px dashed var(--accent-primary)', backgroundColor: 'transparent' }} /> AI Forecast
+              </div>
             </div>
           </div>
 
-          {/* SVG Multi-Series Line Chart */}
-          <div style={{ height: '240px', width: '100%', position: 'relative' }}>
+          {/* SVG Multi-Series Line Chart with Refined Gridlines */}
+          <div style={{ height: '250px', width: '100%', position: 'relative' }}>
             {(() => {
               const curve = (forecastCurve && forecastCurve.length > 0)
                 ? forecastCurve
@@ -151,12 +179,12 @@ export const DashboardPage: React.FC = () => {
                     { date: 'Aug 30', actual: 0, forecast: 240 }
                   ];
               const maxVal = Math.max(...curve.flatMap(d => [d.actual || 0, d.forecast || 0]), 10);
-              
-              const pointsActual = curve
-                .filter(d => (d.actual || 0) > 0)
-                .map((d, i, arr) => {
-                  const x = (i / Math.max(1, arr.length - 1)) * 400 + 20;
-                  const y = 200 - Math.min(180, Math.max(10, ((d.actual || 0) / maxVal) * 180));
+
+              const actualCurve = curve.filter(d => (d.actual || 0) > 0);
+              const pointsActual = actualCurve
+                .map((d, i) => {
+                  const x = (i / Math.max(1, curve.length - 1)) * 600 + 20; // Correct scale to match full width
+                  const y = 210 - Math.min(180, Math.max(10, ((d.actual || 0) / maxVal) * 180));
                   return `${x},${y}`;
                 })
                 .join(' ');
@@ -164,65 +192,77 @@ export const DashboardPage: React.FC = () => {
               const pointsForecast = curve
                 .map((d, i) => {
                   const x = (i / Math.max(1, curve.length - 1)) * 600 + 20;
-                  const y = 200 - Math.min(180, Math.max(10, ((d.forecast || 0) / maxVal) * 180));
+                  const y = 210 - Math.min(180, Math.max(10, ((d.forecast || 0) / maxVal) * 180));
                   return `${x},${y}`;
                 })
                 .join(' ');
 
               return (
-                <svg viewBox="0 0 640 220" style={{ width: '100%', height: '100%', overflow: 'visible' }}>
-                  <line x1="0" y1="200" x2="100%" y2="200" stroke="#27272A" strokeDasharray="4" />
-                  <line x1="0" y1="120" x2="100%" y2="120" stroke="#27272A" strokeDasharray="4" />
-                  <line x1="0" y1="40" x2="100%" y2="40" stroke="#27272A" strokeDasharray="4" />
+                <svg viewBox="0 0 640 230" style={{ width: '100%', height: '100%', overflow: 'visible', fontFamily: 'Inter, monospace' }}>
+                  {/* Refined Grid Lines - Minimal */}
+                  <line x1="0" y1="210" x2="100%" y2="210" stroke="var(--border)" strokeWidth="1" />
+                  <line x1="0" y1="110" x2="100%" y2="110" stroke="var(--border)" strokeWidth="1" strokeDasharray="4" />
+                  <line x1="0" y1="10" x2="100%" y2="10" stroke="var(--border)" strokeWidth="1" strokeDasharray="4" />
+
+                  {/* Lines */}
+                  {pointsForecast && (
+                    <polyline
+                      fill="none"
+                      stroke="var(--accent-primary)"
+                      strokeWidth="2"
+                      strokeDasharray="4 4"
+                      points={pointsForecast}
+                    />
+                  )}
 
                   {pointsActual && (
                     <polyline
                       fill="none"
-                      stroke="#6366F1"
-                      strokeWidth="3"
+                      stroke="var(--accent-cool)"
+                      strokeWidth="2.5"
                       points={pointsActual}
                     />
                   )}
-
-                  {pointsForecast && (
-                    <polyline
-                      fill="none"
-                      stroke="#8B5CF6"
-                      strokeWidth="3"
-                      strokeDasharray="6"
-                      points={pointsForecast}
-                    />
-                  )}
+                  
+                  {/* Direct Chart Labels */}
+                  <text x="560" y="30" fill="var(--accent-primary)" fontSize="11" fontWeight="600">Forecast</text>
+                  <text x="320" y="100" fill="var(--accent-cool)" fontSize="11" fontWeight="600">Actual</text>
                 </svg>
               );
             })()}
-            <div style={{ display: 'flex', justifyContent: 'space-between', color: '#A1A1AA', fontSize: '12px', marginTop: '12px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', color: 'var(--text-muted)', fontSize: '11px', marginTop: '12px', padding: '0 8px' }}>
               {forecastCurve.map((d, i) => (
-                <span key={i}>{d.date}</span>
+                <span key={i} style={{ width: '30px', textAlign: 'center', opacity: i % 2 === 0 ? 1 : 0.5 }}>{d.date.replace(' ', '\n')}</span>
               ))}
             </div>
           </div>
         </div>
 
         {/* Right Column: Recent Activity Feed */}
-        <div style={{ backgroundColor: '#18181B', border: '1px solid #27272A', padding: '24px', borderRadius: '12px' }}>
-          <h3 style={{ margin: '0 0 16px 0', fontSize: '16px' }}>Real-Time Activity Audit</h3>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+        <div className="panel-bordered">
+          <h3 className="section-title" style={{ marginBottom: '16px' }}>Real-Time Activity Audit</h3>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
             {activityLogs.map((act) => (
-              <div key={act._id} style={{ display: 'flex', gap: '12px', alignItems: 'flex-start', borderBottom: '1px solid #27272A', paddingBottom: '12px' }}>
-                <div style={{ backgroundColor: act.movementType === 'STOCK_IN' ? 'rgba(16, 185, 129, 0.15)' : 'rgba(244, 63, 94, 0.15)', color: act.movementType === 'STOCK_IN' ? '#10B981' : '#F43F5E', padding: '6px', borderRadius: '6px', fontSize: '12px', fontWeight: 700 }}>
+              <div key={act._id} style={{ display: 'flex', gap: '12px', alignItems: 'center', borderBottom: '1px solid var(--border)', paddingBottom: '12px' }}>
+                <span className={`badge ${act.movementType === 'STOCK_IN' ? 'badge-success' : 'badge-danger'}`} style={{ width: '42px', justifyContent: 'center' }}>
                   {act.movementType === 'STOCK_IN' ? 'IN' : 'OUT'}
+                </span>
+                <div style={{ flex: 1 }}>
+                  <div style={{ fontSize: '13px', fontWeight: 500, color: 'var(--text-primary)' }}>{act.productId?.name || 'Inventory Movement'}</div>
+                  <div style={{ fontSize: '12px', color: 'var(--text-muted)', marginTop: '1px' }}>
+                    {act.movementType === 'STOCK_IN' ? `+${act.quantity}` : `-${act.quantity}`} units • <span>{act.warehouseId?.code || 'WH-EAST-01'}</span>
+                  </div>
                 </div>
-                <div>
-                  <div style={{ fontSize: '13px', fontWeight: 600 }}>{act.productId?.name || 'Inventory Movement'}</div>
-                  <div style={{ fontSize: '12px', color: '#A1A1AA' }}>{act.movementType === 'STOCK_IN' ? `+${act.quantity}` : `-${act.quantity}`} units at {act.warehouseId?.code || 'WH-EAST-01'}</div>
-                  <div style={{ fontSize: '11px', color: '#71717A', marginTop: '2px' }}>{new Date(act.createdAt).toLocaleTimeString()}</div>
-                </div>
+                <div className="tabular-nums" style={{ fontSize: '11px', color: 'var(--text-muted)' }}>{new Date(act.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</div>
               </div>
             ))}
             {activityLogs.length === 0 && (
-              <div style={{ fontSize: '13px', color: '#A1A1AA', textAlign: 'center', padding: '20px' }}>
-                No stock movements logged yet. Record movements in Inventory Control to see real-time audit logs.
+              <div className="empty-state-box" style={{ padding: '32px 16px', border: 'none' }}>
+                <div className="empty-state-icon">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                </div>
+                <div style={{ fontWeight: 500, fontSize: '14px', color: 'var(--text-primary)' }}>No Stock Movements Logged</div>
+                <div className="subtext-muted" style={{ marginTop: '4px', maxWidth: '240px' }}>Record inventory movements in Inventory Control to populate audit logs.</div>
               </div>
             )}
           </div>
@@ -231,16 +271,19 @@ export const DashboardPage: React.FC = () => {
 
       {/* Notifications Drawer */}
       {isNotificationOpen && (
-        <div style={{ position: 'fixed', top: '70px', right: '24px', width: '360px', backgroundColor: '#18181B', border: '1px solid #27272A', padding: '20px', borderRadius: '12px', boxShadow: '0 10px 25px rgba(0,0,0,0.5)', zIndex: 100 }}>
-          <h4 style={{ margin: '0 0 12px 0' }}>Urgent System Notifications</h4>
+        <div className="panel-bordered" style={{ position: 'fixed', top: '75px', right: '28px', width: '380px', padding: '20px', boxShadow: '0 12px 32px rgba(0,0,0,0.6)', zIndex: 100 }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px' }}>
+            <h4 style={{ margin: 0, fontSize: '14px', fontWeight: 600, color: 'var(--text-primary)' }}>System Alerts & Action Items</h4>
+            <button onClick={() => setIsNotificationOpen(false)} style={{ background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer', fontSize: '16px' }}>✕</button>
+          </div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-            <div style={{ padding: '10px', backgroundColor: 'rgba(244, 63, 94, 0.1)', borderLeft: '3px solid #F43F5E', borderRadius: '4px', fontSize: '12px' }}>
-              <strong style={{ color: '#F43F5E' }}>Critical Stockout Warning</strong>
-              <div>{lowStockAlerts} items currently below safety stock limits.</div>
+            <div style={{ padding: '12px', backgroundColor: 'rgba(229, 83, 75, 0.08)', borderLeft: '3px solid var(--accent-risk)', borderRadius: '6px', fontSize: '12px' }}>
+              <strong style={{ color: 'var(--accent-risk)', display: 'block', marginBottom: '2px' }}>Critical Stockout Warning</strong>
+              <div style={{ color: 'var(--text-muted)' }}>{lowStockAlerts} items currently below safety stock limits.</div>
             </div>
-            <div style={{ padding: '10px', backgroundColor: 'rgba(245, 158, 11, 0.1)', borderLeft: '3px solid #F59E0B', borderRadius: '4px', fontSize: '12px' }}>
-              <strong style={{ color: '#F59E0B' }}>Pending Approval Required</strong>
-              <div>{pendingPOs} Purchase Orders awaiting executive sign-off.</div>
+            <div style={{ padding: '12px', backgroundColor: 'rgba(229, 83, 75, 0.08)', borderLeft: '3px solid var(--accent-risk)', borderRadius: '6px', fontSize: '12px' }}>
+              <strong style={{ color: 'var(--accent-risk)', display: 'block', marginBottom: '2px' }}>Pending Sign-Off Required</strong>
+              <div style={{ color: 'var(--text-muted)' }}>{pendingPOs} Purchase Orders awaiting executive approval.</div>
             </div>
           </div>
         </div>

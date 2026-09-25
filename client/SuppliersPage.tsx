@@ -164,86 +164,91 @@ export const SuppliersPage: React.FC = () => {
   const highRiskCount = suppliers.filter(s => s.performance?.riskLevel === 'HIGH').length;
 
   return (
-    <div style={{ backgroundColor: '#09090B', color: '#F4F4F5', minHeight: '100vh', padding: '24px', fontFamily: 'Inter, sans-serif' }}>
+    <div style={{ backgroundColor: 'var(--bg-base)', color: 'var(--text-primary)', minHeight: '100vh', padding: '32px 40px' }}>
       
       {/* HEADER BAR */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px', flexWrap: 'wrap', gap: '16px' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '28px', flexWrap: 'wrap', gap: '16px' }}>
         <div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-            <h1 style={{ fontSize: '24px', fontWeight: 800, margin: 0, letterSpacing: '-0.02em', color: '#FFF' }}>Supplier Master & OTIF Scorecards</h1>
-            <span style={{ backgroundColor: 'rgba(99, 102, 241, 0.15)', color: '#818CF8', border: '1px solid rgba(99, 102, 241, 0.3)', padding: '2px 8px', borderRadius: '6px', fontSize: '11px', fontWeight: 700 }}>
+            <h1 className="page-title">Supplier Master & OTIF Scorecards</h1>
+            <span className="badge badge-info">
               VENDOR SLA ENGINE
             </span>
           </div>
-          <p style={{ color: '#A1A1AA', fontSize: '13px', margin: '4px 0 0 0' }}>
+          <p className="subtext-muted" style={{ marginTop: '4px' }}>
             Vendor performance scorecards, On-Time In-Full (OTIF) SLA tracking, defect rate auditing, and procurement spend analysis.
           </p>
         </div>
 
         <button
           onClick={() => setIsModalOpen(true)}
-          style={{ backgroundColor: '#6366F1', color: '#FFF', padding: '10px 18px', borderRadius: '8px', border: 'none', fontWeight: 700, fontSize: '13px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px' }}
+          className="btn-primary"
         >
-          ➕ Add New Vendor
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Add New Vendor
         </button>
       </div>
 
       {/* DYNAMIC KPI SCORECARD CARDS */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '16px', marginBottom: '24px' }}>
-        <div style={{ backgroundColor: '#18181B', border: '1px solid #27272A', padding: '18px', borderRadius: '12px' }}>
-          <div style={{ fontSize: '12px', color: '#A1A1AA', fontWeight: 600 }}>🤝 Contracted Vendors</div>
-          <div style={{ fontSize: '24px', fontWeight: 800, color: '#FFF', marginTop: '4px' }}>{totalVendors}</div>
-          <div style={{ fontSize: '11px', color: '#818CF8', marginTop: '4px', fontWeight: 600 }}>Active Master Records</div>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '32px', marginBottom: '40px' }}>
+        <div>
+          <div className="kpi-label">Contracted Vendors</div>
+          <div className="kpi-value" style={{ marginTop: '6px' }}>{totalVendors}</div>
+          <div className="subtext-muted" style={{ marginTop: '6px' }}>Active Master Records</div>
         </div>
 
-        <div style={{ backgroundColor: '#18181B', border: '1px solid #27272A', padding: '18px', borderRadius: '12px' }}>
-          <div style={{ fontSize: '12px', color: '#A1A1AA', fontWeight: 600 }}>🎯 Avg Vendor OTIF Score</div>
-          <div style={{ fontSize: '24px', fontWeight: 800, color: Number(avgOtifScore) >= 95 ? '#34D399' : '#F59E0B', marginTop: '4px' }}>
+        <div>
+          <div className="kpi-label">Avg Vendor OTIF Score</div>
+          <div className="kpi-value-hero" style={{ color: Number(avgOtifScore) >= 95 ? 'var(--accent-cool)' : 'var(--accent-risk)', marginTop: '6px' }}>
             {avgOtifScore}%
           </div>
-          <div style={{ fontSize: '11px', color: '#34D399', marginTop: '4px', fontWeight: 600 }}>On-Time In-Full SLA</div>
+          <div style={{ marginTop: '6px' }}>
+            <span className="badge badge-success">On-Time In-Full SLA</span>
+          </div>
         </div>
 
-        <div style={{ backgroundColor: '#18181B', border: '1px solid #27272A', padding: '18px', borderRadius: '12px' }}>
-          <div style={{ fontSize: '12px', color: '#A1A1AA', fontWeight: 600 }}>💰 Total YTD Spend</div>
-          <div style={{ fontSize: '24px', fontWeight: 800, color: '#34D399', marginTop: '4px' }}>
+        <div>
+          <div className="kpi-label">Total YTD Spend</div>
+          <div className="kpi-value" style={{ marginTop: '6px' }}>
             ₹{totalYtdSpend > 0 ? (totalYtdSpend / 100000).toFixed(2) + ' Lakhs' : '0.00'}
           </div>
-          <div style={{ fontSize: '11px', color: '#A1A1AA', marginTop: '4px' }}>Procurement Spend</div>
+          <div className="subtext-muted" style={{ marginTop: '6px' }}>Procurement Spend</div>
         </div>
 
-        <div style={{ backgroundColor: '#18181B', border: '1px solid #27272A', padding: '18px', borderRadius: '12px' }}>
-          <div style={{ fontSize: '12px', color: '#A1A1AA', fontWeight: 600 }}>⚠️ Vendor Risk Levels</div>
-          <div style={{ fontSize: '24px', fontWeight: 800, color: '#FFF', marginTop: '4px' }}>
-            {lowRiskCount} <span style={{ fontSize: '12px', color: '#34D399', fontWeight: 600 }}>Low</span> / {highRiskCount} <span style={{ fontSize: '12px', color: '#F43F5E', fontWeight: 600 }}>High</span>
+        <div>
+          <div className="kpi-label">Vendor Risk Levels</div>
+          <div className="kpi-value" style={{ marginTop: '6px' }}>
+            {lowRiskCount} <span style={{ fontSize: '14px', color: 'var(--accent-cool)', fontWeight: 600 }}>Low</span> / {highRiskCount} <span style={{ fontSize: '14px', color: 'var(--accent-risk)', fontWeight: 600 }}>High</span>
           </div>
-          <div style={{ fontSize: '11px', color: '#A1A1AA', marginTop: '4px' }}>Defect Avg: {avgDefectRate}%</div>
+          <div className="subtext-muted" style={{ marginTop: '6px' }}>Defect Avg: {avgDefectRate}%</div>
         </div>
       </div>
 
       {/* SEARCH & MULTI-FILTER TOOLBAR */}
-      <div style={{ backgroundColor: '#18181B', border: '1px solid #27272A', borderRadius: '12px', padding: '16px', marginBottom: '24px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+      <div className="panel-bordered" style={{ padding: '16px', marginBottom: '24px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '12px' }}>
           
           {/* Search */}
           <div style={{ gridColumn: 'span 2' }}>
-            <label style={{ fontSize: '11px', color: '#A1A1AA', fontWeight: 600, marginBottom: '4px', display: 'block' }}>🔍 SEARCH VENDOR NAME OR CODE</label>
+            <label className="kpi-label" style={{ marginBottom: '4px', display: 'block' }}>Search Vendor Name or Code</label>
             <input
               type="text"
               placeholder="Type vendor code, company name, contact email..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              style={{ width: '100%', padding: '9px 12px', backgroundColor: '#09090B', border: '1px solid #27272A', color: '#FFF', borderRadius: '8px', fontSize: '13px', boxSizing: 'border-box' }}
+              className="input-dark"
+              style={{ width: '100%', boxSizing: 'border-box' }}
             />
           </div>
 
           {/* Risk Filter */}
           <div>
-            <label style={{ fontSize: '11px', color: '#A1A1AA', fontWeight: 600, marginBottom: '4px', display: 'block' }}>RISK RATING</label>
+            <label className="kpi-label" style={{ marginBottom: '4px', display: 'block' }}>Risk Rating</label>
             <select
               value={riskFilter}
               onChange={(e) => setRiskFilter(e.target.value)}
-              style={{ width: '100%', padding: '9px 12px', backgroundColor: '#09090B', border: '1px solid #27272A', color: '#FFF', borderRadius: '8px', fontSize: '13px' }}
+              className="input-dark"
+              style={{ width: '100%' }}
             >
               <option value="ALL">All Risk Ratings</option>
               <option value="LOW">🟢 Low Risk (&gt;95% OTIF)</option>
@@ -254,11 +259,12 @@ export const SuppliersPage: React.FC = () => {
 
           {/* Payment Terms Filter */}
           <div>
-            <label style={{ fontSize: '11px', color: '#A1A1AA', fontWeight: 600, marginBottom: '4px', display: 'block' }}>PAYMENT TERMS</label>
+            <label className="kpi-label" style={{ marginBottom: '4px', display: 'block' }}>Payment Terms</label>
             <select
               value={paymentFilter}
               onChange={(e) => setPaymentFilter(e.target.value)}
-              style={{ width: '100%', padding: '9px 12px', backgroundColor: '#09090B', border: '1px solid #27272A', color: '#FFF', borderRadius: '8px', fontSize: '13px' }}
+              className="input-dark"
+              style={{ width: '100%' }}
             >
               <option value="ALL">All Payment Terms</option>
               <option value="NET_15">Net 15 Days</option>
@@ -270,12 +276,13 @@ export const SuppliersPage: React.FC = () => {
 
           {/* Sort By */}
           <div>
-            <label style={{ fontSize: '11px', color: '#A1A1AA', fontWeight: 600, marginBottom: '4px', display: 'block' }}>SORT BY</label>
+            <label className="kpi-label" style={{ marginBottom: '4px', display: 'block' }}>Sort By</label>
             <div style={{ display: 'flex', gap: '4px' }}>
               <select
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value)}
-                style={{ flex: 1, padding: '9px 8px', backgroundColor: '#09090B', border: '1px solid #27272A', color: '#FFF', borderRadius: '8px', fontSize: '12px' }}
+                className="input-dark"
+                style={{ flex: 1 }}
               >
                 <option value="otif">OTIF Rating</option>
                 <option value="spend">Total Spend</option>
@@ -284,7 +291,8 @@ export const SuppliersPage: React.FC = () => {
               </select>
               <button
                 onClick={() => setSortOrder(prev => prev === 'asc' ? 'desc' : 'asc')}
-                style={{ padding: '8px 10px', backgroundColor: '#27272A', color: '#FFF', border: '1px solid #3F3F46', borderRadius: '8px', cursor: 'pointer', fontWeight: 700 }}
+                className="btn-secondary"
+                style={{ padding: '0 10px' }}
               >
                 {sortOrder === 'asc' ? '↑' : '↓'}
               </button>
@@ -295,28 +303,28 @@ export const SuppliersPage: React.FC = () => {
 
       {/* SUPPLIER MASTER TABLE OR CLEAN EMPTY STATE */}
       {loading ? (
-        <div style={{ backgroundColor: '#18181B', padding: '40px', borderRadius: '12px', textAlign: 'center', color: '#A1A1AA' }}>
+        <div style={{ color: 'var(--text-muted)' }}>
           Fetching vendor scorecards from MongoDB...
         </div>
       ) : processedSuppliers.length === 0 ? (
-        <div style={{ backgroundColor: '#18181B', border: '1px solid #27272A', padding: '50px', borderRadius: '16px', textAlign: 'center' }}>
-          <div style={{ fontSize: '42px', marginBottom: '12px' }}>🤝</div>
-          <h2 style={{ fontSize: '20px', fontWeight: 800, color: '#FFF', margin: '0 0 8px 0' }}>No Vendor Records Found</h2>
-          <p style={{ color: '#A1A1AA', fontSize: '14px', maxWidth: '480px', margin: '0 auto 20px auto' }}>
+        <div className="empty-state-box">
+          <div className="empty-state-icon">🤝</div>
+          <h2 style={{ fontSize: '18px', fontWeight: 600, color: 'var(--text-primary)', margin: '0 0 8px 0' }}>No Vendor Records Found</h2>
+          <p className="subtext-muted" style={{ maxWidth: '480px', margin: '0 auto 20px auto' }}>
             Your vendor database is clean. Create your first supplier master record to begin tracking lead-time SLAs, OTIF scorecards, and procurement spend.
           </p>
           <button
             onClick={() => setIsModalOpen(true)}
-            style={{ backgroundColor: '#6366F1', color: '#FFF', padding: '12px 24px', borderRadius: '8px', border: 'none', fontWeight: 800, fontSize: '14px', cursor: 'pointer' }}
+            className="btn-primary"
           >
             ➕ Create First Vendor Master Record
           </button>
         </div>
       ) : (
-        <div style={{ backgroundColor: '#18181B', borderRadius: '12px', border: '1px solid #27272A', overflow: 'hidden' }}>
-          <div style={{ padding: '16px 20px', borderBottom: '1px solid #27272A', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <h3 style={{ margin: 0, fontSize: '16px', fontWeight: 800, color: '#FFF' }}>Vendor Master Ledger & Performance Scorecards</h3>
-            <span style={{ fontSize: '11px', color: '#A1A1AA' }}>Click 👁 Scorecard for detailed vendor metrics</span>
+        <div className="panel-bordered" style={{ overflow: 'hidden', padding: 0 }}>
+          <div style={{ padding: '16px 20px', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <h3 style={{ margin: 0, fontSize: '14px', fontWeight: 600, color: 'var(--text-primary)' }}>Vendor Master Ledger & Performance Scorecards</h3>
+            <span style={{ fontSize: '12px', color: 'var(--text-muted)' }}>Click 👁 Scorecard for detailed vendor metrics</span>
           </div>
 
           <div style={{ overflowX: 'auto' }}>
@@ -337,75 +345,71 @@ export const SuppliersPage: React.FC = () => {
               <tbody>
                 {processedSuppliers.map((sup) => {
                   const otif = sup.performance?.otifScore || 98;
-                  const otifBg = otif >= 95 ? 'rgba(16, 185, 129, 0.15)' : otif >= 85 ? 'rgba(245, 158, 11, 0.15)' : 'rgba(244, 63, 94, 0.15)';
-                  const otifColor = otif >= 95 ? '#34D399' : otif >= 85 ? '#F59E0B' : '#F43F5E';
+                  const otifBg = otif >= 95 ? 'rgba(43, 180, 160, 0.15)' : otif >= 85 ? 'rgba(240, 168, 40, 0.15)' : 'rgba(229, 83, 75, 0.15)';
+                  const otifColor = otif >= 95 ? 'var(--accent-cool)' : otif >= 85 ? 'var(--accent-primary)' : 'var(--accent-risk)';
 
                   const risk = sup.performance?.riskLevel || 'LOW';
-                  const riskBg = risk === 'LOW' ? 'rgba(16, 185, 129, 0.15)' : risk === 'MEDIUM' ? 'rgba(245, 158, 11, 0.15)' : 'rgba(244, 63, 94, 0.15)';
-                  const riskColor = risk === 'LOW' ? '#34D399' : risk === 'MEDIUM' ? '#F59E0B' : '#F43F5E';
+                  const riskBg = risk === 'LOW' ? 'rgba(43, 180, 160, 0.15)' : risk === 'MEDIUM' ? 'rgba(240, 168, 40, 0.15)' : 'rgba(229, 83, 75, 0.15)';
+                  const riskColor = risk === 'LOW' ? 'var(--accent-cool)' : risk === 'MEDIUM' ? 'var(--accent-primary)' : 'var(--accent-risk)';
 
                   return (
                     <tr
                       key={sup._id}
                       onClick={() => setSelectedSupplierForDrawer(sup)}
-                      style={{
-                        borderBottom: '1px solid #27272A',
-                        fontSize: '13px',
-                        cursor: 'pointer',
-                        transition: 'background-color 0.15s ease'
-                      }}
-                      onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#1F1F23'}
-                      onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
+                      className="table-row"
+                      style={{ cursor: 'pointer' }}
                     >
-                      <td style={{ padding: '14px 16px', fontFamily: 'monospace', fontWeight: 800, color: '#818CF8' }}>
+                      <td className="table-cell" style={{ fontWeight: 500, color: 'var(--text-primary)' }}>
                         {sup.code}
                       </td>
 
-                      <td style={{ padding: '14px 16px' }}>
-                        <div style={{ fontWeight: 800, color: '#FFF' }}>{sup.name}</div>
-                        <div style={{ fontSize: '11px', color: '#71717A' }}>Tax ID: {sup.taxId || 'N/A'}</div>
+                      <td className="table-cell">
+                        <div style={{ fontWeight: 500, color: 'var(--text-primary)' }}>{sup.name}</div>
+                        <div style={{ fontSize: '12px', color: 'var(--text-muted)' }}>Tax ID: {sup.taxId || 'N/A'}</div>
                       </td>
 
-                      <td style={{ padding: '14px 16px' }}>
-                        <div style={{ fontWeight: 600, color: '#E4E4E7' }}>{sup.contact?.primaryName}</div>
-                        <div style={{ fontSize: '11px', color: '#A1A1AA' }}>{sup.contact?.email}</div>
+                      <td className="table-cell">
+                        <div style={{ fontWeight: 500, color: 'var(--text-primary)' }}>{sup.contact?.primaryName}</div>
+                        <div style={{ fontSize: '12px', color: 'var(--text-muted)' }}>{sup.contact?.email}</div>
                       </td>
 
-                      <td style={{ padding: '14px 16px', color: '#A1A1AA' }}>
+                      <td className="table-cell" style={{ color: 'var(--text-muted)' }}>
                         {sup.leadTime?.defaultDays || 7} Days
                       </td>
 
-                      <td style={{ padding: '14px 16px' }}>
-                        <span style={{ backgroundColor: otifBg, color: otifColor, padding: '4px 10px', borderRadius: '12px', fontWeight: 800, fontSize: '12px' }}>
+                      <td className="table-cell">
+                        <span style={{ backgroundColor: otifBg, color: otifColor, padding: '4px 10px', borderRadius: '4px', fontWeight: 600, fontSize: '12px' }}>
                           {otif}%
                         </span>
                       </td>
 
-                      <td style={{ padding: '14px 16px', color: '#A1A1AA' }}>
+                      <td className="table-cell" style={{ color: 'var(--text-muted)' }}>
                         {sup.performance?.defectRatePercent || 0.1}%
                       </td>
 
-                      <td style={{ padding: '14px 16px' }}>
-                        <span style={{ backgroundColor: riskBg, color: riskColor, padding: '4px 10px', borderRadius: '12px', fontSize: '11px', fontWeight: 800 }}>
+                      <td className="table-cell">
+                        <span style={{ backgroundColor: riskBg, color: riskColor, padding: '4px 10px', borderRadius: '4px', fontSize: '11px', fontWeight: 600 }}>
                           {risk} RISK
                         </span>
                       </td>
 
-                      <td style={{ padding: '14px 16px', textAlign: 'right', fontWeight: 800, color: '#FFF' }}>
+                      <td className="table-cell tabular-nums" style={{ textAlign: 'right', fontWeight: 600, color: 'var(--text-primary)' }}>
                         ₹{(sup.performance?.totalSpendAmount || 0).toLocaleString('en-IN')}
                       </td>
 
-                      <td style={{ padding: '14px 16px' }} onClick={(e) => e.stopPropagation()}>
+                      <td className="table-cell" onClick={(e) => e.stopPropagation()}>
                         <div style={{ display: 'flex', gap: '6px', justifyContent: 'center' }}>
                           <button
                             onClick={() => setSelectedSupplierForDrawer(sup)}
-                            style={{ backgroundColor: '#27272A', color: '#FFF', border: 'none', padding: '5px 10px', borderRadius: '6px', cursor: 'pointer', fontSize: '11px', fontWeight: 600 }}
+                            className="btn-secondary"
+                            style={{ padding: '4px 8px', fontSize: '11px' }}
                           >
                             👁 Scorecard
                           </button>
                           <button
                             onClick={() => handleDeleteSupplier(sup._id, sup.name)}
-                            style={{ backgroundColor: 'rgba(244, 63, 94, 0.1)', color: '#F43F5E', border: 'none', padding: '5px 8px', borderRadius: '6px', cursor: 'pointer', fontSize: '11px' }}
+                            className="btn-danger"
+                            style={{ padding: '4px 8px', fontSize: '11px' }}
                           >
                             🗑
                           </button>
@@ -422,55 +426,56 @@ export const SuppliersPage: React.FC = () => {
 
       {/* VENDOR SCORECARD SIDE DRAWER */}
       {selectedSupplierForDrawer && (
-        <div style={{ position: 'fixed', top: 0, right: 0, bottom: 0, width: '480px', backgroundColor: '#121215', borderLeft: '1px solid #27272A', zIndex: 90, padding: '24px', overflowY: 'auto', boxShadow: '-10px 0 30px rgba(0,0,0,0.8)', display: 'flex', flexDirection: 'column' }}>
+        <div style={{ position: 'fixed', top: 0, right: 0, bottom: 0, width: '480px', backgroundColor: 'var(--bg-base)', borderLeft: '1px solid var(--border)', zIndex: 90, padding: '24px', overflowY: 'auto', boxShadow: '-10px 0 30px rgba(0,0,0,0.8)', display: 'flex', flexDirection: 'column' }}>
           
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '20px', borderBottom: '1px solid #27272A', paddingBottom: '16px' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '20px', borderBottom: '1px solid var(--border)', paddingBottom: '16px' }}>
             <div>
-              <span style={{ fontSize: '11px', color: '#818CF8', fontWeight: 800, fontFamily: 'monospace' }}>{selectedSupplierForDrawer.code}</span>
-              <h2 style={{ margin: '4px 0 0 0', fontSize: '18px', fontWeight: 800, color: '#FFF' }}>{selectedSupplierForDrawer.name}</h2>
+              <span style={{ fontSize: '12px', color: 'var(--text-muted)', fontWeight: 500 }}>{selectedSupplierForDrawer.code}</span>
+              <h2 style={{ margin: '4px 0 0 0', fontSize: '18px', fontWeight: 600, color: 'var(--text-primary)' }}>{selectedSupplierForDrawer.name}</h2>
             </div>
             <button
               onClick={() => setSelectedSupplierForDrawer(null)}
-              style={{ backgroundColor: '#27272A', color: '#FFF', border: 'none', width: '32px', height: '32px', borderRadius: '50%', cursor: 'pointer', fontSize: '16px', fontWeight: 700 }}
+              className="btn-secondary"
+              style={{ padding: '4px 8px' }}
             >
               ✕
             </button>
           </div>
 
           {/* Contact Details */}
-          <div style={{ backgroundColor: '#18181B', border: '1px solid #27272A', borderRadius: '10px', padding: '16px', marginBottom: '20px' }}>
-            <div style={{ fontSize: '12px', color: '#A1A1AA', fontWeight: 700, marginBottom: '8px' }}>PRIMARY VENDOR CONTACT</div>
-            <div style={{ fontSize: '14px', fontWeight: 700, color: '#FFF' }}>{selectedSupplierForDrawer.contact?.primaryName}</div>
-            <div style={{ fontSize: '12px', color: '#A1A1AA', marginTop: '2px' }}>✉️ {selectedSupplierForDrawer.contact?.email}</div>
-            <div style={{ fontSize: '12px', color: '#A1A1AA', marginTop: '2px' }}>📞 {selectedSupplierForDrawer.contact?.phone}</div>
+          <div className="panel-bordered" style={{ marginBottom: '20px' }}>
+            <div className="kpi-label" style={{ marginBottom: '8px' }}>Primary Vendor Contact</div>
+            <div style={{ fontSize: '14px', fontWeight: 500, color: 'var(--text-primary)' }}>{selectedSupplierForDrawer.contact?.primaryName}</div>
+            <div style={{ fontSize: '13px', color: 'var(--text-muted)', marginTop: '2px' }}>✉️ {selectedSupplierForDrawer.contact?.email}</div>
+            <div style={{ fontSize: '13px', color: 'var(--text-muted)', marginTop: '2px' }}>📞 {selectedSupplierForDrawer.contact?.phone}</div>
           </div>
 
           {/* Performance Gauges */}
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '20px' }}>
-            <div style={{ backgroundColor: '#18181B', border: '1px solid #27272A', padding: '14px', borderRadius: '8px' }}>
-              <div style={{ fontSize: '11px', color: '#A1A1AA' }}>OTIF SLA RATING</div>
-              <div style={{ fontSize: '22px', fontWeight: 800, color: '#34D399', marginTop: '4px' }}>
+            <div className="panel-bordered" style={{ padding: '16px' }}>
+              <div className="kpi-label">OTIF SLA Rating</div>
+              <div className="kpi-value" style={{ color: 'var(--accent-cool)', marginTop: '4px' }}>
                 {selectedSupplierForDrawer.performance?.otifScore || 98}%
               </div>
             </div>
 
-            <div style={{ backgroundColor: '#18181B', border: '1px solid #27272A', padding: '14px', borderRadius: '8px' }}>
-              <div style={{ fontSize: '11px', color: '#A1A1AA' }}>DEFECT RATE</div>
-              <div style={{ fontSize: '22px', fontWeight: 800, color: '#F59E0B', marginTop: '4px' }}>
+            <div className="panel-bordered" style={{ padding: '16px' }}>
+              <div className="kpi-label">Defect Rate</div>
+              <div className="kpi-value" style={{ color: 'var(--accent-primary)', marginTop: '4px' }}>
                 {selectedSupplierForDrawer.performance?.defectRatePercent || 0.1}%
               </div>
             </div>
 
-            <div style={{ backgroundColor: '#18181B', border: '1px solid #27272A', padding: '14px', borderRadius: '8px' }}>
-              <div style={{ fontSize: '11px', color: '#A1A1AA' }}>GUARANTEED LEAD TIME</div>
-              <div style={{ fontSize: '22px', fontWeight: 800, color: '#FFF', marginTop: '4px' }}>
+            <div className="panel-bordered" style={{ padding: '16px' }}>
+              <div className="kpi-label">Guaranteed Lead Time</div>
+              <div className="kpi-value" style={{ marginTop: '4px' }}>
                 {selectedSupplierForDrawer.leadTime?.defaultDays || 7} Days
               </div>
             </div>
 
-            <div style={{ backgroundColor: '#18181B', border: '1px solid #27272A', padding: '14px', borderRadius: '8px' }}>
-              <div style={{ fontSize: '11px', color: '#A1A1AA' }}>PAYMENT TERMS</div>
-              <div style={{ fontSize: '22px', fontWeight: 800, color: '#818CF8', marginTop: '4px' }}>
+            <div className="panel-bordered" style={{ padding: '16px' }}>
+              <div className="kpi-label">Payment Terms</div>
+              <div className="kpi-value" style={{ marginTop: '4px', fontSize: '18px' }}>
                 {selectedSupplierForDrawer.paymentTerms?.replace('_', ' ')}
               </div>
             </div>
@@ -479,7 +484,8 @@ export const SuppliersPage: React.FC = () => {
           <div style={{ marginTop: 'auto', display: 'flex', gap: '10px' }}>
             <button
               onClick={() => alert(`Creating Purchase Order for ${selectedSupplierForDrawer.name}`)}
-              style={{ flex: 1, backgroundColor: '#6366F1', color: '#FFF', border: 'none', padding: '12px', borderRadius: '8px', fontWeight: 700, cursor: 'pointer' }}
+              className="btn-primary"
+              style={{ flex: 1, padding: '12px' }}
             >
               📝 Create Purchase Order
             </button>
@@ -489,50 +495,50 @@ export const SuppliersPage: React.FC = () => {
 
       {/* ADD VENDOR MODAL */}
       {isModalOpen && (
-        <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.85)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 110 }}>
-          <div style={{ backgroundColor: '#18181B', border: '1px solid #27272A', borderRadius: '16px', padding: '24px', width: '480px' }}>
-            <h3 style={{ margin: '0 0 16px 0', fontSize: '18px', fontWeight: 800, color: '#FFF' }}>➕ Add New Vendor Master Record</h3>
-            <form onSubmit={handleCreateSupplier} style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+        <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(13, 17, 23, 0.8)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 110 }}>
+          <div className="panel-bordered" style={{ padding: '28px', width: '480px' }}>
+            <h3 style={{ margin: '0 0 20px 0', fontSize: '18px', fontWeight: 600, color: 'var(--text-primary)' }}>Add New Vendor Master Record</h3>
+            <form onSubmit={handleCreateSupplier} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
               <div>
-                <label style={{ fontSize: '12px', color: '#A1A1AA' }}>Company Name</label>
-                <input required type="text" placeholder="e.g. TechComponents Inc." value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} style={{ width: '100%', padding: '8px', backgroundColor: '#09090B', border: '1px solid #27272A', color: '#FFF', borderRadius: '6px', boxSizing: 'border-box' }} />
+                <label className="kpi-label" style={{ marginBottom: '6px', display: 'block' }}>Company Name</label>
+                <input required type="text" placeholder="e.g. TechComponents Inc." value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} className="input-dark" style={{ width: '100%' }} />
               </div>
 
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
                 <div>
-                  <label style={{ fontSize: '12px', color: '#A1A1AA' }}>Vendor Code</label>
-                  <input required type="text" placeholder="e.g. SUP-8840" value={formData.code} onChange={(e) => setFormData({ ...formData, code: e.target.value })} style={{ width: '100%', padding: '8px', backgroundColor: '#09090B', border: '1px solid #27272A', color: '#FFF', borderRadius: '6px', boxSizing: 'border-box' }} />
+                  <label className="kpi-label" style={{ marginBottom: '6px', display: 'block' }}>Vendor Code</label>
+                  <input required type="text" placeholder="e.g. SUP-8840" value={formData.code} onChange={(e) => setFormData({ ...formData, code: e.target.value })} className="input-dark" style={{ width: '100%' }} />
                 </div>
                 <div>
-                  <label style={{ fontSize: '12px', color: '#A1A1AA' }}>Tax ID / GST</label>
-                  <input type="text" placeholder="e.g. TAX-994810" value={formData.taxId} onChange={(e) => setFormData({ ...formData, taxId: e.target.value })} style={{ width: '100%', padding: '8px', backgroundColor: '#09090B', border: '1px solid #27272A', color: '#FFF', borderRadius: '6px', boxSizing: 'border-box' }} />
+                  <label className="kpi-label" style={{ marginBottom: '6px', display: 'block' }}>Tax ID / GST</label>
+                  <input type="text" placeholder="e.g. TAX-994810" value={formData.taxId} onChange={(e) => setFormData({ ...formData, taxId: e.target.value })} className="input-dark" style={{ width: '100%' }} />
                 </div>
               </div>
 
               <div>
-                <label style={{ fontSize: '12px', color: '#A1A1AA' }}>Primary Contact Name</label>
-                <input required type="text" placeholder="e.g. Robert Vance" value={formData.primaryName} onChange={(e) => setFormData({ ...formData, primaryName: e.target.value })} style={{ width: '100%', padding: '8px', backgroundColor: '#09090B', border: '1px solid #27272A', color: '#FFF', borderRadius: '6px', boxSizing: 'border-box' }} />
+                <label className="kpi-label" style={{ marginBottom: '6px', display: 'block' }}>Primary Contact Name</label>
+                <input required type="text" placeholder="e.g. Robert Vance" value={formData.primaryName} onChange={(e) => setFormData({ ...formData, primaryName: e.target.value })} className="input-dark" style={{ width: '100%' }} />
               </div>
 
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
                 <div>
-                  <label style={{ fontSize: '12px', color: '#A1A1AA' }}>Contact Email</label>
-                  <input required type="email" placeholder="orders@vendor.com" value={formData.email} onChange={(e) => setFormData({ ...formData, email: e.target.value })} style={{ width: '100%', padding: '8px', backgroundColor: '#09090B', border: '1px solid #27272A', color: '#FFF', borderRadius: '6px', boxSizing: 'border-box' }} />
+                  <label className="kpi-label" style={{ marginBottom: '6px', display: 'block' }}>Contact Email</label>
+                  <input required type="email" placeholder="orders@vendor.com" value={formData.email} onChange={(e) => setFormData({ ...formData, email: e.target.value })} className="input-dark" style={{ width: '100%' }} />
                 </div>
                 <div>
-                  <label style={{ fontSize: '12px', color: '#A1A1AA' }}>Contact Phone</label>
-                  <input type="text" placeholder="+1 555 019 2831" value={formData.phone} onChange={(e) => setFormData({ ...formData, phone: e.target.value })} style={{ width: '100%', padding: '8px', backgroundColor: '#09090B', border: '1px solid #27272A', color: '#FFF', borderRadius: '6px', boxSizing: 'border-box' }} />
+                  <label className="kpi-label" style={{ marginBottom: '6px', display: 'block' }}>Contact Phone</label>
+                  <input type="text" placeholder="+1 555 019 2831" value={formData.phone} onChange={(e) => setFormData({ ...formData, phone: e.target.value })} className="input-dark" style={{ width: '100%' }} />
                 </div>
               </div>
 
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
                 <div>
-                  <label style={{ fontSize: '12px', color: '#A1A1AA' }}>Lead Time (Days)</label>
-                  <input type="number" min={1} value={formData.leadTimeDays} onChange={(e) => setFormData({ ...formData, leadTimeDays: Number(e.target.value) })} style={{ width: '100%', padding: '8px', backgroundColor: '#09090B', border: '1px solid #27272A', color: '#FFF', borderRadius: '6px', boxSizing: 'border-box' }} />
+                  <label className="kpi-label" style={{ marginBottom: '6px', display: 'block' }}>Lead Time (Days)</label>
+                  <input type="number" min={1} value={formData.leadTimeDays} onChange={(e) => setFormData({ ...formData, leadTimeDays: Number(e.target.value) })} className="input-dark" style={{ width: '100%' }} />
                 </div>
                 <div>
-                  <label style={{ fontSize: '12px', color: '#A1A1AA' }}>Payment Terms</label>
-                  <select value={formData.paymentTerms} onChange={(e) => setFormData({ ...formData, paymentTerms: e.target.value })} style={{ width: '100%', padding: '8px', backgroundColor: '#09090B', border: '1px solid #27272A', color: '#FFF', borderRadius: '6px' }}>
+                  <label className="kpi-label" style={{ marginBottom: '6px', display: 'block' }}>Payment Terms</label>
+                  <select value={formData.paymentTerms} onChange={(e) => setFormData({ ...formData, paymentTerms: e.target.value })} className="input-dark" style={{ width: '100%' }}>
                     <option value="NET_15">Net 15 Days</option>
                     <option value="NET_30">Net 30 Days</option>
                     <option value="NET_60">Net 60 Days</option>
@@ -542,8 +548,8 @@ export const SuppliersPage: React.FC = () => {
               </div>
 
               <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px', marginTop: '16px' }}>
-                <button type="button" onClick={() => setIsModalOpen(false)} style={{ padding: '8px 16px', backgroundColor: '#27272A', color: '#FFF', border: 'none', borderRadius: '6px', cursor: 'pointer' }}>Cancel</button>
-                <button type="submit" style={{ padding: '8px 16px', backgroundColor: '#6366F1', color: '#FFF', border: 'none', borderRadius: '6px', fontWeight: 700, cursor: 'pointer' }}>Save Vendor</button>
+                <button type="button" onClick={() => setIsModalOpen(false)} className="btn-secondary">Cancel</button>
+                <button type="submit" className="btn-primary">Save Vendor</button>
               </div>
             </form>
           </div>

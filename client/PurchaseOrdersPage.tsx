@@ -246,7 +246,7 @@ export const PurchaseOrdersPage: React.FC = () => {
   const receivedCount = purchaseOrders.filter(p => p.status === 'RECEIVED').length;
 
   return (
-    <div style={{ backgroundColor: '#09090B', color: '#F4F4F5', minHeight: '100vh', padding: '24px', fontFamily: 'Inter, sans-serif' }}>
+    <div style={{ backgroundColor: 'var(--bg-base)', color: 'var(--text-primary)', minHeight: '100vh', padding: '32px 40px' }}>
       
       {/* TOAST BANNER NOTIFICATION */}
       {toastMessage && (
@@ -254,13 +254,13 @@ export const PurchaseOrdersPage: React.FC = () => {
           position: 'fixed',
           top: '20px',
           right: '20px',
-          backgroundColor: '#10B981',
-          color: '#FFF',
+          backgroundColor: 'var(--accent-cool)',
+          color: '#000',
           padding: '12px 20px',
-          borderRadius: '10px',
-          fontWeight: 800,
+          borderRadius: '4px',
+          fontWeight: 600,
           fontSize: '13px',
-          boxShadow: '0 10px 25px rgba(0,0,0,0.5)',
+          boxShadow: '0 4px 12px rgba(0,0,0,0.5)',
           zIndex: 999,
           display: 'flex',
           alignItems: 'center',
@@ -271,43 +271,30 @@ export const PurchaseOrdersPage: React.FC = () => {
       )}
 
       {/* HEADER BAR */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px', flexWrap: 'wrap', gap: '16px' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '28px', flexWrap: 'wrap', gap: '16px' }}>
         <div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-            <h1 style={{ fontSize: '24px', fontWeight: 800, margin: 0, letterSpacing: '-0.02em', color: '#FFF' }}>Purchase Order Lifecycle & 3-Way Match</h1>
-            <span style={{ backgroundColor: 'rgba(99, 102, 241, 0.15)', color: '#818CF8', border: '1px solid rgba(99, 102, 241, 0.3)', padding: '3px 10px', borderRadius: '20px', fontSize: '11px', fontWeight: 800, letterSpacing: '0.05em' }}>
+            <h1 className="page-title">Purchase Order Lifecycle & 3-Way Match</h1>
+            <span className="badge badge-info">
               AUTONOMOUS LIFECYCLE ENGINE
             </span>
           </div>
-          <p style={{ color: '#A1A1AA', fontSize: '13px', margin: '4px 0 0 0' }}>
-            Multi-stage workflow: Requisition Draft $\rightarrow$ Manager Approval $\rightarrow$ Issued to Vendor $\rightarrow$ Inbound Dock GRN $\rightarrow$ Stock Ingest $\rightarrow$ 3-Way Reconciliation.
+          <p className="subtext-muted" style={{ marginTop: '4px' }}>
+            Multi-stage workflow: Requisition Draft &rarr; Manager Approval &rarr; Issued to Vendor &rarr; Inbound Dock GRN &rarr; Stock Ingest &rarr; 3-Way Reconciliation.
           </p>
         </div>
 
         <button
           onClick={() => setIsCreateModalOpen(true)}
-          style={{
-            background: 'linear-gradient(135deg, #6366F1 0%, #4F46E5 100%)',
-            color: '#FFF',
-            padding: '11px 22px',
-            borderRadius: '10px',
-            border: 'none',
-            fontWeight: 800,
-            fontSize: '13px',
-            cursor: 'pointer',
-            boxShadow: '0 4px 14px rgba(99, 102, 241, 0.4)',
-            transition: 'all 0.2s ease',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '8px'
-          }}
+          className="btn-primary"
         >
-          ➕ Create Purchase Order
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Create Purchase Order
         </button>
       </div>
 
       {/* PIPELINE STEPPER BAR (INTERACTIVE LIFECYCLE STAGES) */}
-      <div style={{ backgroundColor: '#18181B', border: '1px solid #27272A', borderRadius: '16px', padding: '16px 20px', marginBottom: '24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '12px', overflowX: 'auto' }}>
+      <div className="panel-bordered" style={{ padding: '16px 20px', marginBottom: '24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '12px', overflowX: 'auto' }}>
         
         {/* Stage 1: Draft */}
         <div
@@ -423,20 +410,20 @@ export const PurchaseOrdersPage: React.FC = () => {
       </div>
 
       {/* SEARCH & STATUS TABS TOOLBAR */}
-      <div style={{ backgroundColor: '#18181B', border: '1px solid #27272A', borderRadius: '12px', padding: '14px', marginBottom: '24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px' }}>
+      <div className="panel-bordered" style={{ padding: '14px', marginBottom: '24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px' }}>
         <div style={{ display: 'flex', gap: '6px', overflowX: 'auto' }}>
           {['ALL', 'DRAFT', 'PENDING_APPROVAL', 'APPROVED', 'ISSUED', 'PARTIALLY_RECEIVED', 'RECEIVED', 'CANCELLED'].map((st) => (
             <button
               key={st}
               onClick={() => setStatusFilter(st)}
               style={{
-                backgroundColor: statusFilter === st ? '#6366F1' : '#09090B',
-                color: statusFilter === st ? '#FFF' : '#A1A1AA',
-                border: '1px solid #27272A',
+                backgroundColor: statusFilter === st ? 'var(--bg-surface)' : 'transparent',
+                color: statusFilter === st ? 'var(--text-primary)' : 'var(--text-muted)',
+                border: statusFilter === st ? '1px solid var(--border)' : '1px solid transparent',
                 padding: '7px 14px',
-                borderRadius: '8px',
+                borderRadius: '4px',
                 fontSize: '12px',
-                fontWeight: 700,
+                fontWeight: 600,
                 cursor: 'pointer',
                 whiteSpace: 'nowrap'
               }}
@@ -448,43 +435,45 @@ export const PurchaseOrdersPage: React.FC = () => {
 
         <input
           type="text"
-          placeholder="🔍 Search PO Number, Supplier..."
+          placeholder="Search PO Number, Supplier..."
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          style={{ padding: '8px 14px', backgroundColor: '#09090B', border: '1px solid #27272A', color: '#FFF', borderRadius: '8px', fontSize: '13px', width: '240px' }}
+          className="input-dark"
+          style={{ width: '240px' }}
         />
       </div>
 
       {/* PO DATA TABLE OR CLEAN EMPTY STATE */}
       {loading && purchaseOrders.length === 0 ? (
-        <div style={{ backgroundColor: '#18181B', padding: '40px', borderRadius: '12px', textAlign: 'center', color: '#A1A1AA' }}>
+        <div style={{ color: 'var(--text-muted)' }}>
           Fetching purchase orders from MongoDB...
         </div>
       ) : filteredPOs.length === 0 ? (
-        <div style={{ backgroundColor: '#18181B', border: '1px solid #27272A', padding: '50px', borderRadius: '16px', textAlign: 'center' }}>
-          <div style={{ fontSize: '42px', marginBottom: '12px' }}>🧾</div>
-          <h2 style={{ fontSize: '20px', fontWeight: 800, color: '#FFF', margin: '0 0 8px 0' }}>No Purchase Orders Match Filter '{statusFilter}'</h2>
-          <p style={{ color: '#A1A1AA', fontSize: '14px', maxWidth: '480px', margin: '0 auto 20px auto' }}>
+        <div className="empty-state-box">
+          <div className="empty-state-icon">🧾</div>
+          <h2 style={{ fontSize: '18px', fontWeight: 600, color: 'var(--text-primary)', margin: '0 0 8px 0' }}>No Purchase Orders Match Filter '{statusFilter}'</h2>
+          <p className="subtext-muted" style={{ maxWidth: '480px', margin: '0 auto 20px auto' }}>
             No purchase orders currently match the selected status tab. Create a new purchase order or click 'ALL' to view all orders.
           </p>
           <button
             onClick={() => setStatusFilter('ALL')}
-            style={{ backgroundColor: '#27272A', color: '#FFF', padding: '10px 20px', borderRadius: '8px', border: 'none', fontWeight: 700, fontSize: '13px', cursor: 'pointer', marginRight: '10px' }}
+            className="btn-secondary"
+            style={{ marginRight: '10px' }}
           >
             Show All Purchase Orders
           </button>
           <button
             onClick={() => setIsCreateModalOpen(true)}
-            style={{ backgroundColor: '#6366F1', color: '#FFF', padding: '10px 20px', borderRadius: '8px', border: 'none', fontWeight: 700, fontSize: '13px', cursor: 'pointer' }}
+            className="btn-primary"
           >
             ➕ Create Purchase Order
           </button>
         </div>
       ) : (
-        <div style={{ backgroundColor: '#18181B', borderRadius: '12px', border: '1px solid #27272A', overflow: 'hidden' }}>
+        <div className="panel-bordered" style={{ overflow: 'hidden', padding: 0 }}>
           <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
             <thead>
-              <tr style={{ backgroundColor: '#121215', borderBottom: '1px solid #27272A', color: '#A1A1AA', fontSize: '12px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+              <tr style={{ backgroundColor: 'var(--bg-base)', borderBottom: '1px solid var(--border)', color: 'var(--text-muted)', fontSize: '12px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
                 <th style={{ padding: '14px 16px' }}>PO Number</th>
                 <th style={{ padding: '14px 16px' }}>Supplier Vendor</th>
                 <th style={{ padding: '14px 16px' }}>Destination Facility</th>
@@ -497,63 +486,59 @@ export const PurchaseOrdersPage: React.FC = () => {
             </thead>
             <tbody>
               {filteredPOs.map((po) => {
-                let statusBg = 'rgba(99, 102, 241, 0.15)';
-                let statusColor = '#818CF8';
+                let statusBg = 'rgba(138, 148, 163, 0.15)';
+                let statusColor = 'var(--text-muted)';
 
-                if (po.status === 'APPROVED') { statusBg = 'rgba(56, 189, 248, 0.15)'; statusColor = '#38BDF8'; }
-                else if (po.status === 'ISSUED') { statusBg = 'rgba(99, 102, 241, 0.15)'; statusColor = '#818CF8'; }
-                else if (po.status === 'RECEIVED') { statusBg = 'rgba(16, 185, 129, 0.15)'; statusColor = '#34D399'; }
-                else if (po.status === 'PARTIALLY_RECEIVED') { statusBg = 'rgba(245, 158, 11, 0.15)'; statusColor = '#F59E0B'; }
-                else if (po.status === 'PENDING_APPROVAL' || po.status === 'DRAFT') { statusBg = 'rgba(251, 191, 36, 0.15)'; statusColor = '#FBBF24'; }
-                else if (po.status === 'CANCELLED' || po.status === 'REJECTED') { statusBg = 'rgba(244, 63, 94, 0.15)'; statusColor = '#F43F5E'; }
+                if (po.status === 'APPROVED' || po.status === 'RECEIVED') { statusBg = 'rgba(43, 180, 160, 0.15)'; statusColor = 'var(--accent-cool)'; }
+                else if (po.status === 'PARTIALLY_RECEIVED' || po.status === 'PENDING_APPROVAL' || po.status === 'DRAFT') { statusBg = 'var(--bg-surface)'; statusColor = 'var(--text-primary)'; }
+                else if (po.status === 'CANCELLED' || po.status === 'REJECTED') { statusBg = 'rgba(229, 83, 75, 0.15)'; statusColor = 'var(--accent-risk)'; }
 
                 return (
                   <tr
                     key={po._id}
                     onClick={() => setSelectedPO(po)}
-                    style={{ borderBottom: '1px solid #27272A', fontSize: '13px', cursor: 'pointer', transition: 'background-color 0.15s ease' }}
-                    onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#1F1F23'}
-                    onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
+                    className="table-row"
+                    style={{ cursor: 'pointer' }}
                   >
-                    <td style={{ padding: '14px 16px', fontFamily: 'monospace', fontWeight: 800, color: '#818CF8' }}>
+                    <td className="table-cell" style={{ fontWeight: 500, color: 'var(--text-primary)' }}>
                       {po.poNumber}
                     </td>
 
-                    <td style={{ padding: '14px 16px' }}>
-                      <div style={{ fontWeight: 800, color: '#FFF' }}>{po.supplierId?.name || 'TechComponents Microdevices'}</div>
-                      <div style={{ fontSize: '11px', color: '#71717A' }}>{po.supplierId?.code || 'SUP-8840'}</div>
+                    <td className="table-cell">
+                      <div style={{ fontWeight: 500, color: 'var(--text-primary)' }}>{po.supplierId?.name || 'TechComponents Microdevices'}</div>
+                      <div style={{ fontSize: '12px', color: 'var(--text-muted)' }}>{po.supplierId?.code || 'SUP-8840'}</div>
                     </td>
 
-                    <td style={{ padding: '14px 16px', color: '#A1A1AA' }}>
+                    <td className="table-cell" style={{ color: 'var(--text-muted)' }}>
                       {po.warehouseId?.name || 'East Coast Main DC'}
                     </td>
 
-                    <td style={{ padding: '14px 16px', color: '#A1A1AA' }}>
+                    <td className="table-cell" style={{ color: 'var(--text-muted)' }}>
                       {po.lineItems?.length || 1} Line SKUs
                     </td>
 
-                    <td style={{ padding: '14px 16px', textAlign: 'right', fontWeight: 800, color: '#FFF' }}>
+                    <td className="table-cell tabular-nums" style={{ textAlign: 'right', fontWeight: 600, color: 'var(--text-primary)' }}>
                       ₹{(po.totalAmount || 0).toLocaleString('en-IN')}
                     </td>
 
-                    <td style={{ padding: '14px 16px' }}>
-                      <span style={{ backgroundColor: statusBg, color: statusColor, padding: '4px 10px', borderRadius: '12px', fontWeight: 800, fontSize: '11px' }}>
+                    <td className="table-cell">
+                      <span style={{ backgroundColor: statusBg, color: statusColor, padding: '4px 10px', borderRadius: '4px', fontWeight: 600, fontSize: '11px' }}>
                         {po.status?.replace('_', ' ')}
                       </span>
                     </td>
 
-                    <td style={{ padding: '14px 16px' }}>
+                    <td className="table-cell">
                       <span style={{
-                        backgroundColor: po.matchStatus === 'MATCHED' ? 'rgba(16, 185, 129, 0.15)' : '#27272A',
-                        color: po.matchStatus === 'MATCHED' ? '#34D399' : '#A1A1AA',
-                        padding: '3px 8px', borderRadius: '4px', fontSize: '11px', fontWeight: 700
+                        backgroundColor: po.matchStatus === 'MATCHED' ? 'rgba(43, 180, 160, 0.15)' : 'var(--bg-surface)',
+                        color: po.matchStatus === 'MATCHED' ? 'var(--accent-cool)' : 'var(--text-muted)',
+                        padding: '3px 8px', borderRadius: '4px', fontSize: '11px', fontWeight: 600
                       }}>
                         {po.matchStatus || 'PENDING'}
                       </span>
                     </td>
 
                     {/* DYNAMIC LIFECYCLE ACTIONS UI */}
-                    <td style={{ padding: '14px 16px' }} onClick={(e) => e.stopPropagation()}>
+                    <td className="table-cell" onClick={(e) => e.stopPropagation()}>
                       <div style={{ display: 'flex', gap: '8px', justifyContent: 'center', alignItems: 'center' }}>
                         
                         {/* PENDING APPROVAL / DRAFT */}
@@ -730,7 +715,7 @@ export const PurchaseOrdersPage: React.FC = () => {
 
                         {/* CANCELLED */}
                         {po.status === 'CANCELLED' && (
-                          <span style={{ backgroundColor: 'rgba(244, 63, 94, 0.15)', color: '#F43F5E', padding: '4px 10px', borderRadius: '12px', fontSize: '11px', fontWeight: 800 }}>
+                          <span style={{ backgroundColor: 'rgba(229, 83, 75, 0.15)', color: 'var(--accent-risk)', padding: '4px 10px', borderRadius: '4px', fontSize: '11px', fontWeight: 600 }}>
                             🚫 Cancelled PO
                           </span>
                         )}
@@ -738,7 +723,8 @@ export const PurchaseOrdersPage: React.FC = () => {
                         {/* Details Drawer Button */}
                         <button
                           onClick={() => setSelectedPO(po)}
-                          style={{ backgroundColor: '#27272A', color: '#FFF', border: 'none', padding: '6px 10px', borderRadius: '8px', cursor: 'pointer', fontSize: '12px' }}
+                          className="btn-secondary"
+                          style={{ padding: '4px 8px', fontSize: '11px' }}
                         >
                           👁 Details
                         </button>
@@ -754,55 +740,56 @@ export const PurchaseOrdersPage: React.FC = () => {
 
       {/* PO DETAILS SIDE DRAWER */}
       {selectedPO && !isReceiveModalOpen && (
-        <div style={{ position: 'fixed', top: 0, right: 0, bottom: 0, width: '480px', backgroundColor: '#121215', borderLeft: '1px solid #27272A', zIndex: 90, padding: '24px', overflowY: 'auto', boxShadow: '-10px 0 30px rgba(0,0,0,0.8)', display: 'flex', flexDirection: 'column' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '20px', borderBottom: '1px solid #27272A', paddingBottom: '16px' }}>
+        <div style={{ position: 'fixed', top: 0, right: 0, bottom: 0, width: '480px', backgroundColor: 'var(--bg-base)', borderLeft: '1px solid var(--border)', zIndex: 90, padding: '24px', overflowY: 'auto', boxShadow: '-10px 0 30px rgba(0,0,0,0.8)', display: 'flex', flexDirection: 'column' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '20px', borderBottom: '1px solid var(--border)', paddingBottom: '16px' }}>
             <div>
-              <span style={{ fontSize: '11px', color: '#818CF8', fontWeight: 800, fontFamily: 'monospace' }}>{selectedPO.poNumber}</span>
-              <h2 style={{ margin: '4px 0 0 0', fontSize: '18px', fontWeight: 800, color: '#FFF' }}>{selectedPO.supplierId?.name || 'TechComponents Microdevices'}</h2>
+              <span style={{ fontSize: '12px', color: 'var(--text-muted)', fontWeight: 500 }}>{selectedPO.poNumber}</span>
+              <h2 style={{ margin: '4px 0 0 0', fontSize: '18px', fontWeight: 600, color: 'var(--text-primary)' }}>{selectedPO.supplierId?.name || 'TechComponents Microdevices'}</h2>
             </div>
             <button
               onClick={() => setSelectedPO(null)}
-              style={{ backgroundColor: '#27272A', color: '#FFF', border: 'none', width: '32px', height: '32px', borderRadius: '50%', cursor: 'pointer', fontSize: '16px', fontWeight: 700 }}
+              className="btn-secondary"
+              style={{ padding: '4px 8px' }}
             >
               ✕
             </button>
           </div>
 
           {/* AUDIT WORKFLOW: REQUESTED BY & APPROVED BY */}
-          <div style={{ backgroundColor: '#18181B', border: '1px solid #27272A', borderRadius: '10px', padding: '16px', marginBottom: '20px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
-            <div style={{ fontSize: '11px', color: '#A1A1AA', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em' }}>AUDIT & APPROVAL WORKFLOW</div>
+          <div className="panel-bordered" style={{ marginBottom: '20px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
+            <div className="kpi-label" style={{ textTransform: 'uppercase' }}>Audit & Approval Workflow</div>
             
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <span style={{ fontSize: '12px', color: '#A1A1AA' }}>👤 Requested By:</span>
-              <span style={{ fontSize: '12px', fontWeight: 700, color: '#FFF' }}>Robert Vance (Inventory Specialist)</span>
+              <span style={{ fontSize: '13px', color: 'var(--text-muted)' }}>👤 Requested By:</span>
+              <span style={{ fontSize: '13px', fontWeight: 500, color: 'var(--text-primary)' }}>Robert Vance (Inventory Specialist)</span>
             </div>
 
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <span style={{ fontSize: '12px', color: '#A1A1AA' }}>✅ Approved By:</span>
-              <span style={{ fontSize: '12px', fontWeight: 700, color: selectedPO.status === 'PENDING_APPROVAL' || selectedPO.status === 'DRAFT' ? '#FBBF24' : '#34D399' }}>
+              <span style={{ fontSize: '13px', color: 'var(--text-muted)' }}>✅ Approved By:</span>
+              <span style={{ fontSize: '13px', fontWeight: 500, color: selectedPO.status === 'PENDING_APPROVAL' || selectedPO.status === 'DRAFT' ? 'var(--text-muted)' : 'var(--accent-cool)' }}>
                 {selectedPO.status === 'PENDING_APPROVAL' || selectedPO.status === 'DRAFT' ? '⏳ Pending VP Sign-off' : 'Sarah Connor (VP of Supply Chain)'}
               </span>
             </div>
           </div>
 
-          <div style={{ backgroundColor: '#18181B', border: '1px solid #27272A', borderRadius: '10px', padding: '16px', marginBottom: '20px' }}>
-            <div style={{ fontSize: '11px', color: '#A1A1AA', fontWeight: 700, marginBottom: '6px' }}>DESTINATION WAREHOUSE</div>
-            <div style={{ fontSize: '14px', fontWeight: 700, color: '#FFF' }}>{selectedPO.warehouseId?.name || 'East Coast Main DC'}</div>
-            <div style={{ fontSize: '12px', color: '#A1A1AA', marginTop: '4px' }}>
+          <div className="panel-bordered" style={{ marginBottom: '20px' }}>
+            <div className="kpi-label" style={{ marginBottom: '6px' }}>Destination Warehouse</div>
+            <div style={{ fontSize: '14px', fontWeight: 500, color: 'var(--text-primary)' }}>{selectedPO.warehouseId?.name || 'East Coast Main DC'}</div>
+            <div style={{ fontSize: '13px', color: 'var(--text-muted)', marginTop: '4px' }}>
               Expected Delivery: {new Date(selectedPO.expectedDeliveryDate || Date.now()).toLocaleDateString()}
             </div>
           </div>
 
           <div style={{ marginBottom: '20px' }}>
-            <div style={{ fontSize: '12px', color: '#A1A1AA', fontWeight: 700, marginBottom: '8px' }}>ORDERED LINE ITEMS</div>
-            <div style={{ backgroundColor: '#18181B', border: '1px solid #27272A', borderRadius: '10px', overflow: 'hidden' }}>
+            <div className="kpi-label" style={{ marginBottom: '8px' }}>Ordered Line Items</div>
+            <div className="panel-bordered" style={{ padding: 0, overflow: 'hidden' }}>
               {selectedPO.lineItems?.map((item, idx) => (
-                <div key={idx} style={{ padding: '12px', borderBottom: '1px solid #27272A', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <div key={idx} style={{ padding: '12px', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <div>
-                    <div style={{ fontWeight: 700, fontSize: '13px', color: '#FFF' }}>{item.productId?.name || 'Microcontroller Unit'}</div>
-                    <div style={{ fontSize: '11px', color: '#A1A1AA' }}>Qty: {item.orderedQty} units @ ₹{item.unitPrice}</div>
+                    <div style={{ fontWeight: 500, fontSize: '13px', color: 'var(--text-primary)' }}>{item.productId?.name || 'Microcontroller Unit'}</div>
+                    <div style={{ fontSize: '12px', color: 'var(--text-muted)' }}>Qty: {item.orderedQty} units @ ₹{item.unitPrice}</div>
                   </div>
-                  <div style={{ fontWeight: 800, color: '#34D399', fontSize: '13px' }}>
+                  <div className="tabular-nums" style={{ fontWeight: 600, color: 'var(--accent-cool)', fontSize: '13px' }}>
                     ₹{(item.lineTotal || (item.orderedQty * item.unitPrice))?.toLocaleString('en-IN')}
                   </div>
                 </div>
@@ -810,31 +797,31 @@ export const PurchaseOrdersPage: React.FC = () => {
             </div>
           </div>
 
-          <div style={{ marginTop: 'auto', display: 'flex', justifyContent: 'space-between', alignItems: 'center', backgroundColor: '#18181B', padding: '16px', borderRadius: '10px', border: '1px solid #27272A' }}>
-            <div style={{ fontSize: '12px', color: '#A1A1AA' }}>Total Purchase Amount</div>
-            <div style={{ fontSize: '20px', fontWeight: 800, color: '#34D399' }}>₹{(selectedPO.totalAmount || 0).toLocaleString('en-IN')}</div>
+          <div className="panel-bordered" style={{ marginTop: 'auto', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <div className="kpi-label">Total Purchase Amount</div>
+            <div className="kpi-value" style={{ fontSize: '20px', color: 'var(--text-primary)' }}>₹{(selectedPO.totalAmount || 0).toLocaleString('en-IN')}</div>
           </div>
         </div>
       )}
 
       {/* CREATE PO MODAL */}
       {isCreateModalOpen && (
-        <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.85)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 110 }}>
-          <div style={{ backgroundColor: '#18181B', border: '1px solid #27272A', borderRadius: '16px', padding: '24px', width: '520px', maxHeight: '90vh', overflowY: 'auto' }}>
+        <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(13, 17, 23, 0.8)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 110 }}>
+          <div className="panel-bordered" style={{ padding: '24px', width: '520px', maxHeight: '90vh', overflowY: 'auto' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-              <h3 style={{ margin: 0, fontSize: '18px', fontWeight: 800, color: '#FFF' }}>➕ Create Purchase Order Requisition</h3>
-              <button onClick={() => setIsCreateModalOpen(false)} style={{ backgroundColor: '#27272A', color: '#FFF', border: 'none', borderRadius: '50%', width: '28px', height: '28px', cursor: 'pointer' }}>✕</button>
+              <h3 style={{ margin: 0, fontSize: '18px', fontWeight: 600, color: 'var(--text-primary)' }}>➕ Create Purchase Order Requisition</h3>
+              <button onClick={() => setIsCreateModalOpen(false)} className="btn-secondary" style={{ padding: '4px 8px' }}>✕</button>
             </div>
 
-            <form onSubmit={handleCreatePOSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+            <form onSubmit={handleCreatePOSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
               
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
                 <div>
-                  <label style={{ fontSize: '12px', color: '#A1A1AA' }}>Vendor Supplier</label>
+                  <label className="kpi-label" style={{ marginBottom: '4px', display: 'block' }}>Vendor Supplier</label>
                   <select
                     value={poForm.supplierId}
                     onChange={(e) => setPoForm({ ...poForm, supplierId: e.target.value })}
-                    style={{ width: '100%', padding: '8px', backgroundColor: '#09090B', border: '1px solid #27272A', color: '#FFF', borderRadius: '6px' }}
+                    className="input-dark" style={{ width: '100%' }}
                   >
                     {suppliersList.length > 0 ? (
                       suppliersList.map(s => <option key={s._id} value={s._id}>{s.name} ({s.code})</option>)
@@ -845,11 +832,11 @@ export const PurchaseOrdersPage: React.FC = () => {
                 </div>
 
                 <div>
-                  <label style={{ fontSize: '12px', color: '#A1A1AA' }}>Target Warehouse</label>
+                  <label className="kpi-label" style={{ marginBottom: '4px', display: 'block' }}>Target Warehouse</label>
                   <select
                     value={poForm.warehouseId}
                     onChange={(e) => setPoForm({ ...poForm, warehouseId: e.target.value })}
-                    style={{ width: '100%', padding: '8px', backgroundColor: '#09090B', border: '1px solid #27272A', color: '#FFF', borderRadius: '6px' }}
+                    className="input-dark" style={{ width: '100%' }}
                   >
                     {warehousesList.length > 0 ? (
                       warehousesList.map(w => <option key={w._id} value={w._id}>{w.name} ({w.code})</option>)
@@ -861,22 +848,22 @@ export const PurchaseOrdersPage: React.FC = () => {
               </div>
 
               <div>
-                <label style={{ fontSize: '12px', color: '#A1A1AA' }}>Expected Delivery Date</label>
+                <label className="kpi-label" style={{ marginBottom: '4px', display: 'block' }}>Expected Delivery Date</label>
                 <input
                   type="date"
                   value={poForm.expectedDeliveryDate}
                   onChange={(e) => setPoForm({ ...poForm, expectedDeliveryDate: e.target.value })}
-                  style={{ width: '100%', padding: '8px', backgroundColor: '#09090B', border: '1px solid #27272A', color: '#FFF', borderRadius: '6px', boxSizing: 'border-box' }}
+                  className="input-dark" style={{ width: '100%' }}
                 />
               </div>
 
               {/* LINE ITEMS */}
               <div style={{ marginTop: '8px' }}>
-                <div style={{ fontSize: '12px', color: '#A1A1AA', fontWeight: 700, marginBottom: '6px' }}>LINE ITEMS</div>
+                <div className="kpi-label" style={{ marginBottom: '6px' }}>LINE ITEMS</div>
                 {poLineItems.map((item, idx) => (
-                  <div key={idx} style={{ backgroundColor: '#09090B', padding: '10px', borderRadius: '8px', marginBottom: '8px', display: 'grid', gridTemplateColumns: '2fr 1fr 1fr', gap: '8px' }}>
+                  <div key={idx} style={{ backgroundColor: 'var(--bg-surface)', padding: '10px', borderRadius: '4px', marginBottom: '8px', display: 'grid', gridTemplateColumns: '2fr 1fr 1fr', gap: '8px', border: '1px solid var(--border)' }}>
                     <div>
-                      <label style={{ fontSize: '10px', color: '#71717A' }}>PRODUCT SKU</label>
+                      <label className="kpi-label" style={{ marginBottom: '4px', display: 'block', fontSize: '10px' }}>Product SKU</label>
                       <select
                         value={item.productId}
                         onChange={(e) => {
@@ -884,7 +871,7 @@ export const PurchaseOrdersPage: React.FC = () => {
                           newItems[idx].productId = e.target.value;
                           setPoLineItems(newItems);
                         }}
-                        style={{ width: '100%', padding: '6px', backgroundColor: '#18181B', border: '1px solid #27272A', color: '#FFF', borderRadius: '4px', fontSize: '12px' }}
+                        className="input-dark" style={{ width: '100%', fontSize: '12px', padding: '6px' }}
                       >
                         {productsList.length > 0 ? (
                           productsList.map(p => <option key={p.productId?._id || p._id} value={p.productId?._id || p._id}>{p.productId?.name || p.name}</option>)
@@ -895,7 +882,7 @@ export const PurchaseOrdersPage: React.FC = () => {
                     </div>
 
                     <div>
-                      <label style={{ fontSize: '10px', color: '#71717A' }}>ORDERED QTY</label>
+                      <label className="kpi-label" style={{ marginBottom: '4px', display: 'block', fontSize: '10px' }}>Ordered Qty</label>
                       <input
                         type="number"
                         min={1}
@@ -905,12 +892,12 @@ export const PurchaseOrdersPage: React.FC = () => {
                           newItems[idx].orderedQty = Number(e.target.value);
                           setPoLineItems(newItems);
                         }}
-                        style={{ width: '100%', padding: '6px', backgroundColor: '#18181B', border: '1px solid #27272A', color: '#FFF', borderRadius: '4px', fontSize: '12px', boxSizing: 'border-box' }}
+                        className="input-dark" style={{ width: '100%', fontSize: '12px', padding: '6px' }}
                       />
                     </div>
 
                     <div>
-                      <label style={{ fontSize: '10px', color: '#71717A' }}>UNIT COST (₹)</label>
+                      <label className="kpi-label" style={{ marginBottom: '4px', display: 'block', fontSize: '10px' }}>Unit Cost (₹)</label>
                       <input
                         type="number"
                         min={1}
@@ -920,7 +907,7 @@ export const PurchaseOrdersPage: React.FC = () => {
                           newItems[idx].unitPrice = Number(e.target.value);
                           setPoLineItems(newItems);
                         }}
-                        style={{ width: '100%', padding: '6px', backgroundColor: '#18181B', border: '1px solid #27272A', color: '#FFF', borderRadius: '4px', fontSize: '12px', boxSizing: 'border-box' }}
+                        className="input-dark" style={{ width: '100%', fontSize: '12px', padding: '6px' }}
                       />
                     </div>
                   </div>
@@ -928,8 +915,8 @@ export const PurchaseOrdersPage: React.FC = () => {
               </div>
 
               <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px', marginTop: '16px' }}>
-                <button type="button" onClick={() => setIsCreateModalOpen(false)} style={{ padding: '8px 16px', backgroundColor: '#27272A', color: '#FFF', border: 'none', borderRadius: '6px', cursor: 'pointer' }}>Cancel</button>
-                <button type="submit" style={{ padding: '8px 16px', backgroundColor: '#6366F1', color: '#FFF', border: 'none', borderRadius: '6px', fontWeight: 700, cursor: 'pointer' }}>Submit Requisition</button>
+                <button type="button" onClick={() => setIsCreateModalOpen(false)} className="btn-secondary">Cancel</button>
+                <button type="submit" className="btn-primary">Submit Requisition</button>
               </div>
             </form>
           </div>
@@ -938,22 +925,22 @@ export const PurchaseOrdersPage: React.FC = () => {
 
       {/* RECEIVE GOODS GRN MODAL */}
       {isReceiveModalOpen && selectedPO && (
-        <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.85)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 110 }}>
-          <div style={{ backgroundColor: '#18181B', border: '1px solid #27272A', borderRadius: '16px', padding: '24px', width: '520px' }}>
-            <h3 style={{ margin: '0 0 4px 0', fontSize: '18px', fontWeight: 800, color: '#FFF' }}>📦 Inbound Goods Receipt Note (GRN)</h3>
-            <p style={{ fontSize: '12px', color: '#A1A1AA', margin: '0 0 16px 0' }}>
+        <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(13, 17, 23, 0.8)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 110 }}>
+          <div className="panel-bordered" style={{ padding: '24px', width: '520px' }}>
+            <h3 style={{ margin: '0 0 4px 0', fontSize: '18px', fontWeight: 600, color: 'var(--text-primary)' }}>📦 Inbound Goods Receipt Note (GRN)</h3>
+            <p className="subtext-muted" style={{ margin: '0 0 16px 0' }}>
               Record physical quantities received for {selectedPO.poNumber}. Submitting will automatically execute Stock-In to MongoDB!
             </p>
 
             <form onSubmit={handleSubmitGRN} style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
               {grnItems.map((item, idx) => (
-                <div key={idx} style={{ backgroundColor: '#09090B', padding: '12px', borderRadius: '8px', border: '1px solid #27272A' }}>
-                  <div style={{ fontWeight: 700, fontSize: '13px', color: '#FFF' }}>{item.name}</div>
-                  <div style={{ fontSize: '11px', color: '#A1A1AA', margin: '2px 0 8px 0' }}>Ordered: {item.orderedQty} units</div>
+                <div key={idx} style={{ backgroundColor: 'var(--bg-surface)', padding: '12px', borderRadius: '4px', border: '1px solid var(--border)' }}>
+                  <div style={{ fontWeight: 500, fontSize: '13px', color: 'var(--text-primary)' }}>{item.name}</div>
+                  <div style={{ fontSize: '12px', color: 'var(--text-muted)', margin: '2px 0 8px 0' }}>Ordered: {item.orderedQty} units</div>
 
                   <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '8px' }}>
                     <div>
-                      <label style={{ fontSize: '10px', color: '#A1A1AA' }}>RECEIVED QTY</label>
+                      <label className="kpi-label" style={{ marginBottom: '4px', display: 'block', fontSize: '10px' }}>Received Qty</label>
                       <input
                         type="number"
                         min={0}
@@ -963,11 +950,11 @@ export const PurchaseOrdersPage: React.FC = () => {
                           updated[idx].receivedQty = Number(e.target.value);
                           setGrnItems(updated);
                         }}
-                        style={{ width: '100%', padding: '6px', backgroundColor: '#18181B', border: '1px solid #27272A', color: '#FFF', borderRadius: '4px', fontSize: '12px', boxSizing: 'border-box' }}
+                        className="input-dark" style={{ width: '100%', fontSize: '12px', padding: '6px' }}
                       />
                     </div>
                     <div>
-                      <label style={{ fontSize: '10px', color: '#A1A1AA' }}>PUTAWAY BIN</label>
+                      <label className="kpi-label" style={{ marginBottom: '4px', display: 'block', fontSize: '10px' }}>Putaway Bin</label>
                       <input
                         type="text"
                         value={item.binCode}
@@ -976,11 +963,11 @@ export const PurchaseOrdersPage: React.FC = () => {
                           updated[idx].binCode = e.target.value;
                           setGrnItems(updated);
                         }}
-                        style={{ width: '100%', padding: '6px', backgroundColor: '#18181B', border: '1px solid #27272A', color: '#FFF', borderRadius: '4px', fontSize: '12px', boxSizing: 'border-box' }}
+                        className="input-dark" style={{ width: '100%', fontSize: '12px', padding: '6px' }}
                       />
                     </div>
                     <div>
-                      <label style={{ fontSize: '10px', color: '#A1A1AA' }}>BATCH NUMBER</label>
+                      <label className="kpi-label" style={{ marginBottom: '4px', display: 'block', fontSize: '10px' }}>Batch Number</label>
                       <input
                         type="text"
                         value={item.batchNumber}
@@ -989,7 +976,7 @@ export const PurchaseOrdersPage: React.FC = () => {
                           updated[idx].batchNumber = e.target.value;
                           setGrnItems(updated);
                         }}
-                        style={{ width: '100%', padding: '6px', backgroundColor: '#18181B', border: '1px solid #27272A', color: '#FFF', borderRadius: '4px', fontSize: '12px', boxSizing: 'border-box' }}
+                        className="input-dark" style={{ width: '100%', fontSize: '12px', padding: '6px' }}
                       />
                     </div>
                   </div>
@@ -997,8 +984,8 @@ export const PurchaseOrdersPage: React.FC = () => {
               ))}
 
               <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px', marginTop: '16px' }}>
-                <button type="button" onClick={() => setIsReceiveModalOpen(false)} style={{ padding: '8px 16px', backgroundColor: '#27272A', color: '#FFF', border: 'none', borderRadius: '6px', cursor: 'pointer' }}>Cancel</button>
-                <button type="submit" style={{ padding: '8px 16px', backgroundColor: '#10B981', color: '#FFF', border: 'none', borderRadius: '6px', fontWeight: 700, cursor: 'pointer' }}>Submit GRN & Update Stock</button>
+                <button type="button" onClick={() => setIsReceiveModalOpen(false)} className="btn-secondary">Cancel</button>
+                <button type="submit" className="btn-primary" style={{ backgroundColor: 'var(--accent-cool)', color: '#000' }}>Submit GRN & Update Stock</button>
               </div>
             </form>
           </div>

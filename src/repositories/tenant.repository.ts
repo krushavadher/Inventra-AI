@@ -37,7 +37,7 @@ export class TenantRepository {
       const mockTenant: any = {
         _id: mockId,
         name: data.name || 'Default Enterprise Tenant',
-        slug: data.slug || 'stockmind-default',
+        slug: data.slug || 'inventra-default',
         subscriptionTier: data.subscriptionTier || 'ENTERPRISE',
         status: data.status || 'ACTIVE',
         createdAt: new Date(),

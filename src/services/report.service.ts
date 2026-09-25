@@ -49,7 +49,7 @@ export class ReportService {
     }));
 
     if (format === 'CSV') {
-      return { contentType: 'text/csv', data: this.jsonToCSV(reportRows), filename: 'StockMind_Inventory_Report.csv' };
+      return { contentType: 'text/csv', data: this.jsonToCSV(reportRows), filename: 'Inventra_Inventory_Report.csv' };
     }
     return { contentType: 'application/json', data: reportRows };
   }
@@ -74,7 +74,7 @@ export class ReportService {
     }));
 
     if (format === 'CSV') {
-      return { contentType: 'text/csv', data: this.jsonToCSV(reportRows), filename: 'StockMind_Supplier_Report.csv' };
+      return { contentType: 'text/csv', data: this.jsonToCSV(reportRows), filename: 'Inventra_Supplier_Report.csv' };
     }
     return { contentType: 'application/json', data: reportRows };
   }
@@ -89,7 +89,7 @@ export class ReportService {
     ];
 
     if (format === 'CSV') {
-      return { contentType: 'text/csv', data: this.jsonToCSV(reportRows), filename: 'StockMind_Sales_Report.csv' };
+      return { contentType: 'text/csv', data: this.jsonToCSV(reportRows), filename: 'Inventra_Sales_Report.csv' };
     }
     return { contentType: 'application/json', data: reportRows };
   }
@@ -112,7 +112,7 @@ export class ReportService {
     }));
 
     if (format === 'CSV') {
-      return { contentType: 'text/csv', data: this.jsonToCSV(reportRows), filename: 'StockMind_Warehouse_Report.csv' };
+      return { contentType: 'text/csv', data: this.jsonToCSV(reportRows), filename: 'Inventra_Warehouse_Report.csv' };
     }
     return { contentType: 'application/json', data: reportRows };
   }
@@ -127,7 +127,7 @@ export class ReportService {
     ];
 
     if (format === 'CSV') {
-      return { contentType: 'text/csv', data: this.jsonToCSV(reportRows), filename: 'StockMind_Demand_Forecast_Report.csv' };
+      return { contentType: 'text/csv', data: this.jsonToCSV(reportRows), filename: 'Inventra_Demand_Forecast_Report.csv' };
     }
     return { contentType: 'application/json', data: reportRows };
   }
@@ -151,7 +151,7 @@ export class ReportService {
     }));
 
     if (format === 'CSV') {
-      return { contentType: 'text/csv', data: this.jsonToCSV(reportRows), filename: 'StockMind_Procurement_Report.csv' };
+      return { contentType: 'text/csv', data: this.jsonToCSV(reportRows), filename: 'Inventra_Procurement_Report.csv' };
     }
     return { contentType: 'application/json', data: reportRows };
   }

@@ -31,13 +31,13 @@ export class AuthService {
    * 1. Register a new tenant & primary super admin / initial user account
    */
   async register(dto: RegisterDTO) {
-    const slug = (dto.tenantSlug || 'stockmind-default').toLowerCase();
+    const slug = (dto.tenantSlug || 'inventra-default').toLowerCase();
     let tenant = await this.tenantRepo.findBySlug(slug);
 
     if (!tenant) {
       tenant = await this.tenantRepo.create({
         _id: '65f123456789012345678901' as any,
-        name: dto.companyName || 'StockMind Default Tenant',
+        name: dto.companyName || 'Inventra Default Tenant',
         slug,
         subscriptionTier: 'PROFESSIONAL',
         status: 'ACTIVE'
@@ -93,13 +93,13 @@ export class AuthService {
    * 2. Login User & Issue Access / Refresh Tokens
    */
   async login(dto: LoginDTO) {
-    const slug = (dto.tenantSlug || 'stockmind-default').toLowerCase();
+    const slug = (dto.tenantSlug || 'inventra-default').toLowerCase();
     let tenant = await this.tenantRepo.findBySlug(slug);
 
     if (!tenant) {
       tenant = await this.tenantRepo.create({
         _id: '65f123456789012345678901' as any,
-        name: 'StockMind Global Enterprise',
+        name: 'Inventra Global Enterprise',
         slug,
         subscriptionTier: 'ENTERPRISE',
         status: 'ACTIVE'

@@ -213,83 +213,87 @@ export const WarehousePage: React.FC = () => {
   };
 
   return (
-    <div style={{ backgroundColor: '#09090B', color: '#F4F4F5', minHeight: '100vh', padding: '24px', fontFamily: 'Inter, sans-serif' }}>
+    <div style={{ backgroundColor: 'var(--bg-base)', color: 'var(--text-primary)', minHeight: '100vh', padding: '32px 40px' }}>
       
       {/* HEADER BAR */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px', flexWrap: 'wrap', gap: '16px' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '28px', flexWrap: 'wrap', gap: '16px' }}>
         <div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-            <h1 style={{ fontSize: '24px', fontWeight: 800, margin: 0, letterSpacing: '-0.02em', color: '#FFF' }}>Warehouse Management (WMS)</h1>
-            <span style={{ backgroundColor: 'rgba(99, 102, 241, 0.15)', color: '#818CF8', border: '1px solid rgba(99, 102, 241, 0.3)', padding: '2px 8px', borderRadius: '6px', fontSize: '11px', fontWeight: 700 }}>
+            <h1 className="page-title">Warehouse Management (WMS)</h1>
+            <span className="badge badge-info">
               2D SPATIAL DENSITY ENGINE
             </span>
           </div>
-          <p style={{ color: '#A1A1AA', fontSize: '13px', margin: '4px 0 0 0' }}>
-            Multi-tier facility layout, 4-level storage hierarchy (Zone $\rightarrow$ Aisle $\rightarrow$ Rack $\rightarrow$ Shelf $\rightarrow$ Bin), and volume density heatmap.
+          <p className="subtext-muted" style={{ marginTop: '4px' }}>
+            Multi-tier facility layout, 4-level storage hierarchy (Zone &rarr; Aisle &rarr; Rack &rarr; Shelf &rarr; Bin), and volume density heatmap.
           </p>
         </div>
 
         <button
           onClick={() => setIsAddWhModalOpen(true)}
-          style={{ backgroundColor: '#6366F1', color: '#FFF', padding: '10px 18px', borderRadius: '8px', border: 'none', fontWeight: 700, fontSize: '13px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px' }}
+          className="btn-primary"
         >
-          ➕ Add Warehouse Facility
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Add Warehouse Facility
         </button>
       </div>
 
       {/* KPI OVERVIEW CARDS */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '16px', marginBottom: '24px' }}>
-        <div style={{ backgroundColor: '#18181B', border: '1px solid #27272A', borderRadius: '12px', padding: '16px' }}>
-          <div style={{ fontSize: '12px', color: '#A1A1AA', fontWeight: 600 }}>🏢 Active Facilities</div>
-          <div style={{ fontSize: '24px', fontWeight: 800, color: '#FFF', margin: '6px 0 2px 0' }}>{warehouses.length}</div>
-          <div style={{ fontSize: '11px', color: '#34D399', fontWeight: 600 }}>Global WMS Nodes</div>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '16px', marginBottom: '28px' }}>
+        <div className="panel-bordered" style={{ padding: '20px' }}>
+          <div className="kpi-label">Active Facilities</div>
+          <div className="kpi-value">{warehouses.length}</div>
+          <div className="subtext-muted" style={{ marginTop: '6px' }}>Global WMS Nodes</div>
         </div>
 
-        <div style={{ backgroundColor: '#18181B', border: '1px solid #27272A', borderRadius: '12px', padding: '16px' }}>
-          <div style={{ fontSize: '12px', color: '#A1A1AA', fontWeight: 600 }}>📊 Occupancy Rate</div>
-          <div style={{ fontSize: '24px', fontWeight: 800, color: (analytics?.occupancyRatePercentage || 0) > 85 ? '#F43F5E' : '#34D399', margin: '6px 0 2px 0' }}>
+        <div className="panel-bordered" style={{ padding: '20px' }}>
+          <div className="kpi-label">Occupancy Rate</div>
+          <div className="kpi-value" style={{ color: (analytics?.occupancyRatePercentage || 0) > 85 ? 'var(--accent-risk)' : 'var(--accent-cool)' }}>
             {analytics?.occupancyRatePercentage || 0}%
           </div>
-          <div style={{ fontSize: '11px', color: '#A1A1AA', fontWeight: 500 }}>
+          <div className="subtext-muted" style={{ marginTop: '6px' }}>
             {analytics?.capacity?.totalVolumeUsedM3 || 0} / {analytics?.capacity?.totalVolumeCapacityM3 || 10000} m³ Used
           </div>
         </div>
 
-        <div style={{ backgroundColor: '#18181B', border: '1px solid #27272A', borderRadius: '12px', padding: '16px' }}>
-          <div style={{ fontSize: '12px', color: '#A1A1AA', fontWeight: 600 }}>📦 Active Storage Bins</div>
-          <div style={{ fontSize: '24px', fontWeight: 800, color: '#818CF8', margin: '6px 0 2px 0' }}>
+        <div className="panel-bordered" style={{ padding: '20px' }}>
+          <div className="kpi-label">Active Storage Bins</div>
+          <div className="kpi-value" style={{ color: 'var(--text-primary)' }}>
             {analytics?.binSummary?.totalBins || 0}
           </div>
-          <div style={{ fontSize: '11px', color: '#A1A1AA' }}>
-            🟢 {analytics?.binSummary?.emptyBins || 0} Empty | 🔴 {analytics?.binSummary?.fullBins || 0} Full
+          <div style={{ marginTop: '6px', display: 'flex', gap: '6px' }}>
+            <span className="badge" style={{ color: 'var(--accent-cool)', backgroundColor: 'rgba(43, 180, 160, 0.15)' }}>{analytics?.binSummary?.emptyBins || 0} Empty</span>
+            <span className="badge" style={{ color: 'var(--accent-risk)', backgroundColor: 'rgba(229, 83, 75, 0.15)' }}>{analytics?.binSummary?.fullBins || 0} Full</span>
           </div>
         </div>
 
-        <div style={{ backgroundColor: '#18181B', border: '1px solid #27272A', borderRadius: '12px', padding: '16px' }}>
-          <div style={{ fontSize: '12px', color: '#A1A1AA', fontWeight: 600 }}>❄️ Temp Controlled Zones</div>
-          <div style={{ fontSize: '24px', fontWeight: 800, color: '#38BDF8', margin: '6px 0 2px 0' }}>
+        <div className="panel-bordered" style={{ padding: '20px' }}>
+          <div className="kpi-label">Temp Controlled Zones</div>
+          <div className="kpi-value" style={{ color: 'var(--text-primary)' }}>
             {selectedWarehouse?.zones?.filter(z => z.type === 'COLD_STORAGE').length || 0}
           </div>
-          <div style={{ fontSize: '11px', color: '#38BDF8', fontWeight: 600 }}>Active Cold Chain</div>
+          <div style={{ marginTop: '6px' }}>
+            <span className="badge badge-info">Active Cold Chain</span>
+          </div>
         </div>
       </div>
 
       {/* MAIN LAYOUT GRID */}
       {loading ? (
-        <div style={{ backgroundColor: '#18181B', padding: '40px', borderRadius: '12px', textAlign: 'center', color: '#A1A1AA' }}>
+        <div style={{ color: 'var(--text-muted)' }}>
           Loading warehouse WMS facilities...
         </div>
       ) : warehouses.length === 0 ? (
         /* CLEAN EMPTY STATE WHEN DB IS EMPTY */
-        <div style={{ backgroundColor: '#18181B', border: '1px border #27272A', padding: '50px', borderRadius: '16px', textAlign: 'center' }}>
-          <div style={{ fontSize: '42px', marginBottom: '12px' }}>🏬</div>
-          <h2 style={{ fontSize: '20px', fontWeight: 800, color: '#FFF', margin: '0 0 8px 0' }}>No Warehouse Facilities Found</h2>
-          <p style={{ color: '#A1A1AA', fontSize: '14px', maxWidth: '480px', margin: '0 auto 20px auto' }}>
+        <div className="empty-state-box">
+          <div className="empty-state-icon">🏬</div>
+          <h2 style={{ fontSize: '20px', fontWeight: 600, color: 'var(--text-primary)', margin: '0 0 8px 0' }}>No Warehouse Facilities Found</h2>
+          <p className="subtext-muted" style={{ maxWidth: '480px', margin: '0 auto 20px auto' }}>
             Your warehouse database is clean. Create your first facility to configure storage zones, aisles, racks, and 2D spatial heatmap monitoring.
           </p>
           <button
             onClick={() => setIsAddWhModalOpen(true)}
-            style={{ backgroundColor: '#6366F1', color: '#FFF', padding: '12px 24px', borderRadius: '8px', border: 'none', fontWeight: 800, fontSize: '14px', cursor: 'pointer' }}
+            className="btn-primary"
           >
             ➕ Create First Warehouse Facility
           </button>
@@ -298,10 +302,10 @@ export const WarehousePage: React.FC = () => {
         <div style={{ display: 'grid', gridTemplateColumns: '300px minmax(0, 1fr)', gap: '20px' }}>
           
           {/* LEFT SIDEBAR: FACILITIES LIST */}
-          <div style={{ backgroundColor: '#18181B', border: '1px solid #27272A', borderRadius: '12px', padding: '16px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
+          <div className="panel-bordered" style={{ padding: '16px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
-              <div style={{ fontSize: '12px', color: '#A1A1AA', textTransform: 'uppercase', fontWeight: 800 }}>FACILITIES ({warehouses.length})</div>
-              <button onClick={() => setIsAddWhModalOpen(true)} style={{ backgroundColor: '#27272A', color: '#34D399', border: 'none', padding: '3px 8px', borderRadius: '4px', fontSize: '11px', fontWeight: 700, cursor: 'pointer' }}>+ New</button>
+              <div className="kpi-label">FACILITIES ({warehouses.length})</div>
+              <button onClick={() => setIsAddWhModalOpen(true)} className="btn-secondary" style={{ padding: '4px 8px', fontSize: '11px' }}>+ New</button>
             </div>
 
             {warehouses.map((wh) => {
@@ -310,36 +314,35 @@ export const WarehousePage: React.FC = () => {
                 <div
                   key={wh._id}
                   onClick={() => handleSelectWarehouse(wh)}
+                  className="panel-bordered"
                   style={{
-                    backgroundColor: isSelected ? '#27272A' : '#09090B',
-                    border: '1px solid #27272A',
-                    borderRadius: '10px',
+                    backgroundColor: isSelected ? 'var(--bg-surface)' : 'transparent',
                     padding: '14px',
                     cursor: 'pointer',
-                    borderLeft: isSelected ? '4px solid #6366F1' : '4px solid transparent',
+                    borderColor: isSelected ? 'var(--accent-primary)' : 'var(--border)',
                     transition: 'all 0.15s ease'
                   }}
                 >
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '4px' }}>
-                    <div style={{ fontWeight: 800, fontSize: '14px', color: '#FFF' }}>{wh.name}</div>
-                    <span style={{ backgroundColor: 'rgba(16, 185, 129, 0.2)', color: '#34D399', padding: '2px 6px', borderRadius: '4px', fontSize: '10px', fontWeight: 800 }}>
+                    <div style={{ fontWeight: 600, fontSize: '14px', color: 'var(--text-primary)' }}>{wh.name}</div>
+                    <span style={{ backgroundColor: 'rgba(43, 180, 160, 0.2)', color: 'var(--accent-cool)', padding: '2px 6px', borderRadius: '4px', fontSize: '10px', fontWeight: 600 }}>
                       {wh.status || 'ACTIVE'}
                     </span>
                   </div>
 
-                  <div style={{ fontSize: '11px', color: '#818CF8', fontFamily: 'monospace', fontWeight: 700, marginBottom: '6px' }}>
+                  <div style={{ fontSize: '11px', color: 'var(--text-primary)', fontFamily: 'monospace', fontWeight: 500, marginBottom: '6px' }}>
                     {wh.code} • {wh.type?.replace('_', ' ')}
                   </div>
 
-                  <div style={{ fontSize: '11px', color: '#71717A' }}>
+                  <div style={{ fontSize: '11px', color: 'var(--text-muted)' }}>
                     📍 {wh.address?.city || 'Boston'}, {wh.address?.country || 'USA'}
                   </div>
 
                   <div style={{ marginTop: '10px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <span style={{ fontSize: '11px', color: '#A1A1AA' }}>{wh.zones?.length || 0} Zones Configured</span>
+                    <span style={{ fontSize: '11px', color: 'var(--text-muted)' }}>{wh.zones?.length || 0} Zones Configured</span>
                     <button
                       onClick={(e) => { e.stopPropagation(); handleDeleteWarehouse(wh._id, wh.name); }}
-                      style={{ backgroundColor: 'transparent', color: '#F43F5E', border: 'none', cursor: 'pointer', fontSize: '11px' }}
+                      style={{ backgroundColor: 'transparent', color: 'var(--accent-risk)', border: 'none', cursor: 'pointer', fontSize: '11px' }}
                     >
                       🗑
                     </button>
@@ -354,50 +357,51 @@ export const WarehousePage: React.FC = () => {
             <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
               
               {/* FACILITY OVERVIEW HEADER CARD */}
-              <div style={{ backgroundColor: '#18181B', border: '1px solid #27272A', borderRadius: '12px', padding: '20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '16px' }}>
+              <div className="panel-bordered" style={{ padding: '20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '16px' }}>
                 <div>
-                  <span style={{ fontSize: '11px', color: '#818CF8', fontWeight: 800, fontFamily: 'monospace' }}>{selectedWarehouse.code}</span>
-                  <h2 style={{ margin: '2px 0 4px 0', fontSize: '20px', fontWeight: 800, color: '#FFF' }}>{selectedWarehouse.name}</h2>
-                  <div style={{ fontSize: '12px', color: '#A1A1AA' }}>
+                  <span style={{ fontSize: '12px', color: 'var(--text-muted)', fontWeight: 500 }}>{selectedWarehouse.code}</span>
+                  <h2 style={{ margin: '2px 0 4px 0', fontSize: '20px', fontWeight: 600, color: 'var(--text-primary)' }}>{selectedWarehouse.name}</h2>
+                  <div style={{ fontSize: '12px', color: 'var(--text-muted)' }}>
                     Address: {selectedWarehouse.address?.street}, {selectedWarehouse.address?.city}, {selectedWarehouse.address?.state} {selectedWarehouse.address?.postalCode}
                   </div>
                 </div>
 
                 <button
                   onClick={() => setIsAddZoneModalOpen(true)}
-                  style={{ backgroundColor: '#10B981', color: '#FFF', padding: '9px 16px', borderRadius: '8px', border: 'none', fontWeight: 700, fontSize: '13px', cursor: 'pointer' }}
+                  className="btn-primary"
+                  style={{ backgroundColor: 'var(--accent-cool)', color: '#000' }}
                 >
                   ⚡ Add Zone & Generate Bins
                 </button>
               </div>
 
               {/* 2D SPATIAL HEATMAP GRID */}
-              <div style={{ backgroundColor: '#18181B', border: '1px solid #27272A', borderRadius: '12px', padding: '20px' }}>
+              <div className="panel-bordered" style={{ padding: '20px' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-                  <h3 style={{ margin: 0, fontSize: '15px', fontWeight: 800, color: '#FFF' }}>2D Storage Bin Density & Utilization Heatmap</h3>
+                  <h3 style={{ margin: 0, fontSize: '15px', fontWeight: 600, color: 'var(--text-primary)' }}>2D Storage Bin Density & Utilization Heatmap</h3>
                   <div style={{ display: 'flex', gap: '14px', fontSize: '11px' }}>
-                    <span style={{ color: '#34D399', fontWeight: 700 }}>● Empty / Low (&lt;30%)</span>
-                    <span style={{ color: '#F59E0B', fontWeight: 700 }}>● Medium (30-80%)</span>
-                    <span style={{ color: '#F43F5E', fontWeight: 700 }}>● Full / High (&gt;80%)</span>
+                    <span style={{ color: 'var(--accent-cool)', fontWeight: 600 }}>● Empty / Low (&lt;30%)</span>
+                    <span style={{ color: 'var(--accent-primary)', fontWeight: 600 }}>● Medium (30-80%)</span>
+                    <span style={{ color: 'var(--accent-risk)', fontWeight: 600 }}>● Full / High (&gt;80%)</span>
                   </div>
                 </div>
 
                 {/* ZONE BREAKDOWN HEATMAP TILES */}
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
                   {selectedWarehouse.zones?.map((zone) => (
-                    <div key={zone.zoneCode} style={{ backgroundColor: '#09090B', border: '1px solid #27272A', borderRadius: '10px', padding: '16px' }}>
+                    <div key={zone.zoneCode} className="panel-bordered" style={{ backgroundColor: 'var(--bg-base)', padding: '16px' }}>
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                          <span style={{ backgroundColor: '#6366F1', color: '#FFF', padding: '3px 8px', borderRadius: '6px', fontSize: '11px', fontWeight: 800, fontFamily: 'monospace' }}>
+                          <span style={{ backgroundColor: 'var(--bg-surface)', color: 'var(--text-primary)', padding: '3px 8px', borderRadius: '4px', fontSize: '11px', fontWeight: 600 }}>
                             {zone.zoneCode}
                           </span>
-                          <span style={{ fontWeight: 700, fontSize: '14px', color: '#FFF' }}>{zone.name}</span>
-                          <span style={{ fontSize: '11px', color: '#A1A1AA', backgroundColor: '#27272A', padding: '2px 8px', borderRadius: '4px' }}>
+                          <span style={{ fontWeight: 600, fontSize: '14px', color: 'var(--text-primary)' }}>{zone.name}</span>
+                          <span style={{ fontSize: '11px', color: 'var(--text-muted)', backgroundColor: 'var(--bg-surface)', padding: '2px 8px', borderRadius: '4px' }}>
                             {zone.type}
                           </span>
                         </div>
                         {zone.tempControlCelsius !== undefined && (
-                          <span style={{ color: '#38BDF8', fontSize: '12px', fontWeight: 700 }}>
+                          <span style={{ color: 'var(--accent-cool)', fontSize: '12px', fontWeight: 600 }}>
                             ❄️ {zone.tempControlCelsius}°C
                           </span>
                         )}
@@ -407,22 +411,22 @@ export const WarehousePage: React.FC = () => {
                       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(110px, 1fr))', gap: '10px' }}>
                         {zone.aisles?.flatMap(aisle => aisle.racks?.flatMap((rack: any) => rack.shelves?.flatMap((shelf: any) => shelf.bins || [])) || []).map((bin: Bin, idx: number) => {
                           const util = bin.maxVolumeCubicMeters > 0 ? (bin.currentVolumeUsed / bin.maxVolumeCubicMeters) * 100 : 0;
-                          const color = util > 80 ? '#F43F5E' : util > 30 ? '#F59E0B' : '#34D399';
+                          const color = util > 80 ? 'var(--accent-risk)' : util > 30 ? 'var(--accent-primary)' : 'var(--accent-cool)';
 
                           return (
                             <div
                               key={idx}
                               style={{
-                                backgroundColor: '#18181B',
+                                backgroundColor: 'var(--bg-surface)',
                                 border: `1px solid ${color}`,
                                 padding: '10px',
-                                borderRadius: '8px',
+                                borderRadius: '4px',
                                 textAlign: 'center'
                               }}
                             >
-                              <div style={{ fontSize: '10px', color: '#818CF8', fontFamily: 'monospace', fontWeight: 700 }}>{bin.binCode}</div>
-                              <div style={{ fontSize: '15px', fontWeight: 800, color, margin: '2px 0' }}>{Math.round(util)}%</div>
-                              <div style={{ fontSize: '10px', color: '#71717A' }}>
+                              <div style={{ fontSize: '10px', color: 'var(--text-primary)', fontWeight: 600 }}>{bin.binCode}</div>
+                              <div className="tabular-nums" style={{ fontSize: '15px', fontWeight: 700, color, margin: '2px 0' }}>{Math.round(util)}%</div>
+                              <div style={{ fontSize: '10px', color: 'var(--text-muted)' }}>
                                 {bin.status || 'AVAILABLE'}
                               </div>
                             </div>
@@ -441,23 +445,23 @@ export const WarehousePage: React.FC = () => {
 
       {/* MODAL 1: CREATE WAREHOUSE */}
       {isAddWhModalOpen && (
-        <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.85)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 110 }}>
-          <div style={{ backgroundColor: '#18181B', border: '1px solid #27272A', borderRadius: '16px', padding: '24px', width: '480px' }}>
-            <h3 style={{ margin: '0 0 16px 0', fontSize: '18px', fontWeight: 800, color: '#FFF' }}>➕ Add New Warehouse Facility</h3>
-            <form onSubmit={handleCreateWarehouseSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+        <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(13, 17, 23, 0.8)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 110 }}>
+          <div className="panel-bordered" style={{ padding: '24px', width: '480px' }}>
+            <h3 style={{ margin: '0 0 16px 0', fontSize: '18px', fontWeight: 600, color: 'var(--text-primary)' }}>➕ Add New Warehouse Facility</h3>
+            <form onSubmit={handleCreateWarehouseSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
               <div>
-                <label style={{ fontSize: '12px', color: '#A1A1AA' }}>Facility Name</label>
-                <input required type="text" placeholder="e.g. East Coast Main DC" value={whForm.name} onChange={(e) => setWhForm({ ...whForm, name: e.target.value })} style={{ width: '100%', padding: '8px', backgroundColor: '#09090B', border: '1px solid #27272A', color: '#FFF', borderRadius: '6px', boxSizing: 'border-box' }} />
+                <label className="kpi-label" style={{ marginBottom: '4px', display: 'block' }}>Facility Name</label>
+                <input required type="text" placeholder="e.g. East Coast Main DC" value={whForm.name} onChange={(e) => setWhForm({ ...whForm, name: e.target.value })} className="input-dark" style={{ width: '100%' }} />
               </div>
 
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
                 <div>
-                  <label style={{ fontSize: '12px', color: '#A1A1AA' }}>Facility Code</label>
-                  <input required type="text" placeholder="e.g. WH-EAST-01" value={whForm.code} onChange={(e) => setWhForm({ ...whForm, code: e.target.value })} style={{ width: '100%', padding: '8px', backgroundColor: '#09090B', border: '1px solid #27272A', color: '#FFF', borderRadius: '6px', boxSizing: 'border-box' }} />
+                  <label className="kpi-label" style={{ marginBottom: '4px', display: 'block' }}>Facility Code</label>
+                  <input required type="text" placeholder="e.g. WH-EAST-01" value={whForm.code} onChange={(e) => setWhForm({ ...whForm, code: e.target.value })} className="input-dark" style={{ width: '100%' }} />
                 </div>
                 <div>
-                  <label style={{ fontSize: '12px', color: '#A1A1AA' }}>Facility Type</label>
-                  <select value={whForm.type} onChange={(e: any) => setWhForm({ ...whForm, type: e.target.value })} style={{ width: '100%', padding: '8px', backgroundColor: '#09090B', border: '1px solid #27272A', color: '#FFF', borderRadius: '6px' }}>
+                  <label className="kpi-label" style={{ marginBottom: '4px', display: 'block' }}>Facility Type</label>
+                  <select value={whForm.type} onChange={(e: any) => setWhForm({ ...whForm, type: e.target.value })} className="input-dark" style={{ width: '100%' }}>
                     <option value="DISTRIBUTION_CENTER">Distribution Center</option>
                     <option value="REGIONAL_HUB">Regional Hub</option>
                     <option value="RETAIL_STORE">Retail Store</option>
@@ -467,28 +471,28 @@ export const WarehousePage: React.FC = () => {
               </div>
 
               <div>
-                <label style={{ fontSize: '12px', color: '#A1A1AA' }}>Street Address</label>
-                <input type="text" value={whForm.street} onChange={(e) => setWhForm({ ...whForm, street: e.target.value })} style={{ width: '100%', padding: '8px', backgroundColor: '#09090B', border: '1px solid #27272A', color: '#FFF', borderRadius: '6px', boxSizing: 'border-box' }} />
+                <label className="kpi-label" style={{ marginBottom: '4px', display: 'block' }}>Street Address</label>
+                <input type="text" value={whForm.street} onChange={(e) => setWhForm({ ...whForm, street: e.target.value })} className="input-dark" style={{ width: '100%' }} />
               </div>
 
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '12px' }}>
                 <div>
-                  <label style={{ fontSize: '12px', color: '#A1A1AA' }}>City</label>
-                  <input type="text" value={whForm.city} onChange={(e) => setWhForm({ ...whForm, city: e.target.value })} style={{ width: '100%', padding: '8px', backgroundColor: '#09090B', border: '1px solid #27272A', color: '#FFF', borderRadius: '6px', boxSizing: 'border-box' }} />
+                  <label className="kpi-label" style={{ marginBottom: '4px', display: 'block' }}>City</label>
+                  <input type="text" value={whForm.city} onChange={(e) => setWhForm({ ...whForm, city: e.target.value })} className="input-dark" style={{ width: '100%' }} />
                 </div>
                 <div>
-                  <label style={{ fontSize: '12px', color: '#A1A1AA' }}>State</label>
-                  <input type="text" value={whForm.state} onChange={(e) => setWhForm({ ...whForm, state: e.target.value })} style={{ width: '100%', padding: '8px', backgroundColor: '#09090B', border: '1px solid #27272A', color: '#FFF', borderRadius: '6px', boxSizing: 'border-box' }} />
+                  <label className="kpi-label" style={{ marginBottom: '4px', display: 'block' }}>State</label>
+                  <input type="text" value={whForm.state} onChange={(e) => setWhForm({ ...whForm, state: e.target.value })} className="input-dark" style={{ width: '100%' }} />
                 </div>
                 <div>
-                  <label style={{ fontSize: '12px', color: '#A1A1AA' }}>Postal Code</label>
-                  <input type="text" value={whForm.postalCode} onChange={(e) => setWhForm({ ...whForm, postalCode: e.target.value })} style={{ width: '100%', padding: '8px', backgroundColor: '#09090B', border: '1px solid #27272A', color: '#FFF', borderRadius: '6px', boxSizing: 'border-box' }} />
+                  <label className="kpi-label" style={{ marginBottom: '4px', display: 'block' }}>Postal Code</label>
+                  <input type="text" value={whForm.postalCode} onChange={(e) => setWhForm({ ...whForm, postalCode: e.target.value })} className="input-dark" style={{ width: '100%' }} />
                 </div>
               </div>
 
               <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px', marginTop: '16px' }}>
-                <button type="button" onClick={() => setIsAddWhModalOpen(false)} style={{ padding: '8px 16px', backgroundColor: '#27272A', color: '#FFF', border: 'none', borderRadius: '6px', cursor: 'pointer' }}>Cancel</button>
-                <button type="submit" style={{ padding: '8px 16px', backgroundColor: '#6366F1', color: '#FFF', border: 'none', borderRadius: '6px', fontWeight: 700, cursor: 'pointer' }}>Create Facility</button>
+                <button type="button" onClick={() => setIsAddWhModalOpen(false)} className="btn-secondary">Cancel</button>
+                <button type="submit" className="btn-primary">Create Facility</button>
               </div>
             </form>
           </div>
@@ -497,24 +501,24 @@ export const WarehousePage: React.FC = () => {
 
       {/* MODAL 2: ADD ZONE & GENERATE BINS */}
       {isAddZoneModalOpen && (
-        <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.85)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 110 }}>
-          <div style={{ backgroundColor: '#18181B', border: '1px solid #27272A', borderRadius: '16px', padding: '24px', width: '480px' }}>
-            <h3 style={{ margin: '0 0 16px 0', fontSize: '18px', fontWeight: 800, color: '#FFF' }}>⚡ Add Zone & Generate Storage Hierarchy</h3>
-            <form onSubmit={handleAddZoneSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+        <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(13, 17, 23, 0.8)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 110 }}>
+          <div className="panel-bordered" style={{ padding: '24px', width: '480px' }}>
+            <h3 style={{ margin: '0 0 16px 0', fontSize: '18px', fontWeight: 600, color: 'var(--text-primary)' }}>⚡ Add Zone & Generate Storage Hierarchy</h3>
+            <form onSubmit={handleAddZoneSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
                 <div>
-                  <label style={{ fontSize: '12px', color: '#A1A1AA' }}>Zone Code</label>
-                  <input required type="text" placeholder="e.g. ZONE-C" value={zoneForm.zoneCode} onChange={(e) => setZoneForm({ ...zoneForm, zoneCode: e.target.value })} style={{ width: '100%', padding: '8px', backgroundColor: '#09090B', border: '1px solid #27272A', color: '#FFF', borderRadius: '6px', boxSizing: 'border-box' }} />
+                  <label className="kpi-label" style={{ marginBottom: '4px', display: 'block' }}>Zone Code</label>
+                  <input required type="text" placeholder="e.g. ZONE-C" value={zoneForm.zoneCode} onChange={(e) => setZoneForm({ ...zoneForm, zoneCode: e.target.value })} className="input-dark" style={{ width: '100%' }} />
                 </div>
                 <div>
-                  <label style={{ fontSize: '12px', color: '#A1A1AA' }}>Zone Name</label>
-                  <input required type="text" placeholder="e.g. Cold Vault C" value={zoneForm.name} onChange={(e) => setZoneForm({ ...zoneForm, name: e.target.value })} style={{ width: '100%', padding: '8px', backgroundColor: '#09090B', border: '1px solid #27272A', color: '#FFF', borderRadius: '6px', boxSizing: 'border-box' }} />
+                  <label className="kpi-label" style={{ marginBottom: '4px', display: 'block' }}>Zone Name</label>
+                  <input required type="text" placeholder="e.g. Cold Vault C" value={zoneForm.name} onChange={(e) => setZoneForm({ ...zoneForm, name: e.target.value })} className="input-dark" style={{ width: '100%' }} />
                 </div>
               </div>
 
               <div>
-                <label style={{ fontSize: '12px', color: '#A1A1AA' }}>Zone Type</label>
-                <select value={zoneForm.type} onChange={(e: any) => setZoneForm({ ...zoneForm, type: e.target.value })} style={{ width: '100%', padding: '8px', backgroundColor: '#09090B', border: '1px solid #27272A', color: '#FFF', borderRadius: '6px' }}>
+                <label className="kpi-label" style={{ marginBottom: '4px', display: 'block' }}>Zone Type</label>
+                <select value={zoneForm.type} onChange={(e: any) => setZoneForm({ ...zoneForm, type: e.target.value })} className="input-dark" style={{ width: '100%' }}>
                   <option value="STORAGE">High-Density Storage</option>
                   <option value="RECEIVING">Inbound Receiving Dock</option>
                   <option value="PICKING">Fast Picking Zone</option>
@@ -525,18 +529,18 @@ export const WarehousePage: React.FC = () => {
 
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
                 <div>
-                  <label style={{ fontSize: '12px', color: '#A1A1AA' }}>Aisles Count</label>
-                  <input type="number" min={1} value={zoneForm.aislesCount} onChange={(e) => setZoneForm({ ...zoneForm, aislesCount: Number(e.target.value) })} style={{ width: '100%', padding: '8px', backgroundColor: '#09090B', border: '1px solid #27272A', color: '#FFF', borderRadius: '6px', boxSizing: 'border-box' }} />
+                  <label className="kpi-label" style={{ marginBottom: '4px', display: 'block' }}>Aisles Count</label>
+                  <input type="number" min={1} value={zoneForm.aislesCount} onChange={(e) => setZoneForm({ ...zoneForm, aislesCount: Number(e.target.value) })} className="input-dark" style={{ width: '100%' }} />
                 </div>
                 <div>
-                  <label style={{ fontSize: '12px', color: '#A1A1AA' }}>Bins per Shelf</label>
-                  <input type="number" min={1} value={zoneForm.binsPerShelf} onChange={(e) => setZoneForm({ ...zoneForm, binsPerShelf: Number(e.target.value) })} style={{ width: '100%', padding: '8px', backgroundColor: '#09090B', border: '1px solid #27272A', color: '#FFF', borderRadius: '6px', boxSizing: 'border-box' }} />
+                  <label className="kpi-label" style={{ marginBottom: '4px', display: 'block' }}>Bins per Shelf</label>
+                  <input type="number" min={1} value={zoneForm.binsPerShelf} onChange={(e) => setZoneForm({ ...zoneForm, binsPerShelf: Number(e.target.value) })} className="input-dark" style={{ width: '100%' }} />
                 </div>
               </div>
 
               <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px', marginTop: '16px' }}>
-                <button type="button" onClick={() => setIsAddZoneModalOpen(false)} style={{ padding: '8px 16px', backgroundColor: '#27272A', color: '#FFF', border: 'none', borderRadius: '6px', cursor: 'pointer' }}>Cancel</button>
-                <button type="submit" style={{ padding: '8px 16px', backgroundColor: '#10B981', color: '#FFF', border: 'none', borderRadius: '6px', fontWeight: 700, cursor: 'pointer' }}>Generate Bins</button>
+                <button type="button" onClick={() => setIsAddZoneModalOpen(false)} className="btn-secondary">Cancel</button>
+                <button type="submit" className="btn-primary" style={{ backgroundColor: 'var(--accent-cool)', color: '#000' }}>Generate Bins</button>
               </div>
             </form>
           </div>

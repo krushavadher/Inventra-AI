@@ -107,7 +107,7 @@ Produce an optimal purchasing recommendation that maximizes order fill rate, eli
         paymentStatus: 'UNPAID',
         matchStatus: 'PENDING',
         expectedDeliveryDate,
-        notes: `Auto-generated Draft PO by StockMind AI Procurement Manager. Recommendation ID: ${recommendationNumber}`,
+        notes: `Auto-generated Draft PO by Inventra AI Procurement Manager. Recommendation ID: ${recommendationNumber}`,
         createdBy: userId as any
       });
 

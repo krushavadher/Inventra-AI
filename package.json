@@ -1,7 +1,7 @@
 {
-  "name": "@stockmind/api",
+  "name": "@inventra/api",
   "version": "1.0.0",
-  "description": "StockMind AI Enterprise Backend & Frontend Platform",
+  "description": "Inventra AI Enterprise Backend & Frontend Platform",
   "main": "dist/server.js",
   "type": "module",
   "scripts": {

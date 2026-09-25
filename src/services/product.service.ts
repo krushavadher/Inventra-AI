@@ -70,7 +70,7 @@ export class ProductService {
 
     const sku = dto.sku ? dto.sku.toUpperCase() : this.generateAutoSku();
     const barcode = dto.barcode || this.generateAutoBarcode();
-    const qrCode = `stockmind://product/${sku}?tenant=${tenantId}`;
+    const qrCode = `inventra://product/${sku}?tenant=${tenantId}`;
 
     const productData: Partial<IProduct> = {
       tenantId: tenantId as any,

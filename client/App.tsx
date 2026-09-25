@@ -6,8 +6,6 @@ import { InventoryPage } from './InventoryPage';
 import { WarehousePage } from './WarehousePage';
 import { SuppliersPage } from './SuppliersPage';
 import { PurchaseOrdersPage } from './PurchaseOrdersPage';
-import { AIProcurementAssistantPage } from './AIProcurementAssistantPage';
-import { AICopilotPage } from './AICopilotPage';
 import { ReportsPage } from './ReportsPage';
 import { NotificationDrawer } from './NotificationDrawer';
 import { getAuthToken, getStoredUser, removeAuthToken } from './apiClient';
@@ -19,8 +17,6 @@ export type NavigationTab =
   | 'warehouse'
   | 'suppliers'
   | 'purchase-orders'
-  | 'ai-procurement'
-  | 'ai-copilot'
   | 'reports';
 
 export const App: React.FC = () => {
@@ -43,35 +39,33 @@ export const App: React.FC = () => {
   };
 
   if (isInitializing) {
-    return <div style={{ backgroundColor: '#09090B', color: '#FFF', minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>Initializing StockMind AI...</div>;
+    return <div style={{ backgroundColor: 'var(--bg-base)', color: 'var(--text-primary)', minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>Initializing Inventra AI...</div>;
   }
 
   if (!currentUser) {
     return <LoginPage onLoginSuccess={(user) => setCurrentUser(user)} />;
   }
 
-  const navItems: { id: NavigationTab; label: string; icon: string }[] = [
-    { id: 'dashboard', label: 'Dashboard', icon: '📊' },
-    { id: 'products', label: 'Products Master', icon: '📦' },
-    { id: 'inventory', label: 'Inventory Control', icon: '📉' },
-    { id: 'warehouse', label: 'Warehouse WMS', icon: '🏬' },
-    { id: 'suppliers', label: 'Suppliers & OTIF', icon: '🤝' },
-    { id: 'purchase-orders', label: 'Purchase Orders', icon: '📝' },
-    { id: 'ai-procurement', label: 'AI Procurement Mgr', icon: '🤖' },
-    { id: 'ai-copilot', label: 'AI Copilot Chat', icon: '✨' },
-    { id: 'reports', label: 'Reports & BI', icon: '📈' }
+  const navItems: { id: NavigationTab; label: string }[] = [
+    { id: 'dashboard', label: 'Dashboard' },
+    { id: 'products', label: 'Products Master' },
+    { id: 'inventory', label: 'Inventory Control' },
+    { id: 'warehouse', label: 'Warehouse WMS' },
+    { id: 'suppliers', label: 'Suppliers & OTIF' },
+    { id: 'purchase-orders', label: 'Purchase Orders' },
+    { id: 'reports', label: 'Reports & BI' }
   ];
 
   return (
-    <div style={{ display: 'flex', minHeight: '100vh', backgroundColor: '#09090B', color: '#F4F4F5', fontFamily: 'Inter, sans-serif' }}>
+    <div style={{ display: 'flex', minHeight: '100vh', backgroundColor: 'var(--bg-base)', color: 'var(--text-primary)', fontFamily: 'Inter, sans-serif' }}>
       {/* Linear Style Sidebar */}
-      <aside style={{ width: '250px', backgroundColor: '#121215', borderRight: '1px solid #27272A', display: 'flex', flexDirection: 'column', position: 'fixed', top: 0, bottom: 0, zIndex: 10 }}>
+      <aside style={{ width: '250px', backgroundColor: 'var(--bg-surface)', borderRight: '1px solid var(--border)', display: 'flex', flexDirection: 'column', position: 'fixed', top: 0, bottom: 0, zIndex: 10 }}>
         {/* Brand Logo */}
-        <div style={{ padding: '20px 24px', borderBottom: '1px solid #27272A', display: 'flex', alignItems: 'center', gap: '10px' }}>
-          <div style={{ width: '28px', height: '28px', borderRadius: '6px', backgroundColor: '#6366F1', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontSize: '14px', color: '#FFF' }}>S</div>
+        <div style={{ padding: '20px 24px', borderBottom: '1px solid var(--border)', display: 'flex', alignItems: 'center', gap: '10px' }}>
+          <div style={{ width: '28px', height: '28px', borderRadius: '6px', backgroundColor: 'var(--accent-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 600, fontSize: '14px', color: '#111' }}>I</div>
           <div>
-            <div style={{ fontWeight: 800, fontSize: '15px', letterSpacing: '-0.02em', color: '#FFF' }}>StockMind AI</div>
-            <div style={{ fontSize: '10px', color: '#8B5CF6', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Enterprise SaaS</div>
+            <div style={{ fontWeight: 600, fontSize: '15px', color: 'var(--text-primary)' }}>Inventra AI</div>
+            <div style={{ fontSize: '10px', color: 'var(--text-muted)', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Enterprise SaaS</div>
           </div>
         </div>
 
@@ -83,25 +77,8 @@ export const App: React.FC = () => {
               <button
                 key={item.id}
                 onClick={() => setActiveTab(item.id)}
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '12px',
-                  width: '100%',
-                  padding: '10px 14px',
-                  borderRadius: '8px',
-                  border: 'none',
-                  backgroundColor: isActive ? '#18181B' : 'transparent',
-                  color: isActive ? '#FFF' : '#A1A1AA',
-                  fontWeight: isActive ? 600 : 400,
-                  fontSize: '13px',
-                  cursor: 'pointer',
-                  textAlign: 'left',
-                  borderLeft: isActive ? '3px solid #6366F1' : '3px solid transparent',
-                  transition: 'all 0.15s ease'
-                }}
+                className={`nav-item-btn ${isActive ? 'active' : ''}`}
               >
-                <span style={{ fontSize: '16px' }}>{item.icon}</span>
                 <span>{item.label}</span>
               </button>
             );
@@ -109,20 +86,20 @@ export const App: React.FC = () => {
         </nav>
 
         {/* User Footer Profile with Working Logout Button */}
-        <div style={{ padding: '16px', borderTop: '1px solid #27272A', display: 'flex', alignItems: 'center', justifyContent: 'space-between', backgroundColor: '#09090B' }}>
+        <div style={{ padding: '16px', borderTop: '1px solid var(--border)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', backgroundColor: 'transparent' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-            <div style={{ width: '32px', height: '32px', borderRadius: '50%', backgroundColor: '#6366F1', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700, fontSize: '12px' }}>
+            <div style={{ width: '32px', height: '32px', borderRadius: '50%', backgroundColor: 'var(--bg-base)', border: '1px solid var(--border)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 600, fontSize: '12px', color: 'var(--text-primary)' }}>
               {currentUser.firstName ? currentUser.firstName[0] : 'U'}
             </div>
             <div>
-              <div style={{ fontSize: '13px', fontWeight: 600, color: '#FFF' }}>{currentUser.firstName} {currentUser.lastName}</div>
-              <div style={{ fontSize: '11px', color: '#71717A' }}>{currentUser.role}</div>
+              <div style={{ fontSize: '13px', fontWeight: 500, color: 'var(--text-primary)' }}>{currentUser.firstName} {currentUser.lastName}</div>
+              <div style={{ fontSize: '11px', color: 'var(--text-muted)' }}>{currentUser.role}</div>
             </div>
           </div>
           <button
             onClick={handleLogout}
             title="Sign Out"
-            style={{ backgroundColor: '#27272A', color: '#F43F5E', border: 'none', padding: '6px 10px', borderRadius: '6px', cursor: 'pointer', fontSize: '12px', fontWeight: 600 }}
+            style={{ backgroundColor: 'transparent', color: 'var(--text-muted)', border: 'none', padding: '6px 10px', borderRadius: '6px', cursor: 'pointer', fontSize: '12px', fontWeight: 500 }}
           >
             Logout
           </button>
@@ -130,19 +107,19 @@ export const App: React.FC = () => {
       </aside>
 
       {/* Main Workspace Header & Content */}
-      <div style={{ marginLeft: '250px', flex: 1, display: 'flex', flexDirection: 'column' }}>
+      <div style={{ marginLeft: '250px', flex: 1, display: 'flex', flexDirection: 'column', backgroundColor: 'var(--bg-base)' }}>
         {/* Header Bar */}
-        <header style={{ height: '64px', backgroundColor: '#121215', borderBottom: '1px solid #27272A', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 28px', position: 'sticky', top: 0, zIndex: 9 }}>
-          <div style={{ fontSize: '13px', color: '#A1A1AA', display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <span>StockMind AI</span>
+        <header style={{ height: '64px', backgroundColor: 'var(--bg-surface)', borderBottom: '1px solid var(--border)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 28px', position: 'sticky', top: 0, zIndex: 9 }}>
+          <div style={{ fontSize: '13px', color: 'var(--text-muted)', display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <span>Inventra AI</span>
             <span>/</span>
-            <span style={{ color: '#FFF', fontWeight: 600, textTransform: 'capitalize' }}>{activeTab.replace('-', ' ')}</span>
+            <span style={{ color: 'var(--text-primary)', fontWeight: 500, textTransform: 'capitalize' }}>{activeTab.replace('-', ' ')}</span>
           </div>
 
           <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
             <NotificationDrawer />
-            <div style={{ height: '24px', width: '1px', backgroundColor: '#27272A' }}></div>
-            <span style={{ backgroundColor: 'rgba(16, 185, 129, 0.15)', color: '#10B981', padding: '4px 10px', borderRadius: '12px', fontSize: '11px', fontWeight: 700 }}>
+            <div style={{ height: '24px', width: '1px', backgroundColor: 'var(--border)' }}></div>
+            <span className="badge badge-success">
               ● API Online
             </span>
           </div>
@@ -156,8 +133,6 @@ export const App: React.FC = () => {
           {activeTab === 'warehouse' && <WarehousePage />}
           {activeTab === 'suppliers' && <SuppliersPage />}
           {activeTab === 'purchase-orders' && <PurchaseOrdersPage />}
-          {activeTab === 'ai-procurement' && <AIProcurementAssistantPage />}
-          {activeTab === 'ai-copilot' && <AICopilotPage />}
           {activeTab === 'reports' && <ReportsPage />}
         </main>
       </div>

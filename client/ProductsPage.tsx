@@ -98,34 +98,40 @@ export const ProductsPage: React.FC = () => {
   };
 
   return (
-    <div style={{ backgroundColor: '#09090B', color: '#F4F4F5', minHeight: '100vh', padding: '24px', fontFamily: 'Inter, sans-serif' }}>
+    <div style={{ backgroundColor: 'var(--bg-base)', color: 'var(--text-primary)', minHeight: '100vh', padding: '32px 40px' }}>
       {/* Header Bar */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '28px' }}>
         <div>
-          <h1 style={{ fontSize: '24px', fontWeight: 700, margin: 0 }}>Product Master Catalog</h1>
-          <p style={{ color: '#A1A1AA', fontSize: '14px', margin: '4px 0 0 0' }}>Manage global product SKUs, pricing structures in Rupees (₹), barcodes, and ABC velocity classifications.</p>
+          <h1 className="page-title">Product Master Catalog</h1>
+          <p className="subtext-muted" style={{ marginTop: '4px' }}>Manage global product SKUs, pricing structures in Rupees (₹), barcodes, and ABC velocity classifications.</p>
         </div>
         <button
           onClick={() => setIsModalOpen(true)}
-          style={{ backgroundColor: '#6366F1', color: '#FFFFFF', padding: '10px 18px', borderRadius: '8px', border: 'none', fontWeight: 600, cursor: 'pointer' }}
+          className="btn-primary"
         >
-          + Add New SKU
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Add New SKU
         </button>
       </div>
 
       {/* Filter Bar */}
       <div style={{ display: 'flex', gap: '16px', marginBottom: '24px' }}>
-        <input
-          type="text"
-          placeholder="Search by SKU, Product Name, Barcode..."
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          style={{ flex: 1, backgroundColor: '#18181B', border: '1px solid #27272A', color: '#FFF', padding: '10px 16px', borderRadius: '8px', fontSize: '14px' }}
-        />
+        <div style={{ flex: 1, position: 'relative' }}>
+          <input
+            type="text"
+            placeholder="Search by SKU, Product Name, Barcode..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="input-dark"
+            style={{ width: '100%', paddingLeft: '38px' }}
+          />
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#71717A" strokeWidth="2" style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)' }}><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        </div>
         <select
           value={selectedAbcClass}
           onChange={(e) => setSelectedAbcClass(e.target.value)}
-          style={{ backgroundColor: '#18181B', border: '1px solid #27272A', color: '#FFF', padding: '10px 16px', borderRadius: '8px', fontSize: '14px' }}
+          className="input-dark"
+          style={{ width: '220px', cursor: 'pointer' }}
         >
           <option value="">All ABC Classes</option>
           <option value="A">Class A (High Value)</option>
@@ -134,55 +140,94 @@ export const ProductsPage: React.FC = () => {
         </select>
       </div>
 
-      {/* Data Table */}
-      <div style={{ backgroundColor: '#18181B', borderRadius: '12px', border: '1px solid #27272A', overflow: 'hidden' }}>
+      {/* Data Table Container */}
+      <div className="panel-bordered" style={{ overflow: 'hidden', padding: 0 }}>
         <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
           <thead>
-            <tr style={{ backgroundColor: '#121215', borderBottom: '1px solid #27272A', color: '#A1A1AA', fontSize: '13px' }}>
-              <th style={{ padding: '14px 16px' }}>SKU Code</th>
-              <th style={{ padding: '14px 16px' }}>Product Details</th>
-              <th style={{ padding: '14px 16px' }}>Barcode</th>
-              <th style={{ padding: '14px 16px' }}>Unit Cost (₹)</th>
-              <th style={{ padding: '14px 16px' }}>Selling Price (₹)</th>
-              <th style={{ padding: '14px 16px' }}>ABC Class</th>
-              <th style={{ padding: '14px 16px' }}>Status</th>
-              <th style={{ padding: '14px 16px' }}>Actions</th>
+            <tr>
+              <th className="table-header">SKU Code</th>
+              <th className="table-header">Product Details</th>
+              <th className="table-header">Barcode</th>
+              <th className="table-header">Unit Cost (₹)</th>
+              <th className="table-header">Selling Price (₹)</th>
+              <th className="table-header">ABC Class</th>
+              <th className="table-header">Status</th>
+              <th className="table-header">Actions</th>
             </tr>
           </thead>
           <tbody>
-            {products.map((p) => (
-              <tr key={p._id} style={{ borderBottom: '1px solid #27272A', fontSize: '14px' }}>
-                <td style={{ padding: '14px 16px', fontFamily: 'monospace', fontWeight: 600, color: '#6366F1' }}>{p.sku}</td>
-                <td style={{ padding: '14px 16px' }}>
-                  <div style={{ fontWeight: 600, color: '#FFF' }}>{p.name}</div>
-                </td>
-                <td style={{ padding: '14px 16px', fontFamily: 'monospace', color: '#A1A1AA' }}>{p.barcode || '890123456'}</td>
-                <td style={{ padding: '14px 16px' }}>₹{p.pricing?.unitCost?.toLocaleString('en-IN')}</td>
-                <td style={{ padding: '14px 16px', fontWeight: 700, color: '#10B981' }}>₹{p.pricing?.sellingPrice?.toLocaleString('en-IN')}</td>
-                <td style={{ padding: '14px 16px' }}>
-                  <span style={{ backgroundColor: 'rgba(99, 102, 241, 0.15)', color: '#6366F1', padding: '2px 8px', borderRadius: '4px', fontWeight: 700, fontSize: '12px' }}>
-                    Class {p.abcClass}
-                  </span>
-                </td>
-                <td style={{ padding: '14px 16px' }}>
-                  <span style={{ backgroundColor: 'rgba(16, 185, 129, 0.15)', color: '#10B981', padding: '4px 10px', borderRadius: '12px', fontSize: '12px', fontWeight: 600 }}>
-                    {p.status}
-                  </span>
-                </td>
-                <td style={{ padding: '14px 16px' }}>
-                  <button
-                    onClick={() => handleDeleteProduct(p._id)}
-                    style={{ backgroundColor: 'rgba(244, 63, 94, 0.15)', color: '#F43F5E', border: '1px solid #F43F5E', padding: '6px 12px', borderRadius: '6px', cursor: 'pointer', fontSize: '12px', fontWeight: 600 }}
-                  >
-                    🗑️ Delete
-                  </button>
-                </td>
-              </tr>
-            ))}
-            {products.length === 0 && (
+            {loading ? (
+              [1, 2, 3, 4].map((i) => (
+                <tr key={i} className="table-row">
+                  <td className="table-cell"><div className="skeleton-box" style={{ width: '80px', height: '16px' }} /></td>
+                  <td className="table-cell"><div className="skeleton-box" style={{ width: '160px', height: '16px' }} /></td>
+                  <td className="table-cell"><div className="skeleton-box" style={{ width: '90px', height: '16px' }} /></td>
+                  <td className="table-cell"><div className="skeleton-box" style={{ width: '60px', height: '16px' }} /></td>
+                  <td className="table-cell"><div className="skeleton-box" style={{ width: '60px', height: '16px' }} /></td>
+                  <td className="table-cell"><div className="skeleton-box" style={{ width: '50px', height: '16px' }} /></td>
+                  <td className="table-cell"><div className="skeleton-box" style={{ width: '70px', height: '16px' }} /></td>
+                  <td className="table-cell"><div className="skeleton-box" style={{ width: '60px', height: '24px' }} /></td>
+                </tr>
+              ))
+            ) : (
+              products.map((p) => {
+                const getStatusBadgeClass = (status: string) => {
+                  if (status === 'ACTIVE') return 'badge-success';
+                  if (status === 'DRAFT') return 'badge-warning';
+                  return 'badge-danger';
+                };
+
+                return (
+                  <tr key={p._id} className="table-row">
+                    <td className="table-cell" style={{ fontWeight: 500, color: 'var(--text-primary)' }}>{p.sku}</td>
+                    <td className="table-cell">
+                      <div style={{ fontWeight: 500, color: 'var(--text-primary)' }}>{p.name}</div>
+                    </td>
+                    <td className="table-cell" style={{ color: 'var(--text-muted)' }}>{p.barcode || '890123456'}</td>
+                    <td className="table-cell">₹{p.pricing?.unitCost?.toLocaleString('en-IN')}</td>
+                    <td className="table-cell" style={{ fontWeight: 500, color: 'var(--accent-cool)' }}>₹{p.pricing?.sellingPrice?.toLocaleString('en-IN')}</td>
+                    <td className="table-cell">
+                      <span className="badge badge-neutral">
+                        Class {p.abcClass}
+                      </span>
+                    </td>
+                    <td className="table-cell">
+                      <span className={`badge ${getStatusBadgeClass(p.status)}`}>
+                        {p.status}
+                      </span>
+                    </td>
+                    <td className="table-cell">
+                      <button
+                        onClick={() => handleDeleteProduct(p._id)}
+                        className="btn-danger"
+                      >
+                        Delete
+                      </button>
+                    </td>
+                  </tr>
+                );
+              })
+            )}
+
+            {!loading && products.length === 0 && (
               <tr>
-                <td colSpan={8} style={{ padding: '24px', textAlign: 'center', color: '#A1A1AA' }}>
-                  No products found. Click "+ Add New SKU" to create your first product.
+                <td colSpan={8}>
+                  <div className="empty-state-box" style={{ margin: '24px', border: 'none' }}>
+                    <div className="empty-state-icon">
+                      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>
+                    </div>
+                    <div style={{ fontWeight: 500, fontSize: '15px', color: 'var(--text-primary)' }}>No Products Found</div>
+                    <div className="subtext-muted" style={{ marginTop: '4px', maxWidth: '320px' }}>
+                      {searchQuery || selectedAbcClass ? 'No product SKUs match your filter parameters.' : 'Your master catalog is empty. Add your first SKU to get started.'}
+                    </div>
+                    <button
+                      onClick={() => setIsModalOpen(true)}
+                      className="btn-secondary"
+                      style={{ marginTop: '16px' }}
+                    >
+                      + Add New SKU
+                    </button>
+                  </div>
                 </td>
               </tr>
             )}
@@ -192,31 +237,34 @@ export const ProductsPage: React.FC = () => {
 
       {/* Add Product Modal */}
       {isModalOpen && (
-        <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.8)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 100 }}>
-          <div style={{ backgroundColor: '#18181B', border: '1px solid #27272A', padding: '24px', borderRadius: '16px', width: '440px' }}>
-            <h3 style={{ margin: '0 0 16px 0', fontSize: '18px' }}>Create New SKU Master</h3>
-            <form onSubmit={handleCreateProduct} style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+        <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(13, 17, 23, 0.8)', backdropFilter: 'blur(4px)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 100 }}>
+          <div className="panel-bordered" style={{ padding: '28px', borderRadius: '12px', width: '460px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+              <h3 style={{ margin: 0, fontSize: '17px', fontWeight: 600 }}>Create New SKU Master</h3>
+              <button onClick={() => setIsModalOpen(false)} style={{ background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer', fontSize: '18px' }}>✕</button>
+            </div>
+            <form onSubmit={handleCreateProduct} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
               <div>
-                <label style={{ fontSize: '12px', color: '#A1A1AA' }}>Product Name</label>
-                <input required value={name} onChange={(e) => setName(e.target.value)} placeholder="e.g. Microcontroller Core Processor" style={{ width: '100%', padding: '8px', backgroundColor: '#09090B', border: '1px solid #27272A', color: '#FFF', borderRadius: '6px' }} />
+                <label className="kpi-label" style={{ marginBottom: '6px', display: 'block' }}>Product Name</label>
+                <input required value={name} onChange={(e) => setName(e.target.value)} placeholder="e.g. Microcontroller Core Processor" className="input-dark" style={{ width: '100%' }} />
               </div>
               <div>
-                <label style={{ fontSize: '12px', color: '#A1A1AA' }}>SKU Code (Optional)</label>
-                <input value={sku} onChange={(e) => setSku(e.target.value)} placeholder="Auto-generated if left empty" style={{ width: '100%', padding: '8px', backgroundColor: '#09090B', border: '1px solid #27272A', color: '#FFF', borderRadius: '6px' }} />
+                <label className="kpi-label" style={{ marginBottom: '6px', display: 'block' }}>SKU Code (Optional)</label>
+                <input value={sku} onChange={(e) => setSku(e.target.value)} placeholder="Auto-generated if left empty" className="input-dark" style={{ width: '100%' }} />
               </div>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px' }}>
                 <div>
-                  <label style={{ fontSize: '12px', color: '#A1A1AA' }}>Unit Cost (₹)</label>
-                  <input type="number" step="1" value={unitCost} onChange={(e) => setUnitCost(Number(e.target.value))} style={{ width: '100%', padding: '8px', backgroundColor: '#09090B', border: '1px solid #27272A', color: '#FFF', borderRadius: '6px' }} />
+                  <label className="kpi-label" style={{ marginBottom: '6px', display: 'block' }}>Unit Cost (₹)</label>
+                  <input type="number" step="1" value={unitCost} onChange={(e) => setUnitCost(Number(e.target.value))} className="input-dark" style={{ width: '100%' }} />
                 </div>
                 <div>
-                  <label style={{ fontSize: '12px', color: '#A1A1AA' }}>Selling Price (₹)</label>
-                  <input type="number" step="1" value={sellingPrice} onChange={(e) => setSellingPrice(Number(e.target.value))} style={{ width: '100%', padding: '8px', backgroundColor: '#09090B', border: '1px solid #27272A', color: '#FFF', borderRadius: '6px' }} />
+                  <label className="kpi-label" style={{ marginBottom: '6px', display: 'block' }}>Selling Price (₹)</label>
+                  <input type="number" step="1" value={sellingPrice} onChange={(e) => setSellingPrice(Number(e.target.value))} className="input-dark" style={{ width: '100%' }} />
                 </div>
               </div>
-              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px', marginTop: '16px' }}>
-                <button type="button" onClick={() => setIsModalOpen(false)} style={{ padding: '8px 16px', backgroundColor: '#27272A', color: '#FFF', border: 'none', borderRadius: '6px', cursor: 'pointer' }}>Cancel</button>
-                <button type="submit" disabled={submitting} style={{ padding: '8px 16px', backgroundColor: submitting ? '#4F46E5' : '#6366F1', color: '#FFF', border: 'none', borderRadius: '6px', cursor: submitting ? 'not-allowed' : 'pointer', fontWeight: 600 }}>
+              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '12px', marginTop: '8px' }}>
+                <button type="button" onClick={() => setIsModalOpen(false)} className="btn-secondary">Cancel</button>
+                <button type="submit" disabled={submitting} className="btn-primary">
                   {submitting ? 'Saving...' : 'Save Product SKU'}
                 </button>
               </div>
