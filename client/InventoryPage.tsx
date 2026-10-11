@@ -410,13 +410,19 @@ export const InventoryPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-full w-full max-w-full p-4 sm:p-6 space-y-5 text-white font-['Outfit',sans-serif] select-none pb-14">
+    <div className="min-h-full w-full max-w-full p-4 sm:p-6 space-y-6 text-white font-['Outfit',sans-serif] select-none pb-14">
       {/* 1. TOP HEADER & PRIMARY ACTION BUTTONS */}
       <section className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <div className="flex items-center gap-3">
-            <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-white">Inventory Catalog</h1>
-            <span className="px-2.5 py-0.5 text-xs font-semibold rounded-full bg-[#D5F737]/15 text-[#D5F737] border border-[#D5F737]/30">
+            <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-white">
+              <span className="bg-gradient-to-r from-[#D5F737] to-[#7BE0A5] bg-clip-text text-transparent">
+                Inventory
+              </span>{' '}
+              Catalog
+            </h1>
+            <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 text-xs font-semibold rounded-full bg-[#D5F737]/15 text-[#D5F737] border border-[#D5F737]/30">
+              <span className="w-1.5 h-1.5 rounded-full bg-[#D5F737] animate-pulse" />
               {products.length} Products
             </span>
           </div>
@@ -429,7 +435,7 @@ export const InventoryPage: React.FC = () => {
         <div className="flex flex-wrap items-center gap-2.5">
           <button
             onClick={() => fetchProducts(true)}
-            className="p-2.5 rounded-full border border-white/10 bg-white/5 hover:bg-white/10 text-[#9A9A9A] hover:text-white transition-all active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D5F737]"
+            className="btn-icon-round p-2.5 rounded-full border border-white/10 bg-white/5 hover:bg-white/10 text-[#9A9A9A] hover:text-white transition-all active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D5F737]"
             title="Refresh inventory"
           >
             <RefreshCw
@@ -441,7 +447,7 @@ export const InventoryPage: React.FC = () => {
 
           <button
             onClick={() => openStockInModal()}
-            className="px-4 py-2 rounded-full text-xs font-semibold flex items-center gap-1.5 bg-emerald-500/15 hover:bg-emerald-500/25 border border-emerald-500/30 text-emerald-400 transition-all duration-200 hover:scale-[1.02] active:scale-[0.97] hover:shadow-[0_0_15px_rgba(16,185,129,0.25)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400"
+            className="btn-ghost-lime px-4 py-2 rounded-full text-xs font-semibold flex items-center gap-1.5 bg-emerald-500/15 hover:bg-emerald-500/25 border border-emerald-500/30 text-emerald-400 transition-all duration-200 hover:scale-[1.02] active:scale-[0.97] hover:shadow-[0_0_15px_rgba(16,185,129,0.25)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400"
           >
             <ArrowDownToLine className="w-3.5 h-3.5" />
             <span>Stock In</span>
@@ -449,7 +455,7 @@ export const InventoryPage: React.FC = () => {
 
           <button
             onClick={() => openStockOutModal()}
-            className="px-4 py-2 rounded-full text-xs font-semibold flex items-center gap-1.5 bg-amber-500/15 hover:bg-amber-500/25 border border-amber-500/30 text-amber-400 transition-all duration-200 hover:scale-[1.02] active:scale-[0.97] hover:shadow-[0_0_15px_rgba(245,165,36,0.25)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400"
+            className="btn-ghost-lime px-4 py-2 rounded-full text-xs font-semibold flex items-center gap-1.5 bg-amber-500/15 hover:bg-amber-500/25 border border-amber-500/30 text-amber-400 transition-all duration-200 hover:scale-[1.02] active:scale-[0.97] hover:shadow-[0_0_15px_rgba(245,165,36,0.25)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400"
           >
             <ArrowUpFromLine className="w-3.5 h-3.5" />
             <span>Stock Out</span>
@@ -457,10 +463,8 @@ export const InventoryPage: React.FC = () => {
 
           <button
             onClick={openAddModal}
-            className="relative overflow-hidden group px-5 py-2 rounded-full text-xs font-bold flex items-center gap-1.5 bg-[#D5F737] text-black shadow-md shadow-[#D5F737]/20 transition-all duration-200 hover:scale-[1.03] active:scale-[0.97] hover:shadow-[0_0_20px_rgba(213,247,55,0.45)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D5F737] focus-visible:ring-offset-2 focus-visible:ring-offset-[#181818]"
+            className="btn-lime-pill px-5 py-2 rounded-full text-xs font-bold flex items-center gap-1.5 bg-[#D5F737] text-black shadow-md shadow-[#D5F737]/20 transition-all duration-200 hover:scale-[1.03] active:scale-[0.97] hover:shadow-[0_0_24px_rgba(213,247,55,0.45)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D5F737] focus-visible:ring-offset-2 focus-visible:ring-offset-[#181818]"
           >
-            {/* Light shine sweep on hover */}
-            <span className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-700 bg-gradient-to-r from-transparent via-white/40 to-transparent pointer-events-none" />
             <Plus className="w-4 h-4 stroke-[2.5]" />
             <span>Add Product</span>
           </button>
@@ -639,9 +643,9 @@ export const InventoryPage: React.FC = () => {
       </section>
 
       {/* 4. TABLE CARD: WRAPPED IN ONE GLASS CARD (TABLE GROWS WITH PAGE) */}
-      <div className="rounded-[24px] border border-white/10 bg-[rgba(40,40,40,0.45)] backdrop-blur-[20px] saturate-[90%] shadow-2xl overflow-hidden">
+      <div className="rounded-[24px] border border-white/10 bg-[rgba(40,40,40,0.45)] backdrop-blur-[20px] saturate-[90%] shadow-2xl overflow-hidden no-card-spotlight">
         {/* DESKTOP & TABLET TABLE (hidden on <640px) */}
-        <div className="hidden sm:block overflow-x-auto">
+        <div data-lenis-prevent className="hidden sm:block overflow-x-auto">
           <table className="w-full text-left border-collapse">
             {/* Sticky Table Header */}
             <thead className="sticky top-0 z-20 bg-[#232323]/95 backdrop-blur-[16px] border-b border-white/10 text-[11px] font-semibold uppercase tracking-wider text-[#9A9A9A]">

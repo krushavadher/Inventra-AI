@@ -303,15 +303,23 @@ export const DashboardPage: React.FC = () => {
   };
 
   return (
-    <div className="h-full w-full max-w-full overflow-y-auto overflow-x-hidden p-3.5 sm:p-4 md:p-5 space-y-4 text-white font-['Outfit',sans-serif]">
+    <div className="min-h-full w-full max-w-full p-4 sm:p-6 space-y-6 text-white font-['Outfit',sans-serif] pb-14">
       {/* 1. HERO STRIP (COMPACT) */}
-      <section className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 py-1 sm:py-1.5">
+      <section className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 py-1">
         <div>
-          <h1 className="text-xl sm:text-2xl lg:text-3xl font-extrabold tracking-tight text-white">
-            {greeting},{' '}
-            <span className="text-[#D5F737]">{firstName}</span>
-          </h1>
-          <p className="text-xs text-[#9A9A9A] mt-0.5 font-medium">
+          <div className="flex items-center gap-3">
+            <h1 className="text-xl sm:text-2xl lg:text-3xl font-extrabold tracking-tight text-white">
+              {greeting},{' '}
+              <span className="bg-gradient-to-r from-[#D5F737] to-[#7BE0A5] bg-clip-text text-transparent">
+                {firstName}
+              </span>
+            </h1>
+            <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 text-xs font-semibold rounded-full bg-[#D5F737]/15 text-[#D5F737] border border-[#D5F737]/30">
+              <span className="w-1.5 h-1.5 rounded-full bg-[#D5F737] animate-pulse" />
+              Live Dashboard
+            </span>
+          </div>
+          <p className="text-xs text-[#9A9A9A] mt-1 font-medium">
             {todayFormatted} • Welcome to your inventory overview
           </p>
         </div>
@@ -319,7 +327,7 @@ export const DashboardPage: React.FC = () => {
         {/* Lime Pill Button "Ask AI" */}
         <Link
           to="/assistant"
-          className="inline-flex items-center gap-2 self-start sm:self-auto px-5 py-2.5 sm:px-6 sm:py-2.5 rounded-full bg-[#D5F737] text-black font-bold text-sm sm:text-base transition-all duration-200 ease-out shadow-sm shadow-[#D5F737]/25 hover:scale-[1.03] active:scale-[0.98] hover:shadow-[0_0_22px_rgba(213,247,55,0.45)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D5F737] focus-visible:ring-offset-2 focus-visible:ring-offset-[#181818]"
+          className="btn-lime-pill inline-flex items-center gap-2 self-start sm:self-auto px-5 py-2.5 sm:px-6 sm:py-2.5 rounded-full bg-[#D5F737] text-black font-bold text-sm sm:text-base transition-all duration-200 ease-out shadow-sm shadow-[#D5F737]/25 hover:scale-[1.03] active:scale-[0.97] hover:shadow-[0_0_24px_rgba(213,247,55,0.45)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D5F737] focus-visible:ring-offset-2 focus-visible:ring-offset-[#181818]"
         >
           <span>Ask AI</span>
         </Link>

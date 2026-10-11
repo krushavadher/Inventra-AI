@@ -416,3 +416,156 @@ body {
     }
   }
 }
+
+/* ============================================================
+   SHARED APP STYLING UTILITIES
+   ============================================================ */
+
+/* 1. Cards: Border color shift (35%), soft glow (10%), inner spotlight */
+.app-card {
+  position: relative;
+  background-color: rgba(40, 40, 40, 0.45);
+  backdrop-filter: blur(20px) saturate(90%);
+  -webkit-backdrop-filter: blur(20px) saturate(90%);
+  border: 1px solid rgba(255, 255, 255, 0.10);
+  border-radius: 24px;
+  transition: border-color 250ms ease, box-shadow 250ms ease;
+  overflow: hidden;
+}
+
+.app-card:hover {
+  border-color: rgba(213, 247, 55, 0.35);
+  box-shadow: 0 0 24px rgba(213, 247, 55, 0.10);
+}
+
+.app-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: radial-gradient(
+    220px circle at var(--card-mouse-x, -500px) var(--card-mouse-y, -500px),
+    rgba(213, 247, 55, 0.10),
+    transparent 75%
+  );
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 250ms ease;
+  z-index: 1;
+}
+
+.app-card:hover::before {
+  opacity: 1;
+}
+
+/* Exclude spotlight on tables and chat message areas */
+.no-card-spotlight::before {
+  display: none !important;
+}
+
+/* 2. Buttons: Lime pill shine sweep on hover, 0.97 press scale, hover glow */
+.btn-lime-pill {
+  position: relative;
+  overflow: hidden;
+  border-radius: 9999px;
+  background-color: #D5F737;
+  color: #000000;
+  font-weight: 700;
+  transition: transform 180ms ease, box-shadow 180ms ease, background-color 180ms ease;
+  box-shadow: 0 0 16px rgba(213, 247, 55, 0.20);
+}
+
+.btn-lime-pill:hover {
+  box-shadow: 0 0 28px rgba(213, 247, 55, 0.48);
+}
+
+.btn-lime-pill:active {
+  transform: scale(0.97);
+}
+
+.btn-lime-pill::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -130%;
+  width: 60%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.55),
+    transparent
+  );
+  transform: skewX(-20deg);
+  transition: left 600ms cubic-bezier(0.4, 0, 0.2, 1);
+  pointer-events: none;
+}
+
+.btn-lime-pill:hover::after {
+  left: 140%;
+}
+
+/* Dark and ghost buttons: Lime border shift on hover */
+.btn-dark-lime,
+.btn-ghost-lime {
+  transition: border-color 200ms ease, box-shadow 200ms ease, transform 180ms ease;
+}
+
+.btn-dark-lime:hover,
+.btn-ghost-lime:hover {
+  border-color: rgba(213, 247, 55, 0.45) !important;
+  box-shadow: 0 0 16px rgba(213, 247, 55, 0.15);
+}
+
+/* Round icon buttons: Subtle scale to 1.06 on hover */
+.btn-icon-round {
+  transition: transform 180ms ease, border-color 180ms ease;
+}
+
+.btn-icon-round:hover {
+  transform: scale(1.06);
+}
+
+/* Center-grow underline for text links */
+.link-center-underline {
+  position: relative;
+  display: inline-block;
+}
+
+.link-center-underline::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 50%;
+  width: 0;
+  height: 1.5px;
+  background-color: #D5F737;
+  transition: width 200ms ease, left 200ms ease;
+}
+
+.link-center-underline:hover::after {
+  width: 100%;
+  left: 0;
+}
+
+/* Visible 2px lime focus rings on interactive elements */
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px #D5F737 !important;
+}
+
+/* Reduced motion overrides */
+@media (prefers-reduced-motion: reduce) {
+  .btn-lime-pill::after {
+    display: none;
+  }
+  .app-card,
+  .btn-lime-pill,
+  .btn-icon-round {
+    transition: none !important;
+  }
+}

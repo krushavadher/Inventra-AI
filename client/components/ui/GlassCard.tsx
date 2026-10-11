@@ -7,12 +7,22 @@ export interface GlassCardProps extends React.HTMLAttributes<HTMLDivElement> {
 }
 
 export const GlassCard = React.forwardRef<HTMLDivElement, GlassCardProps>(
-  ({ children, className, style, ...props }, ref) => {
+  ({ children, className, style, onMouseMove, ...props }, ref) => {
+    const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+      const rect = e.currentTarget.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+      e.currentTarget.style.setProperty('--card-mouse-x', `${x.toFixed(1)}px`);
+      e.currentTarget.style.setProperty('--card-mouse-y', `${y.toFixed(1)}px`);
+      if (onMouseMove) onMouseMove(e);
+    };
+
     return (
       <div
         ref={ref}
+        onMouseMove={handleMouseMove}
         className={cn(
-          'transition-all duration-300 text-white glass',
+          'app-card transition-all duration-300 text-white',
           className
         )}
         style={{

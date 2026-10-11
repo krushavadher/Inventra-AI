@@ -126,14 +126,21 @@ export const AlertsPage: React.FC = () => {
   ];
 
   return (
-    <div className="h-full w-full max-w-full overflow-y-auto overflow-x-hidden p-4 sm:p-6 space-y-5 text-white font-['Outfit',sans-serif] select-none pb-14">
+    <div className="min-h-full w-full max-w-full p-4 sm:p-6 space-y-6 text-white font-['Outfit',sans-serif] select-none pb-14">
       {/* 1. Header Section */}
       <section className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <div className="flex items-center gap-3">
-            <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-white">Stock Alerts & Monitoring</h1>
+            <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-white">
+              Stock{' '}
+              <span className="bg-gradient-to-r from-[#D5F737] to-[#7BE0A5] bg-clip-text text-transparent">
+                Alerts
+              </span>{' '}
+              & Monitoring
+            </h1>
             {alerts.length > 0 && (
-              <span className="px-2.5 py-0.5 text-xs font-semibold rounded-full bg-rose-500/15 text-rose-400 border border-rose-500/30">
+              <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 text-xs font-semibold rounded-full bg-rose-500/15 text-rose-400 border border-rose-500/30">
+                <span className="w-1.5 h-1.5 rounded-full bg-rose-400 animate-pulse" />
                 {alerts.length} Action Items
               </span>
             )}
@@ -147,7 +154,7 @@ export const AlertsPage: React.FC = () => {
         <div className="flex items-center gap-2.5">
           <button
             onClick={() => fetchAlerts(true)}
-            className="px-4 py-2 rounded-full border border-white/10 bg-white/5 hover:bg-white/10 text-zinc-300 hover:text-white transition-all active:scale-95 flex items-center gap-2 text-xs font-semibold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D5F737]"
+            className="btn-ghost-lime px-4 py-2 rounded-full border border-white/10 bg-white/5 hover:bg-white/10 text-zinc-300 hover:text-white transition-all active:scale-95 flex items-center gap-2 text-xs font-semibold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D5F737]"
             title="Refresh alerts"
           >
             <RefreshCw

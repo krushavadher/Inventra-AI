@@ -76,7 +76,7 @@ export const ProfilePage: React.FC = () => {
     : 'Recent Member';
 
   return (
-    <div className="h-full max-h-full w-full overflow-hidden flex items-center justify-center p-4 sm:p-6 bg-[#181818]">
+    <div className="min-h-full w-full flex items-center justify-center p-4 sm:p-6">
       <GlassCard className="w-full max-w-2xl p-6 sm:p-8 shadow-2xl overflow-hidden">
         {/* Profile Header */}
         <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4 pb-6 border-b border-white/10">
@@ -85,8 +85,14 @@ export const ProfilePage: React.FC = () => {
           </div>
           <div className="flex-1 text-center sm:text-left">
             <div className="flex flex-col sm:flex-row sm:items-center gap-2">
-              <h2 className="text-xl sm:text-2xl font-bold text-white">{user?.name}</h2>
-              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-[#D5F737]/15 text-[#D5F737] border border-[#D5F737]/30 capitalize self-center sm:self-auto">
+              <h2 className="text-xl sm:text-2xl font-bold text-white">
+                <span className="bg-gradient-to-r from-[#D5F737] to-[#7BE0A5] bg-clip-text text-transparent">
+                  Profile
+                </span>{' '}
+                — {user?.name}
+              </h2>
+              <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-[#D5F737]/15 text-[#D5F737] border border-[#D5F737]/30 capitalize self-center sm:self-auto">
+                <span className="w-1.5 h-1.5 rounded-full bg-[#D5F737] animate-pulse" />
                 {user?.role || 'admin'}
               </span>
             </div>
