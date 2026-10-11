@@ -7,7 +7,7 @@
       "supplier": "Microchip Technology",
       "unitCost": 160,
       "sellingPrice": 260,
-      "stock": 400,
+      "stock": 395,
       "minStock": 60
     },
     {
@@ -232,6 +232,20 @@
     }
   ],
   "movements": [
+    {
+      "_id": "mov_1791714342909",
+      "movementType": "STOCK_OUT",
+      "productName": "ATmega328P-PU 8-bit Microcontroller",
+      "sku": "MCU-ATM328P-PU",
+      "category": "Semiconductors",
+      "quantity": 5,
+      "balanceBefore": 400,
+      "balanceAfter": 395,
+      "referenceDocType": "SO",
+      "referenceDocId": "SO-42909",
+      "reason": "Outbound dispatch / sales order",
+      "createdAt": "2026-10-11T10:25:42.909Z"
+    },
     {
       "_id": "mov_1791700986451",
       "movementType": "STOCK_OUT",

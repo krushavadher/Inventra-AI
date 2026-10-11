@@ -122,7 +122,7 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
       {/* Main Workspace */}
       <div className="flex-1 h-screen max-h-screen flex flex-col overflow-hidden bg-[#181818]">
         {/* Top Bar */}
-        <header className="h-16 bg-[#232323] border-b border-white/10 flex items-center justify-between px-6 flex-shrink-0 z-10">
+        <header className={`h-16 bg-[#232323] ${location.pathname.startsWith('/dashboard') ? '' : 'border-b border-white/10'} flex items-center justify-between px-6 flex-shrink-0 z-10`}>
           {/* Breadcrumb */}
           <div className="text-xs sm:text-sm text-[#9A9A9A] flex items-center gap-2">
             <span>Inventra AI</span>
