@@ -33,7 +33,7 @@ const SUGGESTION_CHIPS = [
 export const AICopilotPage: React.FC = () => {
   const location = useLocation();
   const lastAutoSentQuestion = useRef<string | null>(null);
-  const messagesEndRef = useRef<HTMLDivElement>(null);
+  const messageListRef = useRef<HTMLDivElement>(null);
 
   const [messages, setMessages] = useState<ChatMessage[]>([
     {
@@ -47,9 +47,14 @@ export const AICopilotPage: React.FC = () => {
   const [inputPrompt, setInputPrompt] = useState<string>('');
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
-  // Auto-scroll to bottom of message list
+  // Auto-scroll to bottom of message list without scrolling parent layout
   const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    if (messageListRef.current) {
+      messageListRef.current.scrollTo({
+        top: messageListRef.current.scrollHeight,
+        behavior: 'smooth',
+      });
+    }
   };
 
   useEffect(() => {
@@ -110,25 +115,6 @@ export const AICopilotPage: React.FC = () => {
 
   return (
     <div className="h-full max-h-full w-full flex flex-col overflow-hidden p-6 text-white select-none">
-      {/* Header */}
-      <div className="flex-shrink-0 flex items-center justify-between gap-4 mb-4">
-        <div>
-          <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-[#D5F737] to-[#2BB4A0] flex items-center justify-center text-black font-black text-sm shadow-lg shadow-[#D5F737]/20">
-              <Sparkles className="w-4 h-4 fill-black stroke-black" />
-            </div>
-            <h1 className="text-2xl font-bold tracking-tight text-white">AI Inventory Assistant</h1>
-            <span className="px-2.5 py-0.5 text-[11px] font-semibold rounded-full bg-[#D5F737]/15 text-[#D5F737] border border-[#D5F737]/30 flex items-center gap-1.5">
-              <span className="w-1.5 h-1.5 rounded-full bg-[#D5F737] animate-pulse" />
-              Gemini Flash Online
-            </span>
-          </div>
-          <p className="text-xs text-zinc-400 mt-1">
-            Real-time contextual intelligence on stockouts, reorder recommendations, and supplier velocity.
-          </p>
-        </div>
-      </div>
-
       {/* Main Chat Panel with Border Beam Glow */}
       <div className="relative flex-1 min-h-0 flex flex-col rounded-2xl border border-white/10 bg-white/[0.04] backdrop-blur-xl overflow-hidden shadow-2xl">
         {/* Border Beam Glow */}
@@ -141,7 +127,7 @@ export const AICopilotPage: React.FC = () => {
         />
 
         {/* Message List (Strictly only this scrolls) */}
-        <div className="flex-1 overflow-y-auto p-5 space-y-4 min-h-0">
+        <div ref={messageListRef} className="flex-1 overflow-y-auto p-5 space-y-4 min-h-0">
           {messages.map((m, index) => {
             const isUser = m.sender === 'USER';
             const isLatestAi = !isUser && index === messages.length - 1 && m.isStreaming;
@@ -153,16 +139,12 @@ export const AICopilotPage: React.FC = () => {
                   isUser ? 'ml-auto flex-row-reverse' : 'mr-auto'
                 }`}
               >
-                {/* Avatar */}
-                <div
-                  className={`w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0 mt-0.5 text-xs font-bold ${
-                    isUser
-                      ? 'bg-white/10 border border-white/20 text-white'
-                      : 'bg-gradient-to-br from-[#D5F737] to-[#2BB4A0] text-black shadow-md shadow-[#D5F737]/20'
-                  }`}
-                >
-                  {isUser ? <User className="w-4 h-4" /> : <Bot className="w-4 h-4" />}
-                </div>
+                {/* Avatar (User only; copilot symbol removed beside Inventra AI) */}
+                {isUser && (
+                  <div className="w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0 mt-0.5 text-xs font-bold bg-white/10 border border-white/20 text-white">
+                    <User className="w-4 h-4" />
+                  </div>
+                )}
 
                 {/* Message Bubble */}
                 <div
@@ -199,12 +181,9 @@ export const AICopilotPage: React.FC = () => {
             );
           })}
 
-          {/* Loading Indicator */}
+          {/* Loading Indicator without copilot symbol beside Inventra AI */}
           {isLoading && (
             <div className="flex gap-3 mr-auto max-w-lg animate-in fade-in duration-200">
-              <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-[#D5F737] to-[#2BB4A0] flex items-center justify-center flex-shrink-0 mt-0.5 text-black shadow-md shadow-[#D5F737]/20">
-                <Bot className="w-4 h-4" />
-              </div>
               <div className="rounded-2xl p-4 bg-white/[0.06] border border-white/10 text-xs text-zinc-300 backdrop-blur-md flex items-center gap-3">
                 <div className="flex items-center gap-1.5">
                   <span className="w-2 h-2 rounded-full bg-[#D5F737] animate-bounce [animation-delay:-0.3s]" />
@@ -215,8 +194,6 @@ export const AICopilotPage: React.FC = () => {
               </div>
             </div>
           )}
-
-          <div ref={messagesEndRef} />
         </div>
 
         {/* Suggestion Chips & Fixed Bottom Input Box */}
