@@ -127,7 +127,7 @@
       "supplier": "Texas Instruments India",
       "unitCost": 65,
       "sellingPrice": 125,
-      "stock": 540,
+      "stock": 535,
       "minStock": 70
     },
     {
@@ -232,6 +232,20 @@
     }
   ],
   "movements": [
+    {
+      "_id": "mov_1791715542054",
+      "movementType": "STOCK_OUT",
+      "productName": "LM2596 Step-Down DC-DC Buck Converter",
+      "sku": "POW-LM2596-BUCK",
+      "category": "Power & Batteries",
+      "quantity": 5,
+      "balanceBefore": 540,
+      "balanceAfter": 535,
+      "referenceDocType": "SO",
+      "referenceDocId": "SO-42054",
+      "reason": "Outbound dispatch / sales order",
+      "createdAt": "2026-10-11T10:45:42.054Z"
+    },
     {
       "_id": "mov_1791714342909",
       "movementType": "STOCK_OUT",
