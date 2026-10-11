@@ -126,7 +126,7 @@ export const AlertsPage: React.FC = () => {
               className="p-2.5 rounded-xl border border-white/10 bg-white/5 hover:bg-white/10 text-zinc-300 hover:text-white transition-all active:scale-95 flex items-center gap-2 text-xs font-semibold"
               title="Refresh alerts"
             >
-              <RefreshCw className={`w-4 h-4 ${isRefreshing ? 'animate-spin text-[#C6F135]' : ''}`} />
+              <RefreshCw className={`w-4 h-4 ${isRefreshing ? 'animate-spin text-[#D5F737]' : ''}`} />
               <span className="hidden sm:inline">Refresh</span>
             </button>
           </div>
@@ -172,7 +172,7 @@ export const AlertsPage: React.FC = () => {
           <GlassCard className="p-4 border border-white/10 bg-white/[0.04] rounded-2xl flex items-center justify-between">
             <div>
               <div className="text-[11px] font-semibold text-zinc-400 uppercase tracking-wider flex items-center gap-1.5">
-                <span className="w-2 h-2 rounded-full bg-[#C6F135]" />
+                <span className="w-2 h-2 rounded-full bg-[#D5F737]" />
                 Total Active Alerts
               </div>
               <div className="text-2xl font-bold font-mono text-white mt-1">
@@ -197,7 +197,7 @@ export const AlertsPage: React.FC = () => {
               placeholder="Search alert by item name, SKU, or category..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="w-full bg-white/5 border border-white/10 rounded-xl pl-9 pr-4 py-2 text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-[#C6F135]/60 transition-colors"
+              className="w-full bg-white/5 border border-white/10 rounded-xl pl-9 pr-4 py-2 text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-[#D5F737]/60 transition-colors"
             />
           </div>
 
@@ -343,7 +343,7 @@ export const AlertsPage: React.FC = () => {
                     <div className="flex sm:flex-col items-center sm:items-end justify-between sm:justify-center gap-2 flex-shrink-0 pt-2 sm:pt-0 border-t sm:border-t-0 border-white/5">
                       <button
                         onClick={() => handleAskAI(item)}
-                        className="px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-2 bg-[#C6F135]/15 hover:bg-[#C6F135]/25 border border-[#C6F135]/40 text-[#C6F135] shadow-sm hover:shadow-[#C6F135]/10 transition-all hover:scale-[1.03] active:scale-[0.98]"
+                        className="px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-2 bg-[#D5F737]/15 hover:bg-[#D5F737]/25 border border-[#D5F737]/40 text-[#D5F737] shadow-sm hover:shadow-[#D5F737]/10 transition-all hover:scale-[1.03] active:scale-[0.98]"
                         title="Analyze alert with Inventra AI Assistant"
                       >
                         <Sparkles className="w-3.5 h-3.5 stroke-[2.5]" />

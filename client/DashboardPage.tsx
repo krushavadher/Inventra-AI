@@ -28,13 +28,13 @@ import { NumberTicker } from '@/components/ui/number-ticker';
 import { BlurFade } from '@/components/ui/blur-fade';
 import api from '@/lib/axios';
 
-// Curated lime and green palette for Donut Chart
+// Curated lime, olive and dim bar palette for Charts
 const LIME_GREEN_PALETTE = [
-  '#C6F135', // Electric Lime
-  '#2BB4A0', // Emerald Teal
-  '#10B981', // Forest Green
+  '#D5F737', // Accent Lime
+  '#5A632B', // Olive
+  '#404040', // Dim bar
   '#84CC16', // Olive Lime
-  '#4ADE80', // Mint Green
+  '#2BB4A0', // Emerald Teal
   '#A3E635', // Apple Lime
 ];
 
@@ -206,12 +206,12 @@ export const DashboardPage: React.FC = () => {
   };
 
   return (
-    <div className="h-full max-h-full w-full overflow-hidden flex flex-col p-3.5 sm:p-4 md:p-5 gap-3 sm:gap-3.5 bg-[#161616] text-white font-['Outfit',sans-serif]">
+    <div className="h-full max-h-full w-full overflow-hidden flex flex-col p-3.5 sm:p-4 md:p-5 gap-3 sm:gap-3.5 bg-[#181818] text-white font-['Outfit',sans-serif]">
       {/* TOP ROW: 4 KPI GLASSCARDS USING NUMBER TICKER */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-3.5 flex-shrink-0">
         {/* KPI 1: Total Products */}
         <BlurFade delay={0.04} inView>
-          <GlassCard className="p-3.5 sm:p-4 border border-white/10 bg-white/[0.06] backdrop-blur-[16px] rounded-[20px] flex items-center justify-between shadow-lg h-full">
+          <GlassCard className="p-3.5 sm:p-4 flex items-center justify-between shadow-lg h-full">
             <div>
               <span className="text-[10px] sm:text-xs text-[#9A9A9A] font-medium uppercase tracking-wider block">
                 Total Products
@@ -219,11 +219,11 @@ export const DashboardPage: React.FC = () => {
               <div className="text-xl sm:text-2xl font-bold text-white tracking-tight mt-1">
                 <NumberTicker value={kpis.totalProducts} className="text-white" />
               </div>
-              <span className="text-[10px] text-[#C6F135] font-medium mt-0.5 flex items-center gap-1">
+              <span className="text-[10px] text-[#D5F737] font-medium mt-0.5 flex items-center gap-1">
                 <CheckCircle2 className="w-3 h-3" /> Catalog Active
               </span>
             </div>
-            <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-[#C6F135]/15 border border-[#C6F135]/25 flex items-center justify-center text-[#C6F135] flex-shrink-0">
+            <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-[#D5F737]/15 border border-[#D5F737]/25 flex items-center justify-center text-[#D5F737] flex-shrink-0">
               <Package className="w-5 h-5" />
             </div>
           </GlassCard>
@@ -304,11 +304,11 @@ export const DashboardPage: React.FC = () => {
                 </div>
                 <div className="flex items-center gap-3 text-[10px] font-medium">
                   <div className="flex items-center gap-1.5">
-                    <span className="w-2.5 h-2.5 rounded-sm bg-[#C6F135]" />
+                    <span className="w-2.5 h-2.5 rounded-sm bg-[#D5F737]" />
                     <span className="text-white">Stock In</span>
                   </div>
                   <div className="flex items-center gap-1.5">
-                    <span className="w-2.5 h-2.5 rounded-sm bg-[#2BB4A0]" />
+                    <span className="w-2.5 h-2.5 rounded-sm bg-[#404040]" />
                     <span className="text-[#9A9A9A]">Stock Out</span>
                   </div>
                 </div>
@@ -333,17 +333,17 @@ export const DashboardPage: React.FC = () => {
                     />
                     <Tooltip
                       contentStyle={{
-                        backgroundColor: '#1E1E1E',
-                        borderColor: 'rgba(255,255,255,0.15)',
+                        backgroundColor: '#232323',
+                        borderColor: 'rgba(255,255,255,0.10)',
                         borderRadius: '12px',
                         fontSize: '11px',
                         color: '#FFFFFF',
                       }}
                       itemStyle={{ color: '#FFFFFF' }}
-                      labelStyle={{ color: '#C6F135', fontWeight: 600 }}
+                      labelStyle={{ color: '#D5F737', fontWeight: 600 }}
                     />
-                    <Bar dataKey="in" name="Stock In" fill="#C6F135" radius={[4, 4, 0, 0]} />
-                    <Bar dataKey="out" name="Stock Out" fill="#2BB4A0" radius={[4, 4, 0, 0]} />
+                    <Bar dataKey="in" name="Stock In" fill="#D5F737" radius={[4, 4, 0, 0]} />
+                    <Bar dataKey="out" name="Stock Out" fill="#404040" radius={[4, 4, 0, 0]} />
                   </BarChart>
                 </ResponsiveContainer>
               </div>
@@ -381,15 +381,15 @@ export const DashboardPage: React.FC = () => {
                           <Cell
                             key={`cell-${index}`}
                             fill={LIME_GREEN_PALETTE[index % LIME_GREEN_PALETTE.length]}
-                            stroke="#1E1E1E"
+                            stroke="#232323"
                             strokeWidth={2}
                           />
                         ))}
                       </Pie>
                       <Tooltip
                         contentStyle={{
-                          backgroundColor: '#1E1E1E',
-                          borderColor: 'rgba(255,255,255,0.15)',
+                          backgroundColor: '#232323',
+                          borderColor: 'rgba(255,255,255,0.10)',
                           borderRadius: '12px',
                           fontSize: '11px',
                           color: '#FFFFFF',
@@ -441,7 +441,7 @@ export const DashboardPage: React.FC = () => {
                 <button
                   onClick={fetchDashboardData}
                   disabled={refreshing}
-                  className="text-[#9A9A9A] hover:text-[#C6F135] transition-colors p-1"
+                  className="text-[#9A9A9A] hover:text-[#D5F737] transition-colors p-1"
                   title="Refresh activity logs"
                 >
                   <RefreshCw className={`w-3.5 h-3.5 ${refreshing ? 'animate-spin' : ''}`} />
@@ -461,7 +461,7 @@ export const DashboardPage: React.FC = () => {
                         <div
                           className={`w-6 h-6 rounded-lg flex items-center justify-center text-xs font-bold flex-shrink-0 ${
                             isIn
-                              ? 'bg-[#C6F135]/15 text-[#C6F135] border border-[#C6F135]/30'
+                              ? 'bg-[#D5F737]/15 text-[#D5F737] border border-[#D5F737]/30'
                               : 'bg-cyan-500/15 text-cyan-400 border border-cyan-500/30'
                           }`}
                         >
@@ -474,7 +474,7 @@ export const DashboardPage: React.FC = () => {
                       </div>
 
                       <div className="text-right flex-shrink-0 pl-2">
-                        <div className={`text-xs font-semibold ${isIn ? 'text-[#C6F135]' : 'text-cyan-400'}`}>
+                        <div className={`text-xs font-semibold ${isIn ? 'text-[#D5F737]' : 'text-cyan-400'}`}>
                           {isIn ? `+${act.quantity}` : `-${act.quantity}`} units
                         </div>
                         <div className="text-[9px] text-[#9A9A9A]">{formatTimeAgo(act.createdAt)}</div>
@@ -490,10 +490,10 @@ export const DashboardPage: React.FC = () => {
         {/* Bottom Right: Circular progress "Stock Health %" */}
         <div className="lg:col-span-4 h-full min-h-0">
           <BlurFade delay={0.32} inView className="h-full">
-            <GlassCard className="h-full p-3.5 sm:p-4 border border-white/10 bg-white/[0.06] backdrop-blur-[16px] rounded-[20px] flex flex-col justify-between shadow-lg overflow-hidden">
+            <GlassCard className="h-full p-3.5 sm:p-4 flex flex-col justify-between shadow-lg overflow-hidden">
               <div className="flex items-center justify-between flex-shrink-0">
                 <span className="text-xs font-semibold text-white tracking-tight">Stock Health %</span>
-                <span className="text-[10px] font-semibold text-[#C6F135] bg-[#C6F135]/10 px-2 py-0.5 rounded-full border border-[#C6F135]/25">
+                <span className="text-[10px] font-semibold text-[#D5F737] bg-[#D5F737]/10 px-2 py-0.5 rounded-full border border-[#D5F737]/25">
                   Optimal Target: 85%
                 </span>
               </div>
@@ -521,7 +521,7 @@ export const DashboardPage: React.FC = () => {
                       strokeDasharray={circumference}
                       strokeDashoffset={strokeDashoffset}
                       strokeLinecap="round"
-                      stroke="#C6F135"
+                      stroke="#D5F737"
                       fill="transparent"
                       className="transition-all duration-1000 ease-out"
                     />

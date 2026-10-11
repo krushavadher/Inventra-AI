@@ -31,16 +31,16 @@ export const LandingPage: React.FC = () => {
   const { isAuthenticated } = useAuth();
 
   return (
-    <div className="relative min-h-screen w-full max-w-full overflow-x-hidden bg-[#161616] text-white font-['Outfit',sans-serif] selection:bg-[#C6F135] selection:text-black">
+    <div className="relative min-h-screen w-full max-w-full overflow-x-hidden bg-[#181818] text-white font-['Outfit',sans-serif] selection:bg-[#D5F737] selection:text-black">
       {/* 1. STICKY GLASS NAVBAR */}
-      <nav className="sticky top-0 z-50 w-full backdrop-blur-[18px] bg-[#161616]/80 border-b border-white/10 transition-all">
+      <nav className="sticky top-0 z-50 w-full backdrop-blur-[18px] bg-[#181818]/80 border-b border-white/10 transition-all">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
           {/* Logo */}
           <Link to="/" className="flex items-center gap-2.5 group">
-            <div className="w-8 h-8 rounded-lg bg-[#C6F135] flex items-center justify-center font-bold text-sm text-black shadow-md shadow-[#C6F135]/25 group-hover:scale-105 transition-transform">
+            <div className="w-8 h-8 rounded-lg bg-[#D5F737] flex items-center justify-center font-bold text-sm text-black shadow-md shadow-[#D5F737]/25 group-hover:scale-105 transition-transform">
               I
             </div>
-            <span className="font-bold text-base sm:text-lg tracking-tight text-white group-hover:text-[#C6F135] transition-colors">
+            <span className="font-bold text-base sm:text-lg tracking-tight text-white group-hover:text-[#D5F737] transition-colors">
               Inventra AI
             </span>
           </Link>
@@ -63,9 +63,9 @@ export const LandingPage: React.FC = () => {
             {isAuthenticated ? (
               <Link to="/dashboard">
                 <ShimmerButton
-                  background="#C6F135"
+                  background="#D5F737"
                   shimmerColor="#ffffff"
-                  className="text-black font-semibold text-xs sm:text-sm px-4 sm:px-5 py-2 rounded-xl shadow-md shadow-[#C6F135]/20 hover:brightness-105 transition-all"
+                  className="text-black font-semibold text-xs sm:text-sm px-4 sm:px-5 py-2 rounded-xl shadow-md shadow-[#D5F737]/20 hover:brightness-105 transition-all"
                 >
                   Go to Dashboard
                 </ShimmerButton>
@@ -80,9 +80,9 @@ export const LandingPage: React.FC = () => {
                 </Link>
                 <Link to="/signup">
                   <ShimmerButton
-                    background="#C6F135"
+                    background="#D5F737"
                     shimmerColor="#ffffff"
-                    className="text-black font-semibold text-xs sm:text-sm px-3.5 sm:px-4.5 py-2 rounded-xl shadow-md shadow-[#C6F135]/20 hover:brightness-105 transition-all"
+                    className="text-black font-semibold text-xs sm:text-sm px-3.5 sm:px-4.5 py-2 rounded-xl shadow-md shadow-[#D5F737]/20 hover:brightness-105 transition-all"
                   >
                     Sign Up
                   </ShimmerButton>
@@ -115,9 +115,9 @@ export const LandingPage: React.FC = () => {
               initial={{ opacity: 0, y: 12 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.4 }}
-              className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/[0.06] border border-white/15 backdrop-blur-md text-xs font-medium text-[#C6F135] mb-6 shadow-sm"
+              className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/[0.06] border border-white/15 backdrop-blur-md text-xs font-medium text-[#D5F737] mb-6 shadow-sm"
             >
-              <span className="w-2 h-2 rounded-full bg-[#C6F135] animate-pulse" />
+              <span className="w-2 h-2 rounded-full bg-[#D5F737] animate-pulse" />
               <span>AI-Powered Platform</span>
             </motion.div>
 
@@ -129,7 +129,7 @@ export const LandingPage: React.FC = () => {
               className="text-4xl sm:text-6xl lg:text-7xl font-extrabold tracking-tight text-white leading-[1.08] mb-6"
             >
               Own Your{' '}
-              <AuroraText colors={['#C6F135', '#2BB4A0', '#FFFFFF', '#C6F135']} speed={1.2}>
+              <AuroraText colors={['#D5F737', '#2BB4A0', '#FFFFFF', '#D5F737']} speed={1.2}>
                 Inventory
               </AuroraText>
               .
@@ -154,9 +154,9 @@ export const LandingPage: React.FC = () => {
             >
               <Link to="/signup" className="w-full sm:w-auto">
                 <ShimmerButton
-                  background="#C6F135"
+                  background="#D5F737"
                   shimmerColor="#ffffff"
-                  className="w-full sm:w-auto text-black font-semibold text-sm sm:text-base px-7 py-3.5 rounded-xl shadow-lg shadow-[#C6F135]/25 hover:brightness-105 active:scale-[0.99] transition-all"
+                  className="w-full sm:w-auto text-black font-semibold text-sm sm:text-base px-7 py-3.5 rounded-xl shadow-lg shadow-[#D5F737]/25 hover:brightness-105 active:scale-[0.99] transition-all"
                 >
                   Get Started
                 </ShimmerButton>
@@ -182,7 +182,7 @@ export const LandingPage: React.FC = () => {
                 <GlassCard className="p-4 sm:p-5 border border-white/15 bg-white/[0.08] backdrop-blur-[18px] rounded-[20px] shadow-xl">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-xl bg-[#C6F135]/15 border border-[#C6F135]/30 flex items-center justify-center text-[#C6F135]">
+                      <div className="w-10 h-10 rounded-xl bg-[#D5F737]/15 border border-[#D5F737]/30 flex items-center justify-center text-[#D5F737]">
                         <Package className="w-5 h-5" />
                       </div>
                       <div>
@@ -195,7 +195,7 @@ export const LandingPage: React.FC = () => {
                         </div>
                       </div>
                     </div>
-                    <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold bg-[#C6F135]/15 text-[#C6F135] border border-[#C6F135]/25">
+                    <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold bg-[#D5F737]/15 text-[#D5F737] border border-[#D5F737]/25">
                       In Transit
                     </span>
                   </div>
@@ -269,7 +269,7 @@ export const LandingPage: React.FC = () => {
       <section id="features" className="py-20 lg:py-28 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
         <BlurFade delay={0.08} inView>
           <div className="text-center max-w-2xl mx-auto mb-14">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#C6F135]/10 border border-[#C6F135]/25 text-xs font-semibold text-[#C6F135] mb-3">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#D5F737]/10 border border-[#D5F737]/25 text-xs font-semibold text-[#D5F737] mb-3">
               Core Capabilities
             </div>
             <h2 className="text-3xl sm:text-4xl font-bold text-white tracking-tight">
@@ -285,12 +285,12 @@ export const LandingPage: React.FC = () => {
           {/* Feature 1: Live Inventory */}
           <BlurFade delay={0.12} inView>
             <MagicCard
-              gradientColor="#C6F13518"
+              gradientColor="#D5F73718"
               gradientSize={260}
-              className="h-full rounded-[24px] border border-white/10 bg-[#1E1E1E] p-6 flex flex-col justify-between transition-all hover:border-[#C6F135]/40"
+              className="h-full rounded-[24px] border border-white/10 bg-[#232323] p-6 flex flex-col justify-between transition-all hover:border-[#D5F737]/40"
             >
               <div>
-                <div className="w-12 h-12 rounded-xl bg-[#C6F135]/15 border border-[#C6F135]/30 flex items-center justify-center text-[#C6F135] mb-5">
+                <div className="w-12 h-12 rounded-xl bg-[#D5F737]/15 border border-[#D5F737]/30 flex items-center justify-center text-[#D5F737] mb-5">
                   <Package className="w-6 h-6" />
                 </div>
                 <h3 className="text-lg font-bold text-white mb-2">Live Inventory</h3>
@@ -298,7 +298,7 @@ export const LandingPage: React.FC = () => {
                   Real-time stock tracking with millisecond-level sync across warehouse bins and multiple fulfillment channels.
                 </p>
               </div>
-              <div className="mt-6 pt-4 border-t border-white/10 flex items-center gap-1.5 text-xs text-[#C6F135] font-medium">
+              <div className="mt-6 pt-4 border-t border-white/10 flex items-center gap-1.5 text-xs text-[#D5F737] font-medium">
                 <span>Instant sync active</span>
                 <CheckCircle2 className="w-3.5 h-3.5" />
               </div>
@@ -308,9 +308,9 @@ export const LandingPage: React.FC = () => {
           {/* Feature 2: Low-Stock Alerts */}
           <BlurFade delay={0.16} inView>
             <MagicCard
-              gradientColor="#C6F13518"
+              gradientColor="#D5F73718"
               gradientSize={260}
-              className="h-full rounded-[24px] border border-white/10 bg-[#1E1E1E] p-6 flex flex-col justify-between transition-all hover:border-[#C6F135]/40"
+              className="h-full rounded-[24px] border border-white/10 bg-[#232323] p-6 flex flex-col justify-between transition-all hover:border-[#D5F737]/40"
             >
               <div>
                 <div className="w-12 h-12 rounded-xl bg-amber-500/15 border border-amber-500/30 flex items-center justify-center text-amber-400 mb-5">
@@ -330,9 +330,9 @@ export const LandingPage: React.FC = () => {
           {/* Feature 3: AI Assistant */}
           <BlurFade delay={0.2} inView>
             <MagicCard
-              gradientColor="#C6F13518"
+              gradientColor="#D5F73718"
               gradientSize={260}
-              className="h-full rounded-[24px] border border-white/10 bg-[#1E1E1E] p-6 flex flex-col justify-between transition-all hover:border-[#C6F135]/40"
+              className="h-full rounded-[24px] border border-white/10 bg-[#232323] p-6 flex flex-col justify-between transition-all hover:border-[#D5F737]/40"
             >
               <div>
                 <div className="w-12 h-12 rounded-xl bg-purple-500/15 border border-purple-500/30 flex items-center justify-center text-purple-400 mb-5">
@@ -352,9 +352,9 @@ export const LandingPage: React.FC = () => {
           {/* Feature 4: Smart Dashboard */}
           <BlurFade delay={0.24} inView>
             <MagicCard
-              gradientColor="#C6F13518"
+              gradientColor="#D5F73718"
               gradientSize={260}
-              className="h-full rounded-[24px] border border-white/10 bg-[#1E1E1E] p-6 flex flex-col justify-between transition-all hover:border-[#C6F135]/40"
+              className="h-full rounded-[24px] border border-white/10 bg-[#232323] p-6 flex flex-col justify-between transition-all hover:border-[#D5F737]/40"
             >
               <div>
                 <div className="w-12 h-12 rounded-xl bg-cyan-500/15 border border-cyan-500/30 flex items-center justify-center text-cyan-400 mb-5">
@@ -377,7 +377,7 @@ export const LandingPage: React.FC = () => {
       <section id="how-it-works" className="py-20 lg:py-28 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto border-t border-white/10">
         <BlurFade delay={0.08} inView>
           <div className="text-center max-w-2xl mx-auto mb-14">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#C6F135]/10 border border-[#C6F135]/25 text-xs font-semibold text-[#C6F135] mb-3">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#D5F737]/10 border border-[#D5F737]/25 text-xs font-semibold text-[#D5F737] mb-3">
               Simple Workflow
             </div>
             <h2 className="text-3xl sm:text-4xl font-bold text-white tracking-tight">
@@ -394,7 +394,7 @@ export const LandingPage: React.FC = () => {
           <BlurFade delay={0.12} inView>
             <GlassCard className="p-7 border border-white/15 bg-white/[0.06] backdrop-blur-[18px] rounded-[24px] relative h-full flex flex-col justify-between">
               <div>
-                <div className="w-12 h-12 rounded-2xl bg-[#C6F135] text-black font-extrabold text-base flex items-center justify-center mb-6 shadow-md shadow-[#C6F135]/20">
+                <div className="w-12 h-12 rounded-2xl bg-[#D5F737] text-black font-extrabold text-base flex items-center justify-center mb-6 shadow-md shadow-[#D5F737]/20">
                   01
                 </div>
                 <h3 className="text-xl font-bold text-white mb-2.5">Add products</h3>
@@ -402,7 +402,7 @@ export const LandingPage: React.FC = () => {
                   Import your catalog, specify SKUs, and set minimum safety thresholds to establish your baseline inventory parameters.
                 </p>
               </div>
-              <div className="mt-6 text-xs text-[#C6F135] font-semibold flex items-center gap-1">
+              <div className="mt-6 text-xs text-[#D5F737] font-semibold flex items-center gap-1">
                 <span>Connect catalog</span> <ArrowRight className="w-3.5 h-3.5" />
               </div>
             </GlassCard>
@@ -412,7 +412,7 @@ export const LandingPage: React.FC = () => {
           <BlurFade delay={0.18} inView>
             <GlassCard className="p-7 border border-white/15 bg-white/[0.06] backdrop-blur-[18px] rounded-[24px] relative h-full flex flex-col justify-between">
               <div>
-                <div className="w-12 h-12 rounded-2xl bg-[#C6F135] text-black font-extrabold text-base flex items-center justify-center mb-6 shadow-md shadow-[#C6F135]/20">
+                <div className="w-12 h-12 rounded-2xl bg-[#D5F737] text-black font-extrabold text-base flex items-center justify-center mb-6 shadow-md shadow-[#D5F737]/20">
                   02
                 </div>
                 <h3 className="text-xl font-bold text-white mb-2.5">Track stock</h3>
@@ -420,7 +420,7 @@ export const LandingPage: React.FC = () => {
                   Monitor inbound shipments and outgoing items with automatic stock-level audits and trigger-based notifications.
                 </p>
               </div>
-              <div className="mt-6 text-xs text-[#C6F135] font-semibold flex items-center gap-1">
+              <div className="mt-6 text-xs text-[#D5F737] font-semibold flex items-center gap-1">
                 <span>Automated monitoring</span> <ArrowRight className="w-3.5 h-3.5" />
               </div>
             </GlassCard>
@@ -430,7 +430,7 @@ export const LandingPage: React.FC = () => {
           <BlurFade delay={0.24} inView>
             <GlassCard className="p-7 border border-white/15 bg-white/[0.06] backdrop-blur-[18px] rounded-[24px] relative h-full flex flex-col justify-between">
               <div>
-                <div className="w-12 h-12 rounded-2xl bg-[#C6F135] text-black font-extrabold text-base flex items-center justify-center mb-6 shadow-md shadow-[#C6F135]/20">
+                <div className="w-12 h-12 rounded-2xl bg-[#D5F737] text-black font-extrabold text-base flex items-center justify-center mb-6 shadow-md shadow-[#D5F737]/20">
                   03
                 </div>
                 <h3 className="text-xl font-bold text-white mb-2.5">Ask AI</h3>
@@ -438,7 +438,7 @@ export const LandingPage: React.FC = () => {
                   Query your copilot on what to order, when to replenish, and how to optimize working capital with predictive guidance.
                 </p>
               </div>
-              <div className="mt-6 text-xs text-[#C6F135] font-semibold flex items-center gap-1">
+              <div className="mt-6 text-xs text-[#D5F737] font-semibold flex items-center gap-1">
                 <span>Actionable decisions</span> <ArrowRight className="w-3.5 h-3.5" />
               </div>
             </GlassCard>
@@ -450,7 +450,7 @@ export const LandingPage: React.FC = () => {
       <section id="ai-assistant" className="py-20 lg:py-28 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto border-t border-white/10">
         <BlurFade delay={0.08} inView>
           <div className="text-center max-w-2xl mx-auto mb-14">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#C6F135]/10 border border-[#C6F135]/25 text-xs font-semibold text-[#C6F135] mb-3">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#D5F737]/10 border border-[#D5F737]/25 text-xs font-semibold text-[#D5F737] mb-3">
               Intelligence in Action
             </div>
             <h2 className="text-3xl sm:text-4xl font-bold text-white tracking-tight">
@@ -468,13 +468,13 @@ export const LandingPage: React.FC = () => {
               {/* Chat Mock Header */}
               <div className="flex items-center justify-between pb-5 border-b border-white/10 mb-6">
                 <div className="flex items-center gap-3">
-                  <div className="w-9 h-9 rounded-xl bg-[#C6F135] text-black font-bold flex items-center justify-center">
+                  <div className="w-9 h-9 rounded-xl bg-[#D5F737] text-black font-bold flex items-center justify-center">
                     <Bot className="w-5 h-5" />
                   </div>
                   <div>
                     <div className="text-sm font-semibold text-white">Inventra AI Copilot</div>
                     <div className="text-[10px] text-[#9A9A9A] flex items-center gap-1">
-                      <span className="w-1.5 h-1.5 rounded-full bg-[#C6F135] animate-ping" />
+                      <span className="w-1.5 h-1.5 rounded-full bg-[#D5F737] animate-ping" />
                       Active & Connected to live warehouse
                     </div>
                   </div>
@@ -489,14 +489,14 @@ export const LandingPage: React.FC = () => {
               <div className="space-y-4">
                 {/* User Message */}
                 <div className="flex justify-end">
-                  <div className="max-w-md p-3.5 sm:p-4 rounded-2xl rounded-tr-none bg-[#C6F135]/15 border border-[#C6F135]/30 text-xs sm:text-sm text-white">
+                  <div className="max-w-md p-3.5 sm:p-4 rounded-2xl rounded-tr-none bg-[#D5F737]/15 border border-[#D5F737]/30 text-xs sm:text-sm text-white">
                     Which products are reaching critical stock levels and need immediate reordering?
                   </div>
                 </div>
 
                 {/* AI Reply with Typing Animation */}
                 <div className="flex justify-start items-start gap-3">
-                  <div className="w-7 h-7 rounded-lg bg-[#C6F135] text-black flex items-center justify-center flex-shrink-0 mt-1">
+                  <div className="w-7 h-7 rounded-lg bg-[#D5F737] text-black flex items-center justify-center flex-shrink-0 mt-1">
                     <Sparkles className="w-4 h-4" />
                   </div>
                   <div className="max-w-xl p-4 sm:p-5 rounded-2xl rounded-tl-none bg-white/[0.05] border border-white/10 text-xs sm:text-sm text-[#FFFFFF] leading-relaxed shadow-inner">
@@ -510,7 +510,7 @@ export const LandingPage: React.FC = () => {
 
                     {/* Action recommendations buttons inside mock */}
                     <div className="mt-4 pt-3 border-t border-white/10 flex flex-wrap gap-2">
-                      <button className="px-3 py-1.5 rounded-lg bg-[#C6F135]/20 hover:bg-[#C6F135]/30 text-[#C6F135] text-xs font-semibold border border-[#C6F135]/30 transition-colors">
+                      <button className="px-3 py-1.5 rounded-lg bg-[#D5F737]/20 hover:bg-[#D5F737]/30 text-[#D5F737] text-xs font-semibold border border-[#D5F737]/30 transition-colors">
                         Draft PO for 250 units
                       </button>
                       <button className="px-3 py-1.5 rounded-lg bg-white/[0.05] hover:bg-white/[0.1] text-white text-xs border border-white/10 transition-colors">
@@ -530,7 +530,7 @@ export const LandingPage: React.FC = () => {
         <BlurFade delay={0.08} inView>
           <GlassCard className="p-8 sm:p-14 border border-white/15 bg-white/[0.08] backdrop-blur-[24px] rounded-[32px] text-center relative overflow-hidden shadow-2xl">
             <div className="relative z-10 max-w-2xl mx-auto flex flex-col items-center">
-              <div className="w-12 h-12 rounded-2xl bg-[#C6F135] text-black font-extrabold flex items-center justify-center mb-6 shadow-lg shadow-[#C6F135]/25">
+              <div className="w-12 h-12 rounded-2xl bg-[#D5F737] text-black font-extrabold flex items-center justify-center mb-6 shadow-lg shadow-[#D5F737]/25">
                 <Boxes className="w-6 h-6" />
               </div>
               <h2 className="text-3xl sm:text-5xl font-extrabold text-white tracking-tight mb-4">
@@ -541,9 +541,9 @@ export const LandingPage: React.FC = () => {
               </p>
               <Link to="/signup">
                 <ShimmerButton
-                  background="#C6F135"
+                  background="#D5F737"
                   shimmerColor="#ffffff"
-                  className="text-black font-bold text-sm sm:text-base px-8 py-4 rounded-xl shadow-xl shadow-[#C6F135]/30 hover:brightness-105 active:scale-[0.99] transition-all cursor-pointer"
+                  className="text-black font-bold text-sm sm:text-base px-8 py-4 rounded-xl shadow-xl shadow-[#D5F737]/30 hover:brightness-105 active:scale-[0.99] transition-all cursor-pointer"
                 >
                   Create free account
                 </ShimmerButton>
@@ -554,10 +554,10 @@ export const LandingPage: React.FC = () => {
       </section>
 
       {/* 7. SIMPLE FOOTER */}
-      <footer className="w-full border-t border-white/10 bg-[#161616] py-10 px-4 sm:px-6 lg:px-8">
+      <footer className="w-full border-t border-white/10 bg-[#181818] py-10 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-6">
           <div className="flex items-center gap-2.5">
-            <div className="w-7 h-7 rounded-lg bg-[#C6F135] flex items-center justify-center font-bold text-xs text-black">
+            <div className="w-7 h-7 rounded-lg bg-[#D5F737] flex items-center justify-center font-bold text-xs text-black">
               I
             </div>
             <span className="font-semibold text-sm text-white">Inventra AI</span>

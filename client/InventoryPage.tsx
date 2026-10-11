@@ -298,7 +298,7 @@ export const InventoryPage: React.FC = () => {
           <div>
             <div className="flex items-center gap-3">
               <h1 className="text-2xl font-bold tracking-tight text-white">Inventory Catalog</h1>
-              <span className="px-2.5 py-0.5 text-xs font-semibold rounded-full bg-[#C6F135]/15 text-[#C6F135] border border-[#C6F135]/30">
+              <span className="px-2.5 py-0.5 text-xs font-semibold rounded-full bg-[#D5F737]/15 text-[#D5F737] border border-[#D5F737]/30">
                 {products.length} Products
               </span>
             </div>
@@ -314,7 +314,7 @@ export const InventoryPage: React.FC = () => {
               className="p-2.5 rounded-xl border border-white/10 bg-white/5 hover:bg-white/10 text-zinc-300 hover:text-white transition-all active:scale-95"
               title="Refresh inventory"
             >
-              <RefreshCw className={`w-4 h-4 ${isRefreshing ? 'animate-spin text-[#C6F135]' : ''}`} />
+              <RefreshCw className={`w-4 h-4 ${isRefreshing ? 'animate-spin text-[#D5F737]' : ''}`} />
             </button>
 
             <button
@@ -335,7 +335,7 @@ export const InventoryPage: React.FC = () => {
 
             <button
               onClick={openAddModal}
-              className="px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-1.5 bg-[#C6F135] hover:bg-[#D9F958] text-black shadow-lg shadow-[#C6F135]/20 transition-all hover:scale-[1.02] active:scale-[0.98]"
+              className="px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-1.5 bg-[#D5F737] hover:bg-[#D9F958] text-black shadow-lg shadow-[#D5F737]/20 transition-all hover:scale-[1.02] active:scale-[0.98]"
             >
               <Plus className="w-4 h-4 stroke-[2.5]" />
               Add Product
@@ -353,7 +353,7 @@ export const InventoryPage: React.FC = () => {
               placeholder="Search by product name, SKU, category, or supplier..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="w-full bg-white/5 border border-white/10 rounded-xl pl-9 pr-4 py-2 text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-[#C6F135]/60 transition-colors"
+              className="w-full bg-white/5 border border-white/10 rounded-xl pl-9 pr-4 py-2 text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-[#D5F737]/60 transition-colors"
             />
           </div>
 
@@ -362,7 +362,7 @@ export const InventoryPage: React.FC = () => {
             <select
               value={categoryFilter}
               onChange={(e) => setCategoryFilter(e.target.value)}
-              className="w-full appearance-none bg-[#1C1C1F] border border-white/10 rounded-xl px-3.5 py-2 pr-8 text-xs text-zinc-200 focus:outline-none focus:border-[#C6F135]/60 transition-colors cursor-pointer"
+              className="w-full appearance-none bg-[#1C1C1F] border border-white/10 rounded-xl px-3.5 py-2 pr-8 text-xs text-zinc-200 focus:outline-none focus:border-[#D5F737]/60 transition-colors cursor-pointer"
             >
               <option value="ALL">All Categories</option>
               {categories.map((c) => (
@@ -424,7 +424,7 @@ export const InventoryPage: React.FC = () => {
       <div className="flex-1 min-h-0 flex flex-col rounded-2xl border border-white/10 bg-white/[0.04] backdrop-blur-xl overflow-hidden shadow-2xl">
         <table className="w-full text-left border-collapse table-fixed">
           {/* Sticky Table Header */}
-          <thead className="sticky top-0 z-10 bg-[#161616]/95 backdrop-blur-md border-b border-white/10 text-[11px] font-semibold uppercase tracking-wider text-zinc-400">
+          <thead className="sticky top-0 z-10 bg-[#181818]/95 backdrop-blur-md border-b border-white/10 text-[11px] font-semibold uppercase tracking-wider text-zinc-400">
             <tr>
               <th className="py-3 px-4 w-[24%]">Product</th>
               <th className="py-3 px-4 w-[13%]">SKU</th>
@@ -486,7 +486,7 @@ export const InventoryPage: React.FC = () => {
                     >
                       {/* Product */}
                       <td className="py-3.5 px-4 w-[24%]">
-                        <div className="font-semibold text-sm text-white group-hover:text-[#C6F135] transition-colors truncate">
+                        <div className="font-semibold text-sm text-white group-hover:text-[#D5F737] transition-colors truncate">
                           {p.name}
                         </div>
                         <div className="text-[11px] text-zinc-500 font-mono">
@@ -600,10 +600,10 @@ export const InventoryPage: React.FC = () => {
       {/* ======================= MODAL: Add Product ======================= */}
       {isAddModalOpen && (
         <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-md flex items-center justify-center p-4">
-          <div className="bg-[#18181B]/95 border border-white/15 rounded-2xl w-full max-w-lg p-6 shadow-2xl backdrop-blur-2xl animate-in fade-in zoom-in-95 duration-150">
+          <div className="bg-[#232323] border border-white/10 rounded-[24px] w-full max-w-lg p-6 shadow-2xl backdrop-blur-2xl animate-in fade-in zoom-in-95 duration-150">
             <div className="flex items-center justify-between pb-4 border-b border-white/10">
               <div className="flex items-center gap-2">
-                <div className="w-8 h-8 rounded-lg bg-[#C6F135]/15 border border-[#C6F135]/30 flex items-center justify-center text-[#C6F135]">
+                <div className="w-8 h-8 rounded-lg bg-[#D5F737]/15 border border-[#D5F737]/30 flex items-center justify-center text-[#D5F737]">
                   <Plus className="w-4 h-4" />
                 </div>
                 <h3 className="text-base font-bold text-white">Add New Product</h3>
@@ -634,7 +634,7 @@ export const InventoryPage: React.FC = () => {
                   placeholder="e.g. ESP32-WROOM-32D Wi-Fi Module"
                   value={productForm.name}
                   onChange={(e) => setProductForm({ ...productForm, name: e.target.value })}
-                  className="w-full bg-white/5 border border-white/10 rounded-xl px-3.5 py-2 text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-[#C6F135]/60"
+                  className="w-full bg-white/5 border border-white/10 rounded-xl px-3.5 py-2 text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-[#D5F737]/60"
                 />
               </div>
 
@@ -646,7 +646,7 @@ export const InventoryPage: React.FC = () => {
                     placeholder="Auto-generated if blank"
                     value={productForm.sku}
                     onChange={(e) => setProductForm({ ...productForm, sku: e.target.value })}
-                    className="w-full bg-white/5 border border-white/10 rounded-xl px-3.5 py-2 text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-[#C6F135]/60 uppercase font-mono"
+                    className="w-full bg-white/5 border border-white/10 rounded-xl px-3.5 py-2 text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-[#D5F737]/60 uppercase font-mono"
                   />
                 </div>
                 <div>
@@ -656,7 +656,7 @@ export const InventoryPage: React.FC = () => {
                     placeholder="e.g. Semiconductors"
                     value={productForm.category}
                     onChange={(e) => setProductForm({ ...productForm, category: e.target.value })}
-                    className="w-full bg-white/5 border border-white/10 rounded-xl px-3.5 py-2 text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-[#C6F135]/60"
+                    className="w-full bg-white/5 border border-white/10 rounded-xl px-3.5 py-2 text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-[#D5F737]/60"
                   />
                 </div>
               </div>
@@ -668,7 +668,7 @@ export const InventoryPage: React.FC = () => {
                   placeholder="e.g. Espressif Systems / Core Components"
                   value={productForm.supplier}
                   onChange={(e) => setProductForm({ ...productForm, supplier: e.target.value })}
-                  className="w-full bg-white/5 border border-white/10 rounded-xl px-3.5 py-2 text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-[#C6F135]/60"
+                  className="w-full bg-white/5 border border-white/10 rounded-xl px-3.5 py-2 text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-[#D5F737]/60"
                 />
               </div>
 
@@ -684,7 +684,7 @@ export const InventoryPage: React.FC = () => {
                     onChange={(e) =>
                       setProductForm({ ...productForm, stock: Number(e.target.value) })
                     }
-                    className="w-full bg-white/5 border border-white/10 rounded-xl px-3.5 py-2 text-xs text-white focus:outline-none focus:border-[#C6F135]/60 font-mono"
+                    className="w-full bg-white/5 border border-white/10 rounded-xl px-3.5 py-2 text-xs text-white focus:outline-none focus:border-[#D5F737]/60 font-mono"
                   />
                 </div>
                 <div>
@@ -698,7 +698,7 @@ export const InventoryPage: React.FC = () => {
                     onChange={(e) =>
                       setProductForm({ ...productForm, minStock: Number(e.target.value) })
                     }
-                    className="w-full bg-white/5 border border-white/10 rounded-xl px-3.5 py-2 text-xs text-white focus:outline-none focus:border-[#C6F135]/60 font-mono"
+                    className="w-full bg-white/5 border border-white/10 rounded-xl px-3.5 py-2 text-xs text-white focus:outline-none focus:border-[#D5F737]/60 font-mono"
                   />
                 </div>
               </div>
@@ -715,7 +715,7 @@ export const InventoryPage: React.FC = () => {
                     onChange={(e) =>
                       setProductForm({ ...productForm, unitCost: Number(e.target.value) })
                     }
-                    className="w-full bg-white/5 border border-white/10 rounded-xl px-3.5 py-2 text-xs text-white focus:outline-none focus:border-[#C6F135]/60 font-mono"
+                    className="w-full bg-white/5 border border-white/10 rounded-xl px-3.5 py-2 text-xs text-white focus:outline-none focus:border-[#D5F737]/60 font-mono"
                   />
                 </div>
                 <div>
@@ -729,7 +729,7 @@ export const InventoryPage: React.FC = () => {
                     onChange={(e) =>
                       setProductForm({ ...productForm, sellingPrice: Number(e.target.value) })
                     }
-                    className="w-full bg-white/5 border border-white/10 rounded-xl px-3.5 py-2 text-xs text-white focus:outline-none focus:border-[#C6F135]/60 font-mono"
+                    className="w-full bg-white/5 border border-white/10 rounded-xl px-3.5 py-2 text-xs text-white focus:outline-none focus:border-[#D5F737]/60 font-mono"
                   />
                 </div>
               </div>
@@ -745,7 +745,7 @@ export const InventoryPage: React.FC = () => {
                 <button
                   type="submit"
                   disabled={submitting}
-                  className="px-5 py-2 rounded-xl text-xs font-bold bg-[#C6F135] hover:bg-[#D9F958] text-black transition-all disabled:opacity-50"
+                  className="px-5 py-2 rounded-xl text-xs font-bold bg-[#D5F737] hover:bg-[#D9F958] text-black transition-all disabled:opacity-50"
                 >
                   {submitting ? 'Creating...' : 'Create Product'}
                 </button>
@@ -758,7 +758,7 @@ export const InventoryPage: React.FC = () => {
       {/* ======================= MODAL: Edit Product ======================= */}
       {isEditModalOpen && activeProduct && (
         <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-md flex items-center justify-center p-4">
-          <div className="bg-[#18181B]/95 border border-white/15 rounded-2xl w-full max-w-lg p-6 shadow-2xl backdrop-blur-2xl animate-in fade-in zoom-in-95 duration-150">
+          <div className="bg-[#232323] border border-white/10 rounded-[24px] w-full max-w-lg p-6 shadow-2xl backdrop-blur-2xl animate-in fade-in zoom-in-95 duration-150">
             <div className="flex items-center justify-between pb-4 border-b border-white/10">
               <div className="flex items-center gap-2">
                 <div className="w-8 h-8 rounded-lg bg-blue-500/15 border border-blue-500/30 flex items-center justify-center text-blue-400">
@@ -794,7 +794,7 @@ export const InventoryPage: React.FC = () => {
                   type="text"
                   value={productForm.name}
                   onChange={(e) => setProductForm({ ...productForm, name: e.target.value })}
-                  className="w-full bg-white/5 border border-white/10 rounded-xl px-3.5 py-2 text-xs text-white focus:outline-none focus:border-[#C6F135]/60"
+                  className="w-full bg-white/5 border border-white/10 rounded-xl px-3.5 py-2 text-xs text-white focus:outline-none focus:border-[#D5F737]/60"
                 />
               </div>
 
@@ -805,7 +805,7 @@ export const InventoryPage: React.FC = () => {
                     type="text"
                     value={productForm.sku}
                     onChange={(e) => setProductForm({ ...productForm, sku: e.target.value })}
-                    className="w-full bg-white/5 border border-white/10 rounded-xl px-3.5 py-2 text-xs text-white focus:outline-none focus:border-[#C6F135]/60 uppercase font-mono"
+                    className="w-full bg-white/5 border border-white/10 rounded-xl px-3.5 py-2 text-xs text-white focus:outline-none focus:border-[#D5F737]/60 uppercase font-mono"
                   />
                 </div>
                 <div>
@@ -814,7 +814,7 @@ export const InventoryPage: React.FC = () => {
                     type="text"
                     value={productForm.category}
                     onChange={(e) => setProductForm({ ...productForm, category: e.target.value })}
-                    className="w-full bg-white/5 border border-white/10 rounded-xl px-3.5 py-2 text-xs text-white focus:outline-none focus:border-[#C6F135]/60"
+                    className="w-full bg-white/5 border border-white/10 rounded-xl px-3.5 py-2 text-xs text-white focus:outline-none focus:border-[#D5F737]/60"
                   />
                 </div>
               </div>
@@ -825,7 +825,7 @@ export const InventoryPage: React.FC = () => {
                   type="text"
                   value={productForm.supplier}
                   onChange={(e) => setProductForm({ ...productForm, supplier: e.target.value })}
-                  className="w-full bg-white/5 border border-white/10 rounded-xl px-3.5 py-2 text-xs text-white focus:outline-none focus:border-[#C6F135]/60"
+                  className="w-full bg-white/5 border border-white/10 rounded-xl px-3.5 py-2 text-xs text-white focus:outline-none focus:border-[#D5F737]/60"
                 />
               </div>
 
@@ -841,7 +841,7 @@ export const InventoryPage: React.FC = () => {
                     onChange={(e) =>
                       setProductForm({ ...productForm, stock: Number(e.target.value) })
                     }
-                    className="w-full bg-white/5 border border-white/10 rounded-xl px-3.5 py-2 text-xs text-white focus:outline-none focus:border-[#C6F135]/60 font-mono"
+                    className="w-full bg-white/5 border border-white/10 rounded-xl px-3.5 py-2 text-xs text-white focus:outline-none focus:border-[#D5F737]/60 font-mono"
                   />
                 </div>
                 <div>
@@ -855,7 +855,7 @@ export const InventoryPage: React.FC = () => {
                     onChange={(e) =>
                       setProductForm({ ...productForm, minStock: Number(e.target.value) })
                     }
-                    className="w-full bg-white/5 border border-white/10 rounded-xl px-3.5 py-2 text-xs text-white focus:outline-none focus:border-[#C6F135]/60 font-mono"
+                    className="w-full bg-white/5 border border-white/10 rounded-xl px-3.5 py-2 text-xs text-white focus:outline-none focus:border-[#D5F737]/60 font-mono"
                   />
                 </div>
               </div>
@@ -872,7 +872,7 @@ export const InventoryPage: React.FC = () => {
                     onChange={(e) =>
                       setProductForm({ ...productForm, unitCost: Number(e.target.value) })
                     }
-                    className="w-full bg-white/5 border border-white/10 rounded-xl px-3.5 py-2 text-xs text-white focus:outline-none focus:border-[#C6F135]/60 font-mono"
+                    className="w-full bg-white/5 border border-white/10 rounded-xl px-3.5 py-2 text-xs text-white focus:outline-none focus:border-[#D5F737]/60 font-mono"
                   />
                 </div>
                 <div>
@@ -886,7 +886,7 @@ export const InventoryPage: React.FC = () => {
                     onChange={(e) =>
                       setProductForm({ ...productForm, sellingPrice: Number(e.target.value) })
                     }
-                    className="w-full bg-white/5 border border-white/10 rounded-xl px-3.5 py-2 text-xs text-white focus:outline-none focus:border-[#C6F135]/60 font-mono"
+                    className="w-full bg-white/5 border border-white/10 rounded-xl px-3.5 py-2 text-xs text-white focus:outline-none focus:border-[#D5F737]/60 font-mono"
                   />
                 </div>
               </div>
@@ -902,7 +902,7 @@ export const InventoryPage: React.FC = () => {
                 <button
                   type="submit"
                   disabled={submitting}
-                  className="px-5 py-2 rounded-xl text-xs font-bold bg-[#C6F135] hover:bg-[#D9F958] text-black transition-all disabled:opacity-50"
+                  className="px-5 py-2 rounded-xl text-xs font-bold bg-[#D5F737] hover:bg-[#D9F958] text-black transition-all disabled:opacity-50"
                 >
                   {submitting ? 'Saving...' : 'Save Changes'}
                 </button>
@@ -915,7 +915,7 @@ export const InventoryPage: React.FC = () => {
       {/* ======================= MODAL: Stock In ======================= */}
       {isStockInModalOpen && (
         <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-md flex items-center justify-center p-4">
-          <div className="bg-[#18181B]/95 border border-white/15 rounded-2xl w-full max-w-md p-6 shadow-2xl backdrop-blur-2xl animate-in fade-in zoom-in-95 duration-150">
+          <div className="bg-[#232323] border border-white/10 rounded-[24px] w-full max-w-md p-6 shadow-2xl backdrop-blur-2xl animate-in fade-in zoom-in-95 duration-150">
             <div className="flex items-center justify-between pb-4 border-b border-white/10">
               <div className="flex items-center gap-2">
                 <div className="w-8 h-8 rounded-lg bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center text-emerald-400">
@@ -952,7 +952,7 @@ export const InventoryPage: React.FC = () => {
                   onChange={(e) =>
                     setStockMovementForm({ ...stockMovementForm, productId: e.target.value })
                   }
-                  className="w-full bg-[#1C1C1F] border border-white/10 rounded-xl px-3.5 py-2 text-xs text-white focus:outline-none focus:border-[#C6F135]/60 cursor-pointer"
+                  className="w-full bg-[#1C1C1F] border border-white/10 rounded-xl px-3.5 py-2 text-xs text-white focus:outline-none focus:border-[#D5F737]/60 cursor-pointer"
                 >
                   <option value="">-- Choose a product --</option>
                   {products.map((p) => (
@@ -978,7 +978,7 @@ export const InventoryPage: React.FC = () => {
                       quantity: Math.max(1, Number(e.target.value)),
                     })
                   }
-                  className="w-full bg-white/5 border border-white/10 rounded-xl px-3.5 py-2 text-xs text-white focus:outline-none focus:border-[#C6F135]/60 font-mono"
+                  className="w-full bg-white/5 border border-white/10 rounded-xl px-3.5 py-2 text-xs text-white focus:outline-none focus:border-[#D5F737]/60 font-mono"
                 />
               </div>
 
@@ -993,7 +993,7 @@ export const InventoryPage: React.FC = () => {
                   onChange={(e) =>
                     setStockMovementForm({ ...stockMovementForm, reason: e.target.value })
                   }
-                  className="w-full bg-white/5 border border-white/10 rounded-xl px-3.5 py-2 text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-[#C6F135]/60"
+                  className="w-full bg-white/5 border border-white/10 rounded-xl px-3.5 py-2 text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-[#D5F737]/60"
                 />
               </div>
 
@@ -1021,7 +1021,7 @@ export const InventoryPage: React.FC = () => {
       {/* ======================= MODAL: Stock Out ======================= */}
       {isStockOutModalOpen && (
         <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-md flex items-center justify-center p-4">
-          <div className="bg-[#18181B]/95 border border-white/15 rounded-2xl w-full max-w-md p-6 shadow-2xl backdrop-blur-2xl animate-in fade-in zoom-in-95 duration-150">
+          <div className="bg-[#232323] border border-white/10 rounded-[24px] w-full max-w-md p-6 shadow-2xl backdrop-blur-2xl animate-in fade-in zoom-in-95 duration-150">
             <div className="flex items-center justify-between pb-4 border-b border-white/10">
               <div className="flex items-center gap-2">
                 <div className="w-8 h-8 rounded-lg bg-amber-500/15 border border-amber-500/30 flex items-center justify-center text-amber-400">
@@ -1058,7 +1058,7 @@ export const InventoryPage: React.FC = () => {
                   onChange={(e) =>
                     setStockMovementForm({ ...stockMovementForm, productId: e.target.value })
                   }
-                  className="w-full bg-[#1C1C1F] border border-white/10 rounded-xl px-3.5 py-2 text-xs text-white focus:outline-none focus:border-[#C6F135]/60 cursor-pointer"
+                  className="w-full bg-[#1C1C1F] border border-white/10 rounded-xl px-3.5 py-2 text-xs text-white focus:outline-none focus:border-[#D5F737]/60 cursor-pointer"
                 >
                   <option value="">-- Choose a product --</option>
                   {products.map((p) => (
@@ -1084,7 +1084,7 @@ export const InventoryPage: React.FC = () => {
                       quantity: Math.max(1, Number(e.target.value)),
                     })
                   }
-                  className="w-full bg-white/5 border border-white/10 rounded-xl px-3.5 py-2 text-xs text-white focus:outline-none focus:border-[#C6F135]/60 font-mono"
+                  className="w-full bg-white/5 border border-white/10 rounded-xl px-3.5 py-2 text-xs text-white focus:outline-none focus:border-[#D5F737]/60 font-mono"
                 />
               </div>
 
@@ -1099,7 +1099,7 @@ export const InventoryPage: React.FC = () => {
                   onChange={(e) =>
                     setStockMovementForm({ ...stockMovementForm, reason: e.target.value })
                   }
-                  className="w-full bg-white/5 border border-white/10 rounded-xl px-3.5 py-2 text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-[#C6F135]/60"
+                  className="w-full bg-white/5 border border-white/10 rounded-xl px-3.5 py-2 text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-[#D5F737]/60"
                 />
               </div>
 

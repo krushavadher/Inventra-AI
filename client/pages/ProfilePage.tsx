@@ -76,17 +76,17 @@ export const ProfilePage: React.FC = () => {
     : 'Recent Member';
 
   return (
-    <div className="h-full max-h-full w-full overflow-hidden flex items-center justify-center p-4 sm:p-6 bg-[#161616]">
-      <GlassCard className="w-full max-w-2xl p-6 sm:p-8 border border-white/15 bg-white/[0.08] backdrop-blur-[18px] rounded-[24px] shadow-2xl overflow-hidden">
+    <div className="h-full max-h-full w-full overflow-hidden flex items-center justify-center p-4 sm:p-6 bg-[#181818]">
+      <GlassCard className="w-full max-w-2xl p-6 sm:p-8 shadow-2xl overflow-hidden">
         {/* Profile Header */}
         <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4 pb-6 border-b border-white/10">
-          <div className="w-16 h-16 rounded-full bg-[#C6F135] text-black font-bold text-xl flex items-center justify-center shadow-lg shadow-[#C6F135]/25 flex-shrink-0">
+          <div className="w-16 h-16 rounded-full bg-[#D5F737] text-black font-bold text-xl flex items-center justify-center shadow-lg shadow-[#D5F737]/25 flex-shrink-0">
             {getInitials(user?.name)}
           </div>
           <div className="flex-1 text-center sm:text-left">
             <div className="flex flex-col sm:flex-row sm:items-center gap-2">
               <h2 className="text-xl sm:text-2xl font-bold text-white">{user?.name}</h2>
-              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-[#C6F135]/15 text-[#C6F135] border border-[#C6F135]/30 capitalize self-center sm:self-auto">
+              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-[#D5F737]/15 text-[#D5F737] border border-[#D5F737]/30 capitalize self-center sm:self-auto">
                 {user?.role || 'admin'}
               </span>
             </div>
@@ -99,7 +99,7 @@ export const ProfilePage: React.FC = () => {
         {/* Read-Only Stats Overview */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 my-5">
           <div className="p-3 rounded-xl bg-white/[0.04] border border-white/10 flex items-center gap-3">
-            <Shield className="w-4 h-4 text-[#C6F135]" />
+            <Shield className="w-4 h-4 text-[#D5F737]" />
             <div>
               <div className="text-[10px] text-[#9A9A9A] uppercase tracking-wider">Access Role</div>
               <div className="text-xs sm:text-sm font-semibold text-white capitalize">{user?.role || 'admin'}</div>
@@ -107,7 +107,7 @@ export const ProfilePage: React.FC = () => {
           </div>
 
           <div className="p-3 rounded-xl bg-white/[0.04] border border-white/10 flex items-center gap-3">
-            <Building className="w-4 h-4 text-[#C6F135]" />
+            <Building className="w-4 h-4 text-[#D5F737]" />
             <div>
               <div className="text-[10px] text-[#9A9A9A] uppercase tracking-wider">Company</div>
               <div className="text-xs sm:text-sm font-semibold text-white truncate max-w-[120px]">
@@ -117,7 +117,7 @@ export const ProfilePage: React.FC = () => {
           </div>
 
           <div className="p-3 rounded-xl bg-white/[0.04] border border-white/10 flex items-center gap-3">
-            <Calendar className="w-4 h-4 text-[#C6F135]" />
+            <Calendar className="w-4 h-4 text-[#D5F737]" />
             <div>
               <div className="text-[10px] text-[#9A9A9A] uppercase tracking-wider">Member Since</div>
               <div className="text-xs sm:text-sm font-semibold text-white">{formattedDate}</div>
@@ -127,8 +127,8 @@ export const ProfilePage: React.FC = () => {
 
         {/* Inline Feedback Alerts */}
         {successMessage && (
-          <div className="mb-4 p-2.5 rounded-xl bg-[#C6F135]/10 border border-[#C6F135]/30 flex items-center gap-2 text-xs text-[#C6F135]">
-            <CheckCircle2 className="w-4 h-4 flex-shrink-0 text-[#C6F135]" />
+          <div className="mb-4 p-2.5 rounded-xl bg-[#D5F737]/10 border border-[#D5F737]/30 flex items-center gap-2 text-xs text-[#D5F737]">
+            <CheckCircle2 className="w-4 h-4 flex-shrink-0 text-[#D5F737]" />
             <span>{successMessage}</span>
           </div>
         )}
@@ -155,7 +155,7 @@ export const ProfilePage: React.FC = () => {
                   onChange={(e) => setName(e.target.value)}
                   placeholder="Your full name"
                   required
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-white/[0.05] border border-white/10 text-white placeholder-[#9A9A9A] text-sm focus:outline-none focus:border-[#C6F135] transition-colors"
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-white/[0.05] border border-white/10 text-white placeholder-[#9A9A9A] text-sm focus:outline-none focus:border-[#D5F737] transition-colors"
                 />
               </div>
             </div>
@@ -171,7 +171,7 @@ export const ProfilePage: React.FC = () => {
                   value={company}
                   onChange={(e) => setCompany(e.target.value)}
                   placeholder="Your organization"
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-white/[0.05] border border-white/10 text-white placeholder-[#9A9A9A] text-sm focus:outline-none focus:border-[#C6F135] transition-colors"
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-white/[0.05] border border-white/10 text-white placeholder-[#9A9A9A] text-sm focus:outline-none focus:border-[#D5F737] transition-colors"
                 />
               </div>
             </div>
@@ -181,7 +181,7 @@ export const ProfilePage: React.FC = () => {
             <ShimmerButton
               type="submit"
               disabled={loading}
-              background="#C6F135"
+              background="#D5F737"
               shimmerColor="#ffffff"
               className="text-black font-semibold text-sm px-6 py-2.5 rounded-xl cursor-pointer hover:brightness-105 active:scale-[0.99] transition-all disabled:opacity-60 disabled:cursor-not-allowed"
             >

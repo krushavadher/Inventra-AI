@@ -64,12 +64,12 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
   };
 
   return (
-    <div className="flex h-screen max-h-screen w-screen max-w-full overflow-hidden bg-[#161616] text-white font-['Outfit',sans-serif]">
+    <div className="flex h-screen max-h-screen w-screen max-w-full overflow-hidden bg-[#181818] text-white font-['Outfit',sans-serif]">
       {/* Sidebar - Strictly 4 pages + User footer with Logout */}
-      <aside className="w-[240px] sm:w-[250px] h-screen bg-[#1E1E1E] border-r border-white/10 flex flex-col flex-shrink-0 z-20">
+      <aside className="w-[240px] sm:w-[250px] h-screen bg-[#232323] border-r border-white/10 flex flex-col flex-shrink-0 z-20">
         {/* Brand Logo */}
         <div className="p-5 border-b border-white/10 flex items-center gap-3 flex-shrink-0">
-          <div className="w-8 h-8 rounded-lg bg-[#C6F135] flex items-center justify-center font-bold text-sm text-black shadow-md shadow-[#C6F135]/20">
+          <div className="w-8 h-8 rounded-lg bg-[#D5F737] flex items-center justify-center font-bold text-sm text-black shadow-md shadow-[#D5F737]/20">
             I
           </div>
           <div>
@@ -89,11 +89,11 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
                 to={item.to}
                 className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs sm:text-sm font-medium transition-all ${
                   isActive
-                    ? 'bg-[#C6F135]/15 text-[#C6F135] border border-[#C6F135]/25 shadow-sm'
+                    ? 'bg-[#D5F737]/15 text-[#D5F737] border border-[#D5F737]/25 shadow-sm'
                     : 'text-[#9A9A9A] hover:text-white hover:bg-white/[0.04]'
                 }`}
               >
-                <Icon className={`w-4 h-4 ${isActive ? 'text-[#C6F135]' : 'text-[#9A9A9A]'}`} />
+                <Icon className={`w-4 h-4 ${isActive ? 'text-[#D5F737]' : 'text-[#9A9A9A]'}`} />
                 <span>{item.label}</span>
               </NavLink>
             );
@@ -103,7 +103,7 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
         {/* Sidebar Footer: User's name and role with a Logout button */}
         <div className="p-3.5 border-t border-white/10 flex items-center justify-between bg-black/20 flex-shrink-0">
           <div className="flex items-center gap-2.5 min-w-0">
-            <div className="w-8 h-8 rounded-full bg-[#C6F135] text-black font-semibold text-xs flex items-center justify-center flex-shrink-0 shadow-sm">
+            <div className="w-8 h-8 rounded-full bg-[#D5F737] text-black font-semibold text-xs flex items-center justify-center flex-shrink-0 shadow-sm">
               {getInitials(displayName)}
             </div>
             <div className="min-w-0">
@@ -122,9 +122,9 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
       </aside>
 
       {/* Main Workspace */}
-      <div className="flex-1 h-screen max-h-screen flex flex-col overflow-hidden bg-[#161616]">
+      <div className="flex-1 h-screen max-h-screen flex flex-col overflow-hidden bg-[#181818]">
         {/* Top Bar */}
-        <header className="h-16 bg-[#1E1E1E] border-b border-white/10 flex items-center justify-between px-6 flex-shrink-0 z-10">
+        <header className="h-16 bg-[#232323] border-b border-white/10 flex items-center justify-between px-6 flex-shrink-0 z-10">
           {/* Breadcrumb */}
           <div className="text-xs sm:text-sm text-[#9A9A9A] flex items-center gap-2">
             <span>Inventra AI</span>
@@ -151,7 +151,7 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
                 aria-expanded={dropdownOpen}
               >
                 {/* Profile avatar: initials in a lime circle */}
-                <div className="w-8 h-8 rounded-full bg-[#C6F135] text-black font-semibold text-xs flex items-center justify-center flex-shrink-0 shadow-sm shadow-[#C6F135]/20">
+                <div className="w-8 h-8 rounded-full bg-[#D5F737] text-black font-semibold text-xs flex items-center justify-center flex-shrink-0 shadow-sm shadow-[#D5F737]/20">
                   {getInitials(displayName)}
                 </div>
                 <div className="hidden md:flex flex-col text-left">
@@ -163,7 +163,7 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
 
               {/* Glass Dropdown */}
               {dropdownOpen && (
-                <div className="absolute right-0 mt-2 w-48 rounded-2xl bg-[#1E1E1E]/90 backdrop-blur-[18px] border border-white/15 p-1.5 shadow-2xl z-50 animate-in fade-in zoom-in-95 duration-150">
+                <div className="absolute right-0 mt-2 w-48 rounded-2xl bg-[#232323]/95 backdrop-blur-[20px] border border-white/10 p-1.5 shadow-2xl z-50 animate-in fade-in zoom-in-95 duration-150">
                   <div className="px-3 py-2 border-b border-white/10 md:hidden">
                     <div className="text-xs font-semibold text-white">{displayName}</div>
                     <div className="text-[10px] text-[#9A9A9A] capitalize">{displayRole}</div>
@@ -174,7 +174,7 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
                       setDropdownOpen(false);
                       navigate('/profile');
                     }}
-                    className="w-full flex items-center gap-2.5 px-3 py-2 text-xs font-medium text-white hover:text-[#C6F135] hover:bg-white/[0.06] rounded-xl transition-colors cursor-pointer text-left"
+                    className="w-full flex items-center gap-2.5 px-3 py-2 text-xs font-medium text-white hover:text-[#D5F737] hover:bg-white/[0.06] rounded-xl transition-colors cursor-pointer text-left"
                   >
                     <UserIcon className="w-3.5 h-3.5" />
                     <span>My Profile</span>
@@ -194,7 +194,7 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
         </header>
 
         {/* Main Content Area - Fits Screen Height */}
-        <main className="flex-1 h-[calc(100vh-64px)] max-h-[calc(100vh-64px)] overflow-hidden bg-[#161616]">
+        <main className="flex-1 h-[calc(100vh-64px)] max-h-[calc(100vh-64px)] overflow-hidden bg-[#181818]">
           {children}
         </main>
       </div>

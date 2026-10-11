@@ -12,14 +12,14 @@ export const GlassCard = React.forwardRef<HTMLDivElement, GlassCardProps>(
       <div
         ref={ref}
         className={cn(
-          'transition-all duration-300 text-white',
+          'transition-all duration-300 text-white glass',
           className
         )}
         style={{
-          backgroundColor: 'rgba(255, 255, 255, 0.08)',
-          backdropFilter: 'blur(18px)',
-          WebkitBackdropFilter: 'blur(18px)',
-          border: '1px solid rgba(255, 255, 255, 0.15)',
+          backgroundColor: 'rgba(40, 40, 40, 0.45)',
+          backdropFilter: 'blur(20px) saturate(90%)',
+          WebkitBackdropFilter: 'blur(20px) saturate(90%)',
+          border: '1px solid rgba(255, 255, 255, 0.10)',
           borderRadius: '24px',
           ...style,
         }}

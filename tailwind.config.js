@@ -12,22 +12,24 @@ export default {
         outfit: ["Outfit", "sans-serif"],
       },
       colors: {
-        background: "#161616",
-        card: "#1E1E1E",
+        background: "#181818",
+        card: "#232323",
         "muted-text": "#9A9A9A",
         text: "#FFFFFF",
-        "accent-lime": "#C6F135",
+        "accent-lime": "#D5F737",
+        olive: "#5A632B",
+        "dim-bar": "#404040",
         // Extended mapping for shadcn/ui & Magic UI compatibility
-        border: "rgba(255, 255, 255, 0.12)",
-        input: "rgba(255, 255, 255, 0.15)",
-        ring: "#C6F135",
+        border: "rgba(255, 255, 255, 0.10)",
+        input: "rgba(255, 255, 255, 0.10)",
+        ring: "#D5F737",
         foreground: "#FFFFFF",
         primary: {
-          DEFAULT: "#C6F135",
-          foreground: "#161616",
+          DEFAULT: "#D5F737",
+          foreground: "#181818",
         },
         secondary: {
-          DEFAULT: "#1E1E1E",
+          DEFAULT: "#232323",
           foreground: "#FFFFFF",
         },
         destructive: {
@@ -35,15 +37,15 @@ export default {
           foreground: "#FFFFFF",
         },
         muted: {
-          DEFAULT: "#1E1E1E",
+          DEFAULT: "#232323",
           foreground: "#9A9A9A",
         },
         accent: {
-          DEFAULT: "#C6F135",
-          foreground: "#161616",
+          DEFAULT: "#D5F737",
+          foreground: "#181818",
         },
         popover: {
-          DEFAULT: "#1E1E1E",
+          DEFAULT: "#232323",
           foreground: "#FFFFFF",
         },
       },

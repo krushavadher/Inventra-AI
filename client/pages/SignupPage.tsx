@@ -88,11 +88,11 @@ export const SignupPage: React.FC = () => {
   return (
     <AnimatedBackground className="h-screen max-h-screen w-full overflow-hidden flex items-center justify-center p-3 sm:p-4">
       <BlurFade delay={0.08} duration={0.45} className="w-full max-w-[420px]">
-        <GlassCard className="w-full max-w-[420px] p-5 sm:p-6 border border-white/15 bg-white/[0.08] backdrop-blur-[18px] rounded-[24px] shadow-2xl relative">
+        <GlassCard className="w-full max-w-[420px] p-5 sm:p-6 shadow-2xl relative">
           {/* Logo & Header */}
           <div className="flex flex-col items-center text-center mb-3 sm:mb-4">
             <div className="flex items-center gap-2 mb-1.5">
-              <div className="w-8 h-8 rounded-xl bg-[#C6F135] flex items-center justify-center font-bold text-sm text-black shadow-lg shadow-[#C6F135]/25">
+              <div className="w-8 h-8 rounded-xl bg-[#D5F737] flex items-center justify-center font-bold text-sm text-black shadow-lg shadow-[#D5F737]/25">
                 I
               </div>
               <span className="text-lg font-bold tracking-tight text-white">Inventra AI</span>
@@ -123,7 +123,7 @@ export const SignupPage: React.FC = () => {
                   onChange={(e) => setName(e.target.value)}
                   placeholder="John Doe"
                   required
-                  className="w-full px-3 py-2 rounded-xl bg-white/[0.05] border border-white/10 text-white placeholder-[#9A9A9A] text-xs sm:text-sm focus:outline-none focus:border-[#C6F135] transition-colors"
+                  className="w-full px-3 py-2 rounded-xl bg-white/[0.05] border border-white/10 text-white placeholder-[#9A9A9A] text-xs sm:text-sm focus:outline-none focus:border-[#D5F737] transition-colors"
                 />
               </div>
 
@@ -137,7 +137,7 @@ export const SignupPage: React.FC = () => {
                   value={company}
                   onChange={(e) => setCompany(e.target.value)}
                   placeholder="Acme Corp"
-                  className="w-full px-3 py-2 rounded-xl bg-white/[0.05] border border-white/10 text-white placeholder-[#9A9A9A] text-xs sm:text-sm focus:outline-none focus:border-[#C6F135] transition-colors"
+                  className="w-full px-3 py-2 rounded-xl bg-white/[0.05] border border-white/10 text-white placeholder-[#9A9A9A] text-xs sm:text-sm focus:outline-none focus:border-[#D5F737] transition-colors"
                 />
               </div>
             </div>
@@ -154,7 +154,7 @@ export const SignupPage: React.FC = () => {
                 placeholder="name@company.com"
                 required
                 autoComplete="email"
-                className="w-full px-3 py-2 rounded-xl bg-white/[0.05] border border-white/10 text-white placeholder-[#9A9A9A] text-xs sm:text-sm focus:outline-none focus:border-[#C6F135] transition-colors"
+                className="w-full px-3 py-2 rounded-xl bg-white/[0.05] border border-white/10 text-white placeholder-[#9A9A9A] text-xs sm:text-sm focus:outline-none focus:border-[#D5F737] transition-colors"
               />
             </div>
 
@@ -171,7 +171,7 @@ export const SignupPage: React.FC = () => {
                     onChange={(e) => setPassword(e.target.value)}
                     placeholder="Min 6 chars"
                     required
-                    className="w-full px-3 py-2 pr-8 rounded-xl bg-white/[0.05] border border-white/10 text-white placeholder-[#9A9A9A] text-xs sm:text-sm focus:outline-none focus:border-[#C6F135] transition-colors"
+                    className="w-full px-3 py-2 pr-8 rounded-xl bg-white/[0.05] border border-white/10 text-white placeholder-[#9A9A9A] text-xs sm:text-sm focus:outline-none focus:border-[#D5F737] transition-colors"
                   />
                   <button
                     type="button"
@@ -196,7 +196,7 @@ export const SignupPage: React.FC = () => {
                     onChange={(e) => setConfirmPassword(e.target.value)}
                     placeholder="Repeat"
                     required
-                    className="w-full px-3 py-2 pr-8 rounded-xl bg-white/[0.05] border border-white/10 text-white placeholder-[#9A9A9A] text-xs sm:text-sm focus:outline-none focus:border-[#C6F135] transition-colors"
+                    className="w-full px-3 py-2 pr-8 rounded-xl bg-white/[0.05] border border-white/10 text-white placeholder-[#9A9A9A] text-xs sm:text-sm focus:outline-none focus:border-[#D5F737] transition-colors"
                   />
                   <button
                     type="button"
@@ -214,7 +214,7 @@ export const SignupPage: React.FC = () => {
               <ShimmerButton
                 type="submit"
                 disabled={loading}
-                background="#C6F135"
+                background="#D5F737"
                 shimmerColor="#ffffff"
                 className="w-full text-black font-semibold text-xs sm:text-sm py-2 sm:py-2.5 rounded-xl cursor-pointer hover:brightness-105 active:scale-[0.99] transition-all disabled:opacity-60 disabled:cursor-not-allowed"
               >
@@ -233,7 +233,7 @@ export const SignupPage: React.FC = () => {
           {/* Login Link */}
           <div className="mt-3.5 text-center text-xs text-[#9A9A9A]">
             Already have an account?{' '}
-            <Link to="/login" className="text-[#C6F135] hover:underline font-medium transition-colors">
+            <Link to="/login" className="text-[#D5F737] hover:underline font-medium transition-colors">
               Log in
             </Link>
           </div>

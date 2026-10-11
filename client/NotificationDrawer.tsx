@@ -78,9 +78,9 @@ export const NotificationDrawer: React.FC = () => {
             top: '72px',
             right: '28px',
             width: '380px',
-            backgroundColor: '#111115',
-            border: '1px solid rgba(255, 255, 255, 0.12)',
-            borderRadius: '14px',
+            backgroundColor: '#232323',
+            border: '1px solid rgba(255, 255, 255, 0.10)',
+            borderRadius: '24px',
             boxShadow: '0 16px 36px rgba(0,0,0,0.65)',
             zIndex: 1000,
             overflow: 'hidden'

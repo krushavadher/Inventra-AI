@@ -6,20 +6,22 @@
 
 :root {
   /* Global Theme Variables */
-  --background: #161616;
-  --card: #1E1E1E;
+  --background: #181818;
+  --card: #232323;
   --text-muted: #9A9A9A;
   --text: #FFFFFF;
-  --accent-lime: #C6F135;
+  --accent-lime: #D5F737;
+  --olive: #5A632B;
+  --dim-bar: #404040;
 
   /* Theme mappings for existing tokens */
-  --bg-base: #161616;
-  --bg-surface: #1E1E1E;
-  --accent-primary: #C6F135;
-  --accent-cool: #2BB4A0;
+  --bg-base: #181818;
+  --bg-surface: #232323;
+  --accent-primary: #D5F737;
+  --accent-cool: #5A632B;
   --accent-risk: #E5534B;
   --text-primary: #FFFFFF;
-  --border: rgba(255, 255, 255, 0.12);
+  --border: rgba(255, 255, 255, 0.10);
 }
 
 * {
@@ -105,9 +107,17 @@ body {
 }
 
 /* Panels / Containers */
+.glass {
+  background: rgba(40, 40, 40, 0.45);
+  backdrop-filter: blur(20px) saturate(90%);
+  -webkit-backdrop-filter: blur(20px) saturate(90%);
+  border: 1px solid rgba(255, 255, 255, 0.10);
+  border-radius: 24px;
+}
+
 .glass-card {
-  /* Removed rounded borders and shadow for KPIs, per rules */
-  padding: 16px 0; /* Adjusted for minimal chrome */
+  /* Minimal chrome */
+  padding: 16px 0;
 }
 
 .glass-card-hero {

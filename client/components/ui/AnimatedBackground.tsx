@@ -15,16 +15,16 @@ export const AnimatedBackground: React.FC<AnimatedBackgroundProps> = ({
 }) => {
   return (
     <div
-      className={cn('relative w-full h-full overflow-hidden bg-[#161616]', className)}
+      className={cn('relative w-full h-full overflow-hidden bg-[#181818]', className)}
       style={{
-        backgroundColor: '#161616',
+        backgroundColor: '#181818',
         ...style,
       }}
       {...props}
     >
       {/* Blurred Animated Blobs Container */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden z-0">
-        {/* Dark Green Blob 1 */}
+        {/* Olive Green Blob 1 */}
         <motion.div
           animate={{
             x: [0, 100, -60, 0],
@@ -44,7 +44,7 @@ export const AnimatedBackground: React.FC<AnimatedBackgroundProps> = ({
             width: '520px',
             height: '520px',
             borderRadius: '50%',
-            background: 'radial-gradient(circle, rgba(16, 68, 36, 0.55) 0%, rgba(14, 56, 27, 0) 70%)',
+            background: 'radial-gradient(circle, rgba(90, 99, 43, 0.45) 0%, rgba(90, 99, 43, 0) 70%)',
             filter: 'blur(90px)',
             willChange: 'transform',
           }}
@@ -70,13 +70,13 @@ export const AnimatedBackground: React.FC<AnimatedBackgroundProps> = ({
             width: '440px',
             height: '440px',
             borderRadius: '50%',
-            background: 'radial-gradient(circle, rgba(198, 241, 53, 0.16) 0%, rgba(198, 241, 53, 0) 70%)',
+            background: 'radial-gradient(circle, rgba(213, 247, 55, 0.16) 0%, rgba(213, 247, 55, 0) 70%)',
             filter: 'blur(100px)',
             willChange: 'transform',
           }}
         />
 
-        {/* Dark Green / Forest Blob 3 */}
+        {/* Dark Olive Blob 3 */}
         <motion.div
           animate={{
             x: [0, 70, -90, 0],
@@ -96,7 +96,7 @@ export const AnimatedBackground: React.FC<AnimatedBackgroundProps> = ({
             width: '560px',
             height: '560px',
             borderRadius: '50%',
-            background: 'radial-gradient(circle, rgba(10, 50, 24, 0.48) 0%, rgba(10, 50, 24, 0) 70%)',
+            background: 'radial-gradient(circle, rgba(90, 99, 43, 0.35) 0%, rgba(90, 99, 43, 0) 70%)',
             filter: 'blur(95px)',
             willChange: 'transform',
           }}
@@ -122,7 +122,7 @@ export const AnimatedBackground: React.FC<AnimatedBackgroundProps> = ({
             width: '380px',
             height: '380px',
             borderRadius: '50%',
-            background: 'radial-gradient(circle, rgba(198, 241, 53, 0.12) 0%, rgba(198, 241, 53, 0) 70%)',
+            background: 'radial-gradient(circle, rgba(213, 247, 55, 0.12) 0%, rgba(213, 247, 55, 0) 70%)',
             filter: 'blur(85px)',
             willChange: 'transform',
           }}

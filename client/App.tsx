@@ -17,9 +17,9 @@ const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) =
 
   if (isLoading) {
     return (
-      <div className="h-screen w-screen flex items-center justify-center bg-[#161616] text-white font-['Outfit',sans-serif]">
+      <div className="h-screen w-screen flex items-center justify-center bg-[#181818] text-white font-['Outfit',sans-serif]">
         <div className="flex flex-col items-center gap-3">
-          <div className="w-8 h-8 rounded-full border-2 border-[#C6F135] border-t-transparent animate-spin" />
+          <div className="w-8 h-8 rounded-full border-2 border-[#D5F737] border-t-transparent animate-spin" />
           <span className="text-xs text-[#9A9A9A]">Loading session...</span>
         </div>
       </div>
@@ -39,9 +39,9 @@ const GuestRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
 
   if (isLoading) {
     return (
-      <div className="h-screen w-screen flex items-center justify-center bg-[#161616] text-white font-['Outfit',sans-serif]">
+      <div className="h-screen w-screen flex items-center justify-center bg-[#181818] text-white font-['Outfit',sans-serif]">
         <div className="flex flex-col items-center gap-3">
-          <div className="w-8 h-8 rounded-full border-2 border-[#C6F135] border-t-transparent animate-spin" />
+          <div className="w-8 h-8 rounded-full border-2 border-[#D5F737] border-t-transparent animate-spin" />
           <span className="text-xs text-[#9A9A9A]">Loading session...</span>
         </div>
       </div>
