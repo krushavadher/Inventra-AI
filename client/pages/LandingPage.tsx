@@ -231,6 +231,15 @@ export const LandingPage: React.FC = () => {
     }
   };
 
+  // 6. Cursor Spotlight Position Tracker (features & how it works cards)
+  const handleCardMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    e.currentTarget.style.setProperty('--mouse-x', `${x}px`);
+    e.currentTarget.style.setProperty('--mouse-y', `${y}px`);
+  };
+
   const navLinks = [
     { name: 'Features', href: '#features', id: 'features' },
     { name: 'AI Assistant', href: '#ai-assistant', id: 'ai-assistant' },
@@ -254,11 +263,14 @@ export const LandingPage: React.FC = () => {
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
           {/* Logo */}
-          <Link to="/" className="flex items-center gap-2.5 group">
-            <div className="w-8 h-8 rounded-lg bg-[#D5F737] flex items-center justify-center font-bold text-sm text-black shadow-md shadow-[#D5F737]/25 group-hover:scale-105 transition-transform">
+          <Link
+            to="/"
+            className="flex items-center gap-2.5 group rounded-xl p-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D5F737] focus-visible:ring-offset-2 focus-visible:ring-offset-[#181818]"
+          >
+            <div className="w-8 h-8 rounded-lg bg-[#D5F737] flex items-center justify-center font-bold text-sm text-black shadow-md shadow-[#D5F737]/25 group-hover:scale-105 transition-transform duration-200">
               I
             </div>
-            <span className="font-bold text-base sm:text-lg tracking-tight text-white group-hover:text-[#D5F737] transition-colors">
+            <span className="font-bold text-base sm:text-lg tracking-tight text-white group-hover:text-[#D5F737] transition-colors duration-200">
               Inventra AI
             </span>
           </Link>
@@ -273,13 +285,21 @@ export const LandingPage: React.FC = () => {
                   href={link.href}
                   onClick={(e) => scrollToSection(e, link.href)}
                   className={cn(
-                    'transition-colors duration-200 cursor-pointer',
+                    'relative py-1.5 px-1 transition-colors duration-200 cursor-pointer group rounded-md',
+                    'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D5F737] focus-visible:ring-offset-2 focus-visible:ring-offset-[#181818]',
                     isActive
                       ? 'text-[#D5F737] font-semibold'
-                      : 'text-[#9A9A9A] hover:text-white'
+                      : 'text-[#9A9A9A] hover:text-[#D5F737]'
                   )}
                 >
-                  {link.name}
+                  <span>{link.name}</span>
+                  {/* Underline grows from center on hover */}
+                  <span
+                    className={cn(
+                      'absolute bottom-0 left-1/2 -translate-x-1/2 h-[2px] bg-[#D5F737] transition-all duration-300 ease-out pointer-events-none origin-center',
+                      isActive ? 'w-full' : 'w-0 group-hover:w-full'
+                    )}
+                  />
                 </a>
               );
             })}
@@ -288,30 +308,58 @@ export const LandingPage: React.FC = () => {
           {/* Right Action Buttons */}
           <div className="flex items-center gap-3">
             {isAuthenticated ? (
-              <Link to="/dashboard">
+              <Link
+                to="/dashboard"
+                className="group relative inline-flex rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D5F737] focus-visible:ring-offset-2 focus-visible:ring-offset-[#181818]"
+              >
                 <ShimmerButton
                   background="#D5F737"
                   shimmerColor="#ffffff"
-                  className="text-black font-semibold text-xs sm:text-sm px-4 sm:px-5 py-2 rounded-xl shadow-md shadow-[#D5F737]/20 hover:brightness-105 transition-all"
+                  className={cn(
+                    'text-black font-semibold text-xs sm:text-sm px-4 sm:px-5 py-2 rounded-xl shadow-md shadow-[#D5F737]/20 transition-all duration-200 ease-out relative overflow-hidden',
+                    prefersReducedMotion
+                      ? 'hover:shadow-[0_0_24px_rgba(213,247,55,0.45)]'
+                      : 'hover:scale-[1.04] active:scale-[0.97] hover:shadow-[0_0_28px_rgba(213,247,55,0.45)]'
+                  )}
                 >
-                  Go to Dashboard
+                  {/* Sweeping light shine on hover */}
+                  <span className="absolute inset-0 overflow-hidden rounded-[inherit] pointer-events-none">
+                    <span className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-700 ease-in-out bg-gradient-to-r from-transparent via-white/40 to-transparent skew-x-12" />
+                  </span>
+                  <span className="relative z-10">Go to Dashboard</span>
                 </ShimmerButton>
               </Link>
             ) : (
               <>
                 <Link
                   to="/login"
-                  className="px-3 sm:px-4 py-2 rounded-xl text-xs sm:text-sm font-medium text-[#9A9A9A] hover:text-white hover:bg-white/[0.05] transition-all"
+                  className={cn(
+                    'px-3 sm:px-4 py-2 rounded-xl text-xs sm:text-sm font-medium text-[#9A9A9A] hover:text-white bg-white/[0.04] hover:bg-white/[0.12] border border-white/10 hover:border-[#D5F737] transition-all duration-200 ease-out',
+                    'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D5F737] focus-visible:ring-offset-2 focus-visible:ring-offset-[#181818]',
+                    prefersReducedMotion ? '' : 'active:scale-[0.97]'
+                  )}
                 >
                   Login
                 </Link>
-                <Link to="/signup">
+                <Link
+                  to="/signup"
+                  className="group relative inline-flex rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D5F737] focus-visible:ring-offset-2 focus-visible:ring-offset-[#181818]"
+                >
                   <ShimmerButton
                     background="#D5F737"
                     shimmerColor="#ffffff"
-                    className="text-black font-semibold text-xs sm:text-sm px-3.5 sm:px-4.5 py-2 rounded-xl shadow-md shadow-[#D5F737]/20 hover:brightness-105 transition-all"
+                    className={cn(
+                      'text-black font-semibold text-xs sm:text-sm px-3.5 sm:px-4.5 py-2 rounded-xl shadow-md shadow-[#D5F737]/20 transition-all duration-200 ease-out relative overflow-hidden',
+                      prefersReducedMotion
+                        ? 'hover:shadow-[0_0_24px_rgba(213,247,55,0.45)]'
+                        : 'hover:scale-[1.04] active:scale-[0.97] hover:shadow-[0_0_28px_rgba(213,247,55,0.45)]'
+                    )}
                   >
-                    Sign Up
+                    {/* Sweeping light shine on hover */}
+                    <span className="absolute inset-0 overflow-hidden rounded-[inherit] pointer-events-none">
+                      <span className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-700 ease-in-out bg-gradient-to-r from-transparent via-white/40 to-transparent skew-x-12" />
+                    </span>
+                    <span className="relative z-10">Sign Up</span>
                   </ShimmerButton>
                 </Link>
               </>
@@ -382,25 +430,42 @@ export const LandingPage: React.FC = () => {
               transition={{ duration: 0.5, delay: 0.3 }}
               className="flex flex-wrap items-center gap-4 w-full sm:w-auto"
             >
-              <Link to="/signup" className="w-full sm:w-auto">
+              <Link
+                to="/signup"
+                className="group relative w-full sm:w-auto inline-flex rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D5F737] focus-visible:ring-offset-2 focus-visible:ring-offset-[#181818]"
+              >
                 <ShimmerButton
                   background="#D5F737"
                   shimmerColor="#ffffff"
-                  className="w-full sm:w-auto text-black font-semibold text-sm sm:text-base px-7 py-3.5 rounded-xl shadow-lg shadow-[#D5F737]/25 hover:brightness-105 active:scale-[0.99] transition-all"
+                  className={cn(
+                    'w-full sm:w-auto text-black font-semibold text-sm sm:text-base px-7 py-3.5 rounded-xl shadow-lg shadow-[#D5F737]/25 transition-all duration-200 ease-out relative overflow-hidden',
+                    prefersReducedMotion
+                      ? 'hover:shadow-[0_0_30px_rgba(213,247,55,0.45)]'
+                      : 'hover:scale-[1.04] active:scale-[0.97] hover:shadow-[0_0_32px_rgba(213,247,55,0.5)]'
+                  )}
                 >
-                  Get Started
+                  {/* Sweeping light shine on hover */}
+                  <span className="absolute inset-0 overflow-hidden rounded-[inherit] pointer-events-none">
+                    <span className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-700 ease-in-out bg-gradient-to-r from-transparent via-white/40 to-transparent skew-x-12" />
+                  </span>
+                  <span className="relative z-10">Get Started</span>
                 </ShimmerButton>
               </Link>
 
-              <Link to="/login" className="w-full sm:w-auto">
-                <button className="w-full sm:w-auto px-7 py-3.5 rounded-xl bg-white/[0.08] hover:bg-white/[0.14] border border-white/15 backdrop-blur-md text-white font-semibold text-sm sm:text-base transition-all hover:border-white/30 cursor-pointer">
-                  Login
-                </button>
+              <Link
+                to="/login"
+                className={cn(
+                  'w-full sm:w-auto px-7 py-3.5 rounded-xl bg-white/[0.08] hover:bg-white/[0.14] border border-white/15 hover:border-[#D5F737] backdrop-blur-md text-white font-semibold text-sm sm:text-base transition-all duration-200 ease-out hover:shadow-[0_0_20px_rgba(213,247,55,0.2)] cursor-pointer text-center',
+                  'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D5F737] focus-visible:ring-offset-2 focus-visible:ring-offset-[#181818]',
+                  prefersReducedMotion ? '' : 'active:scale-[0.97]'
+                )}
+              >
+                Login
               </Link>
             </motion.div>
           </div>
 
-          {/* Right Floating Cards Column */}
+          {/* Right Floating Cards Column (Hover lift, lime border & soft glow) */}
           <div className="lg:col-span-5 flex flex-col items-center justify-center relative w-full pt-4 lg:pt-0">
             <div className="relative w-full max-w-md flex flex-col gap-4">
               {/* Floating Card 1: Incoming Stock */}
@@ -409,10 +474,23 @@ export const LandingPage: React.FC = () => {
                 transition={{ duration: 4.6, repeat: Infinity, ease: 'easeInOut' }}
                 className="w-full"
               >
-                <GlassCard className="p-4 sm:p-5 border border-white/15 bg-white/[0.08] backdrop-blur-[18px] rounded-[20px] shadow-xl">
+                <GlassCard
+                  tabIndex={0}
+                  className={cn(
+                    'group p-4 sm:p-5 border border-white/15 bg-white/[0.08] backdrop-blur-[18px] rounded-[20px] shadow-xl cursor-pointer transition-all duration-300 ease-out',
+                    'hover:border-[#D5F737]/40 hover:shadow-[0_16px_36px_-8px_rgba(0,0,0,0.6),0_0_24px_rgba(213,247,55,0.12)]',
+                    'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D5F737] focus-visible:ring-offset-2 focus-visible:ring-offset-[#181818]',
+                    prefersReducedMotion ? '' : 'hover:-translate-y-1.5'
+                  )}
+                >
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-xl bg-[#D5F737]/15 border border-[#D5F737]/30 flex items-center justify-center text-[#D5F737]">
+                      <div
+                        className={cn(
+                          'w-10 h-10 rounded-xl bg-[#D5F737]/15 border border-[#D5F737]/30 flex items-center justify-center text-[#D5F737] transition-transform duration-300 ease-out',
+                          prefersReducedMotion ? '' : 'group-hover:scale-[1.08] group-hover:rotate-3'
+                        )}
+                      >
                         <Package className="w-5 h-5" />
                       </div>
                       <div>
@@ -438,10 +516,23 @@ export const LandingPage: React.FC = () => {
                 transition={{ duration: 5.4, repeat: Infinity, ease: 'easeInOut', delay: 0.8 }}
                 className="w-full"
               >
-                <GlassCard className="p-4 sm:p-5 border border-white/15 bg-white/[0.08] backdrop-blur-[18px] rounded-[20px] shadow-xl">
+                <GlassCard
+                  tabIndex={0}
+                  className={cn(
+                    'group p-4 sm:p-5 border border-white/15 bg-white/[0.08] backdrop-blur-[18px] rounded-[20px] shadow-xl cursor-pointer transition-all duration-300 ease-out',
+                    'hover:border-[#D5F737]/40 hover:shadow-[0_16px_36px_-8px_rgba(0,0,0,0.6),0_0_24px_rgba(213,247,55,0.12)]',
+                    'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D5F737] focus-visible:ring-offset-2 focus-visible:ring-offset-[#181818]',
+                    prefersReducedMotion ? '' : 'hover:-translate-y-1.5'
+                  )}
+                >
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-xl bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center text-emerald-400">
+                      <div
+                        className={cn(
+                          'w-10 h-10 rounded-xl bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center text-emerald-400 transition-transform duration-300 ease-out',
+                          prefersReducedMotion ? '' : 'group-hover:scale-[1.08] group-hover:rotate-3'
+                        )}
+                      >
                         <ShieldCheck className="w-5 h-5" />
                       </div>
                       <div>
@@ -467,10 +558,23 @@ export const LandingPage: React.FC = () => {
                 transition={{ duration: 6.2, repeat: Infinity, ease: 'easeInOut', delay: 1.6 }}
                 className="w-full"
               >
-                <GlassCard className="p-4 sm:p-5 border border-white/15 bg-white/[0.08] backdrop-blur-[18px] rounded-[20px] shadow-xl">
+                <GlassCard
+                  tabIndex={0}
+                  className={cn(
+                    'group p-4 sm:p-5 border border-white/15 bg-white/[0.08] backdrop-blur-[18px] rounded-[20px] shadow-xl cursor-pointer transition-all duration-300 ease-out',
+                    'hover:border-[#D5F737]/40 hover:shadow-[0_16px_36px_-8px_rgba(0,0,0,0.6),0_0_24px_rgba(213,247,55,0.12)]',
+                    'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D5F737] focus-visible:ring-offset-2 focus-visible:ring-offset-[#181818]',
+                    prefersReducedMotion ? '' : 'hover:-translate-y-1.5'
+                  )}
+                >
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-xl bg-cyan-500/15 border border-cyan-500/30 flex items-center justify-center text-cyan-400">
+                      <div
+                        className={cn(
+                          'w-10 h-10 rounded-xl bg-cyan-500/15 border border-cyan-500/30 flex items-center justify-center text-cyan-400 transition-transform duration-300 ease-out',
+                          prefersReducedMotion ? '' : 'group-hover:scale-[1.08] group-hover:rotate-3'
+                        )}
+                      >
                         <TrendingUp className="w-5 h-5" />
                       </div>
                       <div>
@@ -495,7 +599,7 @@ export const LandingPage: React.FC = () => {
         </div>
       </section>
 
-      {/* 3. SECTION 1: FEATURES (STAGGERED REVEALS & SUBTLE PARALLAX) */}
+      {/* 3. SECTION 1: FEATURES (STAGGERED REVEALS, SPOTLIGHT & HOVER LIFT) */}
       <section id="features" className="py-20 lg:py-28 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
         <div className="text-center max-w-2xl mx-auto mb-14">
           <SectionRevealItem delay={0} prefersReducedMotion={prefersReducedMotion}>
@@ -523,13 +627,31 @@ export const LandingPage: React.FC = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
           {/* Feature 1 */}
           <SectionRevealItem delay={0.24} prefersReducedMotion={prefersReducedMotion} className="h-full">
-            <MagicCard
-              gradientColor="#D5F73718"
-              gradientSize={260}
-              className="h-full rounded-[24px] border border-white/10 bg-[#232323] p-6 flex flex-col justify-between transition-all hover:border-[#D5F737]/40"
+            <div
+              tabIndex={0}
+              onMouseMove={handleCardMouseMove}
+              className={cn(
+                'group relative h-full rounded-[24px] border border-white/10 bg-[#232323] p-6 flex flex-col justify-between overflow-hidden cursor-pointer transition-all duration-300 ease-out',
+                'hover:border-[#D5F737]/40 hover:shadow-[0_16px_36px_-8px_rgba(0,0,0,0.6),0_0_24px_rgba(213,247,55,0.12)]',
+                'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D5F737] focus-visible:ring-offset-2 focus-visible:ring-offset-[#181818]',
+                prefersReducedMotion ? '' : 'hover:-translate-y-1.5'
+              )}
             >
-              <div>
-                <div className="w-12 h-12 rounded-xl bg-[#D5F737]/15 border border-[#D5F737]/30 flex items-center justify-center text-[#D5F737] mb-5">
+              {/* Radial lime glow cursor spotlight (disabled on touch devices) */}
+              <div
+                className="pointer-events-none absolute inset-0 rounded-[inherit] opacity-0 [@media(hover:hover)]:group-hover:opacity-100 transition-opacity duration-300 z-0"
+                style={{
+                  background:
+                    'radial-gradient(350px circle at var(--mouse-x, -999px) var(--mouse-y, -999px), rgba(213, 247, 55, 0.15), transparent 80%)',
+                }}
+              />
+              <div className="relative z-10">
+                <div
+                  className={cn(
+                    'w-12 h-12 rounded-xl bg-[#D5F737]/15 border border-[#D5F737]/30 flex items-center justify-center text-[#D5F737] mb-5 transition-transform duration-300 ease-out',
+                    prefersReducedMotion ? '' : 'group-hover:scale-[1.08] group-hover:rotate-3'
+                  )}
+                >
                   <Package className="w-6 h-6" />
                 </div>
                 <h3 className="text-lg font-bold text-white mb-2">Live Inventory</h3>
@@ -537,22 +659,40 @@ export const LandingPage: React.FC = () => {
                   Real-time stock tracking with millisecond-level sync across warehouse bins and multiple fulfillment channels.
                 </p>
               </div>
-              <div className="mt-6 pt-4 border-t border-white/10 flex items-center gap-1.5 text-xs text-[#D5F737] font-medium">
+              <div className="relative z-10 mt-6 pt-4 border-t border-white/10 flex items-center gap-1.5 text-xs text-[#D5F737] font-medium">
                 <span>Instant sync active</span>
                 <CheckCircle2 className="w-3.5 h-3.5" />
               </div>
-            </MagicCard>
+            </div>
           </SectionRevealItem>
 
           {/* Feature 2 */}
           <SectionRevealItem delay={0.32} prefersReducedMotion={prefersReducedMotion} className="h-full">
-            <MagicCard
-              gradientColor="#D5F73718"
-              gradientSize={260}
-              className="h-full rounded-[24px] border border-white/10 bg-[#232323] p-6 flex flex-col justify-between transition-all hover:border-[#D5F737]/40"
+            <div
+              tabIndex={0}
+              onMouseMove={handleCardMouseMove}
+              className={cn(
+                'group relative h-full rounded-[24px] border border-white/10 bg-[#232323] p-6 flex flex-col justify-between overflow-hidden cursor-pointer transition-all duration-300 ease-out',
+                'hover:border-[#D5F737]/40 hover:shadow-[0_16px_36px_-8px_rgba(0,0,0,0.6),0_0_24px_rgba(213,247,55,0.12)]',
+                'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D5F737] focus-visible:ring-offset-2 focus-visible:ring-offset-[#181818]',
+                prefersReducedMotion ? '' : 'hover:-translate-y-1.5'
+              )}
             >
-              <div>
-                <div className="w-12 h-12 rounded-xl bg-amber-500/15 border border-amber-500/30 flex items-center justify-center text-amber-400 mb-5">
+              {/* Radial lime glow cursor spotlight */}
+              <div
+                className="pointer-events-none absolute inset-0 rounded-[inherit] opacity-0 [@media(hover:hover)]:group-hover:opacity-100 transition-opacity duration-300 z-0"
+                style={{
+                  background:
+                    'radial-gradient(350px circle at var(--mouse-x, -999px) var(--mouse-y, -999px), rgba(213, 247, 55, 0.15), transparent 80%)',
+                }}
+              />
+              <div className="relative z-10">
+                <div
+                  className={cn(
+                    'w-12 h-12 rounded-xl bg-amber-500/15 border border-amber-500/30 flex items-center justify-center text-amber-400 mb-5 transition-transform duration-300 ease-out',
+                    prefersReducedMotion ? '' : 'group-hover:scale-[1.08] group-hover:rotate-3'
+                  )}
+                >
                   <Bell className="w-6 h-6" />
                 </div>
                 <h3 className="text-lg font-bold text-white mb-2">Low-Stock Alerts</h3>
@@ -560,21 +700,39 @@ export const LandingPage: React.FC = () => {
                   Predictive safety threshold monitoring that notifies you before stock runs dry, factoring supplier lead times.
                 </p>
               </div>
-              <div className="mt-6 pt-4 border-t border-white/10 flex items-center gap-1.5 text-xs text-amber-400 font-medium">
+              <div className="relative z-10 mt-6 pt-4 border-t border-white/10 flex items-center gap-1.5 text-xs text-amber-400 font-medium">
                 <span>Zero unexpected stockouts</span>
               </div>
-            </MagicCard>
+            </div>
           </SectionRevealItem>
 
           {/* Feature 3 */}
           <SectionRevealItem delay={0.4} prefersReducedMotion={prefersReducedMotion} className="h-full">
-            <MagicCard
-              gradientColor="#D5F73718"
-              gradientSize={260}
-              className="h-full rounded-[24px] border border-white/10 bg-[#232323] p-6 flex flex-col justify-between transition-all hover:border-[#D5F737]/40"
+            <div
+              tabIndex={0}
+              onMouseMove={handleCardMouseMove}
+              className={cn(
+                'group relative h-full rounded-[24px] border border-white/10 bg-[#232323] p-6 flex flex-col justify-between overflow-hidden cursor-pointer transition-all duration-300 ease-out',
+                'hover:border-[#D5F737]/40 hover:shadow-[0_16px_36px_-8px_rgba(0,0,0,0.6),0_0_24px_rgba(213,247,55,0.12)]',
+                'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D5F737] focus-visible:ring-offset-2 focus-visible:ring-offset-[#181818]',
+                prefersReducedMotion ? '' : 'hover:-translate-y-1.5'
+              )}
             >
-              <div>
-                <div className="w-12 h-12 rounded-xl bg-purple-500/15 border border-purple-500/30 flex items-center justify-center text-purple-400 mb-5">
+              {/* Radial lime glow cursor spotlight */}
+              <div
+                className="pointer-events-none absolute inset-0 rounded-[inherit] opacity-0 [@media(hover:hover)]:group-hover:opacity-100 transition-opacity duration-300 z-0"
+                style={{
+                  background:
+                    'radial-gradient(350px circle at var(--mouse-x, -999px) var(--mouse-y, -999px), rgba(213, 247, 55, 0.15), transparent 80%)',
+                }}
+              />
+              <div className="relative z-10">
+                <div
+                  className={cn(
+                    'w-12 h-12 rounded-xl bg-purple-500/15 border border-purple-500/30 flex items-center justify-center text-purple-400 mb-5 transition-transform duration-300 ease-out',
+                    prefersReducedMotion ? '' : 'group-hover:scale-[1.08] group-hover:rotate-3'
+                  )}
+                >
                   <Bot className="w-6 h-6" />
                 </div>
                 <h3 className="text-lg font-bold text-white mb-2">AI Assistant</h3>
@@ -582,21 +740,39 @@ export const LandingPage: React.FC = () => {
                   Conversational intelligence that generates purchase recommendations, predicts demand spikes, and analyzes velocity.
                 </p>
               </div>
-              <div className="mt-6 pt-4 border-t border-white/10 flex items-center gap-1.5 text-xs text-purple-400 font-medium">
+              <div className="relative z-10 mt-6 pt-4 border-t border-white/10 flex items-center gap-1.5 text-xs text-purple-400 font-medium">
                 <span>Autonomous decision support</span>
               </div>
-            </MagicCard>
+            </div>
           </SectionRevealItem>
 
           {/* Feature 4 */}
           <SectionRevealItem delay={0.48} prefersReducedMotion={prefersReducedMotion} className="h-full">
-            <MagicCard
-              gradientColor="#D5F73718"
-              gradientSize={260}
-              className="h-full rounded-[24px] border border-white/10 bg-[#232323] p-6 flex flex-col justify-between transition-all hover:border-[#D5F737]/40"
+            <div
+              tabIndex={0}
+              onMouseMove={handleCardMouseMove}
+              className={cn(
+                'group relative h-full rounded-[24px] border border-white/10 bg-[#232323] p-6 flex flex-col justify-between overflow-hidden cursor-pointer transition-all duration-300 ease-out',
+                'hover:border-[#D5F737]/40 hover:shadow-[0_16px_36px_-8px_rgba(0,0,0,0.6),0_0_24px_rgba(213,247,55,0.12)]',
+                'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D5F737] focus-visible:ring-offset-2 focus-visible:ring-offset-[#181818]',
+                prefersReducedMotion ? '' : 'hover:-translate-y-1.5'
+              )}
             >
-              <div>
-                <div className="w-12 h-12 rounded-xl bg-cyan-500/15 border border-cyan-500/30 flex items-center justify-center text-cyan-400 mb-5">
+              {/* Radial lime glow cursor spotlight */}
+              <div
+                className="pointer-events-none absolute inset-0 rounded-[inherit] opacity-0 [@media(hover:hover)]:group-hover:opacity-100 transition-opacity duration-300 z-0"
+                style={{
+                  background:
+                    'radial-gradient(350px circle at var(--mouse-x, -999px) var(--mouse-y, -999px), rgba(213, 247, 55, 0.15), transparent 80%)',
+                }}
+              />
+              <div className="relative z-10">
+                <div
+                  className={cn(
+                    'w-12 h-12 rounded-xl bg-cyan-500/15 border border-cyan-500/30 flex items-center justify-center text-cyan-400 mb-5 transition-transform duration-300 ease-out',
+                    prefersReducedMotion ? '' : 'group-hover:scale-[1.08] group-hover:rotate-3'
+                  )}
+                >
                   <LayoutDashboard className="w-6 h-6" />
                 </div>
                 <h3 className="text-lg font-bold text-white mb-2">Smart Dashboard</h3>
@@ -604,15 +780,15 @@ export const LandingPage: React.FC = () => {
                   Real-time visibility into turnover rates, inventory valuation, active SKUs, and immediate reorder urgency.
                 </p>
               </div>
-              <div className="mt-6 pt-4 border-t border-white/10 flex items-center gap-1.5 text-xs text-cyan-400 font-medium">
+              <div className="relative z-10 mt-6 pt-4 border-t border-white/10 flex items-center gap-1.5 text-xs text-cyan-400 font-medium">
                 <span>Executive analytics live</span>
               </div>
-            </MagicCard>
+            </div>
           </SectionRevealItem>
         </div>
       </section>
 
-      {/* 4. SECTION 2: HOW IT WORKS (STAGGERED REVEALS & SUBTLE PARALLAX) */}
+      {/* 4. SECTION 2: HOW IT WORKS (SPOTLIGHT, HOVER LIFT & ARROW SLIDE) */}
       <section
         id="how-it-works"
         className="py-20 lg:py-28 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto border-t border-white/10"
@@ -643,9 +819,31 @@ export const LandingPage: React.FC = () => {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8">
           {/* Step 1 */}
           <SectionRevealItem delay={0.24} prefersReducedMotion={prefersReducedMotion} className="h-full">
-            <GlassCard className="p-7 border border-white/15 bg-white/[0.06] backdrop-blur-[18px] rounded-[24px] relative h-full flex flex-col justify-between">
-              <div>
-                <div className="w-12 h-12 rounded-2xl bg-[#D5F737] text-black font-extrabold text-base flex items-center justify-center mb-6 shadow-md shadow-[#D5F737]/20">
+            <div
+              tabIndex={0}
+              onMouseMove={handleCardMouseMove}
+              className={cn(
+                'group relative h-full p-7 border border-white/15 bg-white/[0.06] backdrop-blur-[18px] rounded-[24px] flex flex-col justify-between overflow-hidden cursor-pointer transition-all duration-300 ease-out',
+                'hover:border-[#D5F737]/40 hover:shadow-[0_16px_36px_-8px_rgba(0,0,0,0.6),0_0_24px_rgba(213,247,55,0.12)]',
+                'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D5F737] focus-visible:ring-offset-2 focus-visible:ring-offset-[#181818]',
+                prefersReducedMotion ? '' : 'hover:-translate-y-1.5'
+              )}
+            >
+              {/* Radial spotlight */}
+              <div
+                className="pointer-events-none absolute inset-0 rounded-[inherit] opacity-0 [@media(hover:hover)]:group-hover:opacity-100 transition-opacity duration-300 z-0"
+                style={{
+                  background:
+                    'radial-gradient(350px circle at var(--mouse-x, -999px) var(--mouse-y, -999px), rgba(213, 247, 55, 0.15), transparent 80%)',
+                }}
+              />
+              <div className="relative z-10">
+                <div
+                  className={cn(
+                    'w-12 h-12 rounded-2xl bg-[#D5F737] text-black font-extrabold text-base flex items-center justify-center mb-6 shadow-md shadow-[#D5F737]/20 transition-transform duration-300 ease-out',
+                    prefersReducedMotion ? '' : 'group-hover:scale-[1.08] group-hover:rotate-3'
+                  )}
+                >
                   01
                 </div>
                 <h3 className="text-xl font-bold text-white mb-2.5">Add products</h3>
@@ -653,17 +851,45 @@ export const LandingPage: React.FC = () => {
                   Import your catalog, specify SKUs, and set minimum safety thresholds to establish your baseline inventory parameters.
                 </p>
               </div>
-              <div className="mt-6 text-xs text-[#D5F737] font-semibold flex items-center gap-1">
-                <span>Connect catalog</span> <ArrowRight className="w-3.5 h-3.5" />
+              <div className="relative z-10 mt-6 text-xs text-[#D5F737] font-semibold flex items-center gap-1.5 group/link w-fit">
+                <span>Connect catalog</span>
+                <ArrowRight
+                  className={cn(
+                    'w-3.5 h-3.5 transition-transform duration-200 ease-out',
+                    prefersReducedMotion ? '' : 'group-hover:translate-x-1 group-hover/link:translate-x-1'
+                  )}
+                />
               </div>
-            </GlassCard>
+            </div>
           </SectionRevealItem>
 
           {/* Step 2 */}
           <SectionRevealItem delay={0.32} prefersReducedMotion={prefersReducedMotion} className="h-full">
-            <GlassCard className="p-7 border border-white/15 bg-white/[0.06] backdrop-blur-[18px] rounded-[24px] relative h-full flex flex-col justify-between">
-              <div>
-                <div className="w-12 h-12 rounded-2xl bg-[#D5F737] text-black font-extrabold text-base flex items-center justify-center mb-6 shadow-md shadow-[#D5F737]/20">
+            <div
+              tabIndex={0}
+              onMouseMove={handleCardMouseMove}
+              className={cn(
+                'group relative h-full p-7 border border-white/15 bg-white/[0.06] backdrop-blur-[18px] rounded-[24px] flex flex-col justify-between overflow-hidden cursor-pointer transition-all duration-300 ease-out',
+                'hover:border-[#D5F737]/40 hover:shadow-[0_16px_36px_-8px_rgba(0,0,0,0.6),0_0_24px_rgba(213,247,55,0.12)]',
+                'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D5F737] focus-visible:ring-offset-2 focus-visible:ring-offset-[#181818]',
+                prefersReducedMotion ? '' : 'hover:-translate-y-1.5'
+              )}
+            >
+              {/* Radial spotlight */}
+              <div
+                className="pointer-events-none absolute inset-0 rounded-[inherit] opacity-0 [@media(hover:hover)]:group-hover:opacity-100 transition-opacity duration-300 z-0"
+                style={{
+                  background:
+                    'radial-gradient(350px circle at var(--mouse-x, -999px) var(--mouse-y, -999px), rgba(213, 247, 55, 0.15), transparent 80%)',
+                }}
+              />
+              <div className="relative z-10">
+                <div
+                  className={cn(
+                    'w-12 h-12 rounded-2xl bg-[#D5F737] text-black font-extrabold text-base flex items-center justify-center mb-6 shadow-md shadow-[#D5F737]/20 transition-transform duration-300 ease-out',
+                    prefersReducedMotion ? '' : 'group-hover:scale-[1.08] group-hover:rotate-3'
+                  )}
+                >
                   02
                 </div>
                 <h3 className="text-xl font-bold text-white mb-2.5">Track stock</h3>
@@ -671,17 +897,45 @@ export const LandingPage: React.FC = () => {
                   Monitor inbound shipments and outgoing items with automatic stock-level audits and trigger-based notifications.
                 </p>
               </div>
-              <div className="mt-6 text-xs text-[#D5F737] font-semibold flex items-center gap-1">
-                <span>Automated monitoring</span> <ArrowRight className="w-3.5 h-3.5" />
+              <div className="relative z-10 mt-6 text-xs text-[#D5F737] font-semibold flex items-center gap-1.5 group/link w-fit">
+                <span>Automated monitoring</span>
+                <ArrowRight
+                  className={cn(
+                    'w-3.5 h-3.5 transition-transform duration-200 ease-out',
+                    prefersReducedMotion ? '' : 'group-hover:translate-x-1 group-hover/link:translate-x-1'
+                  )}
+                />
               </div>
-            </GlassCard>
+            </div>
           </SectionRevealItem>
 
           {/* Step 3 */}
           <SectionRevealItem delay={0.4} prefersReducedMotion={prefersReducedMotion} className="h-full">
-            <GlassCard className="p-7 border border-white/15 bg-white/[0.06] backdrop-blur-[18px] rounded-[24px] relative h-full flex flex-col justify-between">
-              <div>
-                <div className="w-12 h-12 rounded-2xl bg-[#D5F737] text-black font-extrabold text-base flex items-center justify-center mb-6 shadow-md shadow-[#D5F737]/20">
+            <div
+              tabIndex={0}
+              onMouseMove={handleCardMouseMove}
+              className={cn(
+                'group relative h-full p-7 border border-white/15 bg-white/[0.06] backdrop-blur-[18px] rounded-[24px] flex flex-col justify-between overflow-hidden cursor-pointer transition-all duration-300 ease-out',
+                'hover:border-[#D5F737]/40 hover:shadow-[0_16px_36px_-8px_rgba(0,0,0,0.6),0_0_24px_rgba(213,247,55,0.12)]',
+                'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D5F737] focus-visible:ring-offset-2 focus-visible:ring-offset-[#181818]',
+                prefersReducedMotion ? '' : 'hover:-translate-y-1.5'
+              )}
+            >
+              {/* Radial spotlight */}
+              <div
+                className="pointer-events-none absolute inset-0 rounded-[inherit] opacity-0 [@media(hover:hover)]:group-hover:opacity-100 transition-opacity duration-300 z-0"
+                style={{
+                  background:
+                    'radial-gradient(350px circle at var(--mouse-x, -999px) var(--mouse-y, -999px), rgba(213, 247, 55, 0.15), transparent 80%)',
+                }}
+              />
+              <div className="relative z-10">
+                <div
+                  className={cn(
+                    'w-12 h-12 rounded-2xl bg-[#D5F737] text-black font-extrabold text-base flex items-center justify-center mb-6 shadow-md shadow-[#D5F737]/20 transition-transform duration-300 ease-out',
+                    prefersReducedMotion ? '' : 'group-hover:scale-[1.08] group-hover:rotate-3'
+                  )}
+                >
                   03
                 </div>
                 <h3 className="text-xl font-bold text-white mb-2.5">Ask AI</h3>
@@ -689,15 +943,21 @@ export const LandingPage: React.FC = () => {
                   Query your copilot on what to order, when to replenish, and how to optimize working capital with predictive guidance.
                 </p>
               </div>
-              <div className="mt-6 text-xs text-[#D5F737] font-semibold flex items-center gap-1">
-                <span>Actionable decisions</span> <ArrowRight className="w-3.5 h-3.5" />
+              <div className="relative z-10 mt-6 text-xs text-[#D5F737] font-semibold flex items-center gap-1.5 group/link w-fit">
+                <span>Actionable decisions</span>
+                <ArrowRight
+                  className={cn(
+                    'w-3.5 h-3.5 transition-transform duration-200 ease-out',
+                    prefersReducedMotion ? '' : 'group-hover:translate-x-1 group-hover/link:translate-x-1'
+                  )}
+                />
               </div>
-            </GlassCard>
+            </div>
           </SectionRevealItem>
         </div>
       </section>
 
-      {/* 5. SECTION 3: AI ASSISTANT PREVIEW (STAGGERED REVEALS & SUBTLE PARALLAX) */}
+      {/* 5. SECTION 3: AI ASSISTANT PREVIEW (HOVER LIFT, CHIP HOVERS & PULSE DOT) */}
       <section
         id="ai-assistant"
         className="py-20 lg:py-28 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto border-t border-white/10"
@@ -727,18 +987,35 @@ export const LandingPage: React.FC = () => {
 
         <div className="max-w-3xl mx-auto">
           <SectionRevealItem delay={0.24} prefersReducedMotion={prefersReducedMotion}>
-            <GlassCard className="p-6 sm:p-8 border border-white/15 bg-white/[0.08] backdrop-blur-[20px] rounded-[24px] shadow-2xl relative">
+            <GlassCard
+              tabIndex={0}
+              className={cn(
+                'group p-6 sm:p-8 border border-white/15 bg-white/[0.08] backdrop-blur-[20px] rounded-[24px] shadow-2xl relative transition-all duration-300 ease-out',
+                'hover:border-[#D5F737]/40 hover:shadow-[0_16px_36px_-8px_rgba(0,0,0,0.6),0_0_24px_rgba(213,247,55,0.12)]',
+                'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D5F737] focus-visible:ring-offset-2 focus-visible:ring-offset-[#181818]',
+                prefersReducedMotion ? '' : 'hover:-translate-y-1.5'
+              )}
+            >
               {/* Chat Mock Header */}
               <div className="flex items-center justify-between pb-5 border-b border-white/10 mb-6">
                 <div className="flex items-center gap-3">
-                  <div className="w-9 h-9 rounded-xl bg-[#D5F737] text-black font-bold flex items-center justify-center">
+                  <div
+                    className={cn(
+                      'w-9 h-9 rounded-xl bg-[#D5F737] text-black font-bold flex items-center justify-center transition-transform duration-300 ease-out',
+                      prefersReducedMotion ? '' : 'group-hover:scale-[1.08] group-hover:rotate-3'
+                    )}
+                  >
                     <Bot className="w-5 h-5" />
                   </div>
                   <div>
                     <div className="text-sm font-semibold text-white">Inventra AI Copilot</div>
-                    <div className="text-[10px] text-[#9A9A9A] flex items-center gap-1">
-                      <span className="w-1.5 h-1.5 rounded-full bg-[#D5F737] animate-ping" />
-                      Active & Connected to live warehouse
+                    {/* Bright lime status dot softly pulsing */}
+                    <div className="text-[10px] text-[#9A9A9A] flex items-center gap-1.5">
+                      <span className="relative flex h-2 w-2">
+                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#D5F737] opacity-75" />
+                        <span className="relative inline-flex rounded-full h-2 w-2 bg-[#D5F737] shadow-[0_0_8px_#D5F737]" />
+                      </span>
+                      <span>Active & Connected to live warehouse</span>
                     </div>
                   </div>
                 </div>
@@ -757,26 +1034,47 @@ export const LandingPage: React.FC = () => {
                   </div>
                 </div>
 
-                {/* AI Reply with Typing Animation */}
+                {/* AI Reply with Typing Animation on View */}
                 <div className="flex justify-start items-start gap-3">
                   <div className="w-7 h-7 rounded-lg bg-[#D5F737] text-black flex items-center justify-center flex-shrink-0 mt-1">
                     <Sparkles className="w-4 h-4" />
                   </div>
                   <div className="max-w-xl p-4 sm:p-5 rounded-2xl rounded-tl-none bg-white/[0.05] border border-white/10 text-xs sm:text-sm text-[#FFFFFF] leading-relaxed shadow-inner">
-                    <TypingAnimation
-                      duration={25}
-                      delay={200}
-                      className="text-white font-normal"
-                    >
-                      Based on current sales velocity, SKU-402 (Wireless Pro Headphones) has 14 units left and will stock out in 3 days. I recommend generating a purchase order for 250 units today to maintain your optimal 30-day buffer stock.
-                    </TypingAnimation>
+                    {prefersReducedMotion ? (
+                      <span className="text-white font-normal">
+                        Based on current sales velocity, SKU-402 (Wireless Pro Headphones) has 14 units left and will stock out in 3 days. I recommend generating a purchase order for 250 units today to maintain your optimal 30-day buffer stock.
+                      </span>
+                    ) : (
+                      <TypingAnimation
+                        duration={20}
+                        delay={150}
+                        startOnView={true}
+                        className="text-white font-normal"
+                      >
+                        Based on current sales velocity, SKU-402 (Wireless Pro Headphones) has 14 units left and will stock out in 3 days. I recommend generating a purchase order for 250 units today to maintain your optimal 30-day buffer stock.
+                      </TypingAnimation>
+                    )}
 
-                    {/* Action recommendations buttons inside mock */}
+                    {/* Action chips with button-style hover */}
                     <div className="mt-4 pt-3 border-t border-white/10 flex flex-wrap gap-2">
-                      <button className="px-3 py-1.5 rounded-lg bg-[#D5F737]/20 hover:bg-[#D5F737]/30 text-[#D5F737] text-xs font-semibold border border-[#D5F737]/30 transition-colors">
+                      <button
+                        className={cn(
+                          'px-3 py-1.5 rounded-lg bg-[#D5F737]/20 text-[#D5F737] text-xs font-semibold border border-[#D5F737]/30 transition-all duration-200 ease-out cursor-pointer',
+                          'hover:bg-[#D5F737]/30 hover:border-[#D5F737] hover:shadow-[0_0_18px_rgba(213,247,55,0.25)]',
+                          'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D5F737] focus-visible:ring-offset-2 focus-visible:ring-offset-[#181818]',
+                          prefersReducedMotion ? '' : 'hover:scale-[1.04] active:scale-[0.97]'
+                        )}
+                      >
                         Draft PO for 250 units
                       </button>
-                      <button className="px-3 py-1.5 rounded-lg bg-white/[0.05] hover:bg-white/[0.1] text-white text-xs border border-white/10 transition-colors">
+                      <button
+                        className={cn(
+                          'px-3 py-1.5 rounded-lg bg-white/[0.05] text-white text-xs border border-white/10 transition-all duration-200 ease-out cursor-pointer',
+                          'hover:bg-white/[0.12] hover:border-[#D5F737]/60 hover:shadow-[0_0_18px_rgba(213,247,55,0.2)]',
+                          'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D5F737] focus-visible:ring-offset-2 focus-visible:ring-offset-[#181818]',
+                          prefersReducedMotion ? '' : 'hover:scale-[1.04] active:scale-[0.97]'
+                        )}
+                      >
                         View Supplier Lead Times
                       </button>
                     </div>
@@ -788,7 +1086,7 @@ export const LandingPage: React.FC = () => {
         </div>
       </section>
 
-      {/* 6. SECTION 4: CALL TO ACTION (STAGGERED REVEALS & SUBTLE PARALLAX) */}
+      {/* 6. SECTION 4: CALL TO ACTION (LIME BUTTON SCALE & SWEEP SHINE) */}
       <section className="py-20 lg:py-24 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto border-t border-white/10">
         <SectionRevealItem delay={0} prefersReducedMotion={prefersReducedMotion}>
           <GlassCard className="p-8 sm:p-14 border border-white/15 bg-white/[0.08] backdrop-blur-[24px] rounded-[32px] text-center relative overflow-hidden shadow-2xl">
@@ -815,13 +1113,25 @@ export const LandingPage: React.FC = () => {
               </SectionRevealItem>
 
               <SectionRevealItem delay={0.32} prefersReducedMotion={prefersReducedMotion}>
-                <Link to="/signup">
+                <Link
+                  to="/signup"
+                  className="group relative inline-flex rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D5F737] focus-visible:ring-offset-2 focus-visible:ring-offset-[#181818]"
+                >
                   <ShimmerButton
                     background="#D5F737"
                     shimmerColor="#ffffff"
-                    className="text-black font-bold text-sm sm:text-base px-8 py-4 rounded-xl shadow-xl shadow-[#D5F737]/30 hover:brightness-105 active:scale-[0.99] transition-all cursor-pointer"
+                    className={cn(
+                      'text-black font-bold text-sm sm:text-base px-8 py-4 rounded-xl shadow-xl shadow-[#D5F737]/30 transition-all duration-200 ease-out cursor-pointer relative overflow-hidden',
+                      prefersReducedMotion
+                        ? 'hover:shadow-[0_0_32px_rgba(213,247,55,0.45)]'
+                        : 'hover:scale-[1.04] active:scale-[0.97] hover:shadow-[0_0_36px_rgba(213,247,55,0.5)]'
+                    )}
                   >
-                    Create free account
+                    {/* Sweeping light shine on hover */}
+                    <span className="absolute inset-0 overflow-hidden rounded-[inherit] pointer-events-none">
+                      <span className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-700 ease-in-out bg-gradient-to-r from-transparent via-white/40 to-transparent skew-x-12" />
+                    </span>
+                    <span className="relative z-10">Create free account</span>
                   </ShimmerButton>
                 </Link>
               </SectionRevealItem>
@@ -845,25 +1155,28 @@ export const LandingPage: React.FC = () => {
             <a
               href="#features"
               onClick={(e) => scrollToSection(e, '#features')}
-              className="hover:text-white transition-colors"
+              className="hover:text-[#D5F737] transition-colors duration-200 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D5F737] focus-visible:ring-offset-2 focus-visible:ring-offset-[#181818] rounded"
             >
               Features
             </a>
             <a
               href="#ai-assistant"
               onClick={(e) => scrollToSection(e, '#ai-assistant')}
-              className="hover:text-white transition-colors"
+              className="hover:text-[#D5F737] transition-colors duration-200 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D5F737] focus-visible:ring-offset-2 focus-visible:ring-offset-[#181818] rounded"
             >
               AI Assistant
             </a>
             <a
               href="#how-it-works"
               onClick={(e) => scrollToSection(e, '#how-it-works')}
-              className="hover:text-white transition-colors"
+              className="hover:text-[#D5F737] transition-colors duration-200 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D5F737] focus-visible:ring-offset-2 focus-visible:ring-offset-[#181818] rounded"
             >
               How it works
             </a>
-            <Link to="/login" className="hover:text-white transition-colors">
+            <Link
+              to="/login"
+              className="hover:text-[#D5F737] transition-colors duration-200 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D5F737] focus-visible:ring-offset-2 focus-visible:ring-offset-[#181818] rounded"
+            >
               Sign In
             </Link>
           </div>
@@ -881,9 +1194,12 @@ export const LandingPage: React.FC = () => {
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.8, y: 16 }}
             transition={{ duration: 0.25, ease: 'easeOut' }}
-            whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: 0.95 }}
-            className="fixed bottom-6 right-6 sm:bottom-8 sm:right-8 z-50 w-11 h-11 rounded-full bg-[#D5F737] text-black shadow-xl shadow-[#D5F737]/30 flex items-center justify-center cursor-pointer transition-transform"
+            whileHover={prefersReducedMotion ? {} : { scale: 1.1 }}
+            whileTap={prefersReducedMotion ? {} : { scale: 0.95 }}
+            className={cn(
+              'fixed bottom-6 right-6 sm:bottom-8 sm:right-8 z-50 w-11 h-11 rounded-full bg-[#D5F737] text-black shadow-xl shadow-[#D5F737]/30 flex items-center justify-center cursor-pointer transition-all duration-200 ease-out hover:shadow-[0_0_24px_rgba(213,247,55,0.5)]',
+              'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D5F737] focus-visible:ring-offset-2 focus-visible:ring-offset-[#181818]'
+            )}
           >
             <ArrowUp className="w-5 h-5 stroke-[2.5]" />
           </motion.button>
