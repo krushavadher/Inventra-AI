@@ -1,13 +1,10 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
-  AlertTriangle,
-  AlertCircle,
   Sparkles,
   RefreshCw,
   Search,
   CheckCircle2,
-  Package,
   ArrowRight,
   FilterX,
   X,
@@ -184,10 +181,6 @@ export const AlertsPage: React.FC = () => {
             </div>
             <div className="text-[11px] text-[#9A9A9A] mt-0.5">Immediate reorder required</div>
           </div>
-          {/* Critical icon box with soft pulsing red glow */}
-          <div className="w-11 h-11 rounded-2xl bg-rose-500/20 border border-rose-500/40 flex items-center justify-center text-rose-400 shadow-[0_0_18px_rgba(240,80,110,0.4)] animate-pulse">
-            <AlertCircle className="w-5 h-5" />
-          </div>
         </GlassCard>
 
         {/* Warning Card (Click applies Warnings filter) */}
@@ -208,9 +201,6 @@ export const AlertsPage: React.FC = () => {
               <NumberTicker value={warningCount} className="text-white" />
             </div>
             <div className="text-[11px] text-[#9A9A9A] mt-0.5">Below safety buffer</div>
-          </div>
-          <div className="w-11 h-11 rounded-2xl bg-amber-500/15 border border-amber-500/30 flex items-center justify-center text-amber-400 shadow-[0_0_14px_rgba(245,165,36,0.25)]">
-            <AlertTriangle className="w-5 h-5" />
           </div>
         </GlassCard>
 
@@ -234,9 +224,6 @@ export const AlertsPage: React.FC = () => {
             <div className="text-[11px] text-[#9A9A9A] mt-0.5">
               {alerts.length === 0 ? 'Catalog healthy' : 'Catalog items flagged'}
             </div>
-          </div>
-          <div className="w-11 h-11 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center text-zinc-300">
-            <Package className="w-5 h-5 text-[#D5F737]" />
           </div>
         </GlassCard>
       </section>
@@ -339,20 +326,8 @@ export const AlertsPage: React.FC = () => {
                 >
                   <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
                     {/* Left: Product & Alert Info */}
-                    <div className="flex items-start gap-3.5 min-w-0 flex-1">
-                      {/* Inner icon box: scales 1.06 on card hover */}
-                      <div
-                        className={`w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 mt-0.5 transition-transform duration-200 group-hover:scale-[1.06] ${
-                          isOut
-                            ? 'bg-rose-500/15 border border-rose-500/30 text-rose-400'
-                            : 'bg-amber-500/15 border border-amber-500/30 text-amber-400'
-                        }`}
-                      >
-                        {isOut ? <AlertCircle className="w-5 h-5" /> : <AlertTriangle className="w-5 h-5" />}
-                      </div>
-
-                      <div className="flex flex-col gap-1 min-w-0 flex-1">
-                        <div className="flex flex-wrap items-center gap-2">
+                    <div className="flex flex-col gap-1 min-w-0 flex-1">
+                      <div className="flex flex-wrap items-center gap-2">
                           <span
                             className={`text-[11px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full border ${
                               isOut
@@ -407,7 +382,6 @@ export const AlertsPage: React.FC = () => {
                           </div>
                         </div>
                       </div>
-                    </div>
 
                     {/* Right: Ask AI Action Button (Pill with shine sweep, arrow slide, pulse dot) */}
                     <div className="flex flex-row lg:flex-col items-center lg:items-end justify-between lg:justify-center gap-2 flex-shrink-0 pt-3 lg:pt-0 border-t lg:border-t-0 border-white/5">
