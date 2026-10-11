@@ -1,6 +1,12 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { motion } from 'framer-motion';
+import {
+  motion,
+  useScroll,
+  useTransform,
+  useReducedMotion,
+  AnimatePresence,
+} from 'framer-motion';
 import Lenis from 'lenis';
 import {
   Package,
@@ -8,6 +14,7 @@ import {
   Bot,
   LayoutDashboard,
   ArrowRight,
+  ArrowUp,
   Sparkles,
   TrendingUp,
   Activity,
@@ -15,25 +22,105 @@ import {
   Send,
   CheckCircle2,
   Boxes,
-  Cpu
+  Cpu,
 } from 'lucide-react';
+import { cn } from '@/lib/utils';
 import { AnimatedBackground } from '@/components/ui/AnimatedBackground';
 import { GlassCard } from '@/components/ui/GlassCard';
 import { AnimatedGridPattern } from '@/components/ui/animated-grid-pattern';
 import { AuroraText } from '@/components/ui/aurora-text';
 import { ShimmerButton } from '@/components/ui/shimmer-button';
 import { NumberTicker } from '@/components/ui/number-ticker';
-import { BlurFade } from '@/components/ui/blur-fade';
 import { MagicCard } from '@/components/ui/magic-card';
 import { TypingAnimation } from '@/components/ui/typing-animation';
 import { useAuth } from '@/context/AuthContext';
 
+/**
+ * Section Reveal Item
+ * Fades in and slides up ~24px once when 20% visible.
+ * Respects prefers-reduced-motion.
+ */
+interface SectionRevealItemProps {
+  children: React.ReactNode;
+  delay?: number;
+  className?: string;
+  prefersReducedMotion?: boolean | null;
+}
+
+const SectionRevealItem: React.FC<SectionRevealItemProps> = ({
+  children,
+  delay = 0,
+  className = '',
+  prefersReducedMotion,
+}) => {
+  if (prefersReducedMotion) {
+    return <div className={className}>{children}</div>;
+  }
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 24 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, amount: 0.2 }}
+      transition={{
+        duration: 0.6,
+        ease: [0.16, 1, 0.3, 1], // ease-out curve
+        delay,
+      }}
+      className={className}
+    >
+      {children}
+    </motion.div>
+  );
+};
+
+/**
+ * Parallax Section Heading
+ * Moves slightly slower than scroll (8-10%) across viewport.
+ * Animates GPU transform only with zero layout shift.
+ */
+interface ParallaxHeadingProps {
+  children: React.ReactNode;
+  className?: string;
+  prefersReducedMotion?: boolean | null;
+}
+
+const ParallaxHeading: React.FC<ParallaxHeadingProps> = ({
+  children,
+  className = '',
+  prefersReducedMotion,
+}) => {
+  const targetRef = useRef<HTMLHeadingElement>(null);
+  const { scrollYProgress } = useScroll({
+    target: targetRef,
+    offset: ['start end', 'end start'],
+  });
+
+  // Moves 8-10% slower than scroll across viewport range
+  const y = useTransform(scrollYProgress, [0, 1], [-20, 20]);
+
+  if (prefersReducedMotion) {
+    return <h2 className={className}>{children}</h2>;
+  }
+
+  return (
+    <motion.h2 ref={targetRef} style={{ y }} className={className}>
+      {children}
+    </motion.h2>
+  );
+};
+
 export const LandingPage: React.FC = () => {
   const { isAuthenticated } = useAuth();
+  const prefersReducedMotion = useReducedMotion();
   const lenisRef = useRef<Lenis | null>(null);
 
+  const [isScrolled, setIsScrolled] = useState(false);
+  const [activeSection, setActiveSection] = useState<string>('');
+  const [showBackToTop, setShowBackToTop] = useState(false);
+
+  // 1. Initialize Lenis on the window (native touch unchanged, smooth wheel on)
   useEffect(() => {
-    // 1. Initialize Lenis on the window (native touch unchanged, smooth wheel on)
     const lenis = new Lenis({
       duration: 1.2,
       easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)), // easeOutExpo
@@ -43,7 +130,7 @@ export const LandingPage: React.FC = () => {
 
     lenisRef.current = lenis;
 
-    // 2. Single requestAnimationFrame loop
+    // Single requestAnimationFrame loop
     let rafId: number | null = null;
     const raf = (time: number) => {
       lenis.raf(time);
@@ -51,7 +138,7 @@ export const LandingPage: React.FC = () => {
     };
     rafId = requestAnimationFrame(raf);
 
-    // 3. React StrictMode-safe cleanup on unmount
+    // React StrictMode-safe cleanup on unmount
     return () => {
       if (rafId !== null) {
         cancelAnimationFrame(rafId);
@@ -62,28 +149,109 @@ export const LandingPage: React.FC = () => {
     };
   }, []);
 
+  // 2. Passive Scroll Listener for Sticky Navbar (>40px) & Back-To-Top (>450px)
+  useEffect(() => {
+    const handleScroll = () => {
+      const scrollY = window.scrollY;
+
+      const scrolled = scrollY > 40;
+      setIsScrolled((prev) => (prev !== scrolled ? scrolled : prev));
+
+      const showBtn = scrollY > 450;
+      setShowBackToTop((prev) => (prev !== showBtn ? showBtn : prev));
+
+      if (scrollY < 180) {
+        setActiveSection('');
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    handleScroll();
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  // 3. Intersection Observer for Active Section Navbar Highlighting
+  useEffect(() => {
+    const sectionIds = ['features', 'how-it-works', 'ai-assistant'];
+    const sections = sectionIds
+      .map((id) => document.getElementById(id))
+      .filter(Boolean) as HTMLElement[];
+
+    if (!sections.length) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            setActiveSection(entry.target.id);
+          }
+        });
+      },
+      {
+        rootMargin: '-80px 0px -55% 0px',
+        threshold: 0,
+      }
+    );
+
+    sections.forEach((sec) => observer.observe(sec));
+    return () => observer.disconnect();
+  }, []);
+
+  // 4. Smooth Scroll with Navbar Offset (64px)
   const scrollToSection = (e: React.MouseEvent<HTMLAnchorElement>, target: string) => {
     if (target.startsWith('#')) {
       const element = document.querySelector(target);
       if (element) {
         e.preventDefault();
-        if (lenisRef.current) {
+        if (lenisRef.current && !prefersReducedMotion) {
           lenisRef.current.scrollTo(element as HTMLElement, {
             offset: -64,
             duration: 1.2,
           });
         } else {
           const top = element.getBoundingClientRect().top + window.scrollY - 64;
-          window.scrollTo({ top, behavior: 'smooth' });
+          window.scrollTo({
+            top,
+            behavior: prefersReducedMotion ? 'auto' : 'smooth',
+          });
         }
       }
     }
   };
 
+  // 5. Back to Top Action
+  const scrollToTop = () => {
+    if (lenisRef.current && !prefersReducedMotion) {
+      lenisRef.current.scrollTo(0, { duration: 1.2 });
+    } else {
+      window.scrollTo({
+        top: 0,
+        behavior: prefersReducedMotion ? 'auto' : 'smooth',
+      });
+    }
+  };
+
+  const navLinks = [
+    { name: 'Features', href: '#features', id: 'features' },
+    { name: 'AI Assistant', href: '#ai-assistant', id: 'ai-assistant' },
+    { name: 'How it works', href: '#how-it-works', id: 'how-it-works' },
+  ];
+
   return (
     <div className="relative min-h-screen w-full max-w-full overflow-x-hidden bg-[#181818] text-white font-['Outfit',sans-serif] selection:bg-[#D5F737] selection:text-black">
       {/* 1. STICKY GLASS NAVBAR */}
-      <nav className="sticky top-0 z-50 w-full backdrop-blur-[18px] bg-[#181818]/80 border-b border-white/10 transition-all">
+      <nav
+        className="sticky top-0 z-50 w-full transition-all duration-300"
+        style={{
+          backgroundColor: isScrolled ? 'rgba(24, 24, 24, 0.70)' : 'transparent',
+          backdropFilter: isScrolled ? 'blur(16px)' : 'none',
+          WebkitBackdropFilter: isScrolled ? 'blur(16px)' : 'none',
+          borderBottom: isScrolled
+            ? '1px solid rgba(255, 255, 255, 0.10)'
+            : '1px solid transparent',
+          boxShadow: isScrolled ? '0 10px 30px -10px rgba(0,0,0,0.5)' : 'none',
+        }}
+      >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
           {/* Logo */}
           <Link to="/" className="flex items-center gap-2.5 group">
@@ -96,28 +264,25 @@ export const LandingPage: React.FC = () => {
           </Link>
 
           {/* Nav Links */}
-          <div className="hidden md:flex items-center gap-8 text-sm font-medium text-[#9A9A9A]">
-            <a
-              href="#features"
-              onClick={(e) => scrollToSection(e, '#features')}
-              className="hover:text-white transition-colors"
-            >
-              Features
-            </a>
-            <a
-              href="#ai-assistant"
-              onClick={(e) => scrollToSection(e, '#ai-assistant')}
-              className="hover:text-white transition-colors"
-            >
-              AI Assistant
-            </a>
-            <a
-              href="#how-it-works"
-              onClick={(e) => scrollToSection(e, '#how-it-works')}
-              className="hover:text-white transition-colors"
-            >
-              How it works
-            </a>
+          <div className="hidden md:flex items-center gap-8 text-sm font-medium">
+            {navLinks.map((link) => {
+              const isActive = activeSection === link.id;
+              return (
+                <a
+                  key={link.id}
+                  href={link.href}
+                  onClick={(e) => scrollToSection(e, link.href)}
+                  className={cn(
+                    'transition-colors duration-200 cursor-pointer',
+                    isActive
+                      ? 'text-[#D5F737] font-semibold'
+                      : 'text-[#9A9A9A] hover:text-white'
+                  )}
+                >
+                  {link.name}
+                </a>
+              );
+            })}
           </div>
 
           {/* Right Action Buttons */}
@@ -155,8 +320,11 @@ export const LandingPage: React.FC = () => {
         </div>
       </nav>
 
-      {/* 2. HERO SECTION (FULL SCREEN) */}
-      <section className="relative min-h-[calc(100vh-64px)] w-full flex items-center justify-center overflow-hidden py-12 lg:py-20 px-4 sm:px-6 lg:px-8">
+      {/* 2. HERO SECTION (FULL SCREEN - INITIAL ANIMATION UNCHANGED) */}
+      <section
+        id="hero"
+        className="relative min-h-[calc(100vh-64px)] w-full flex items-center justify-center overflow-hidden py-12 lg:py-20 px-4 sm:px-6 lg:px-8"
+      >
         {/* Animated Background & Animated Grid Pattern */}
         <div className="absolute inset-0 pointer-events-none z-0">
           <AnimatedBackground className="w-full h-full" />
@@ -327,25 +495,34 @@ export const LandingPage: React.FC = () => {
         </div>
       </section>
 
-      {/* 3. SECTION 1: FEATURES (BENTO GRID WITH MAGIC CARD HOVER) */}
+      {/* 3. SECTION 1: FEATURES (STAGGERED REVEALS & SUBTLE PARALLAX) */}
       <section id="features" className="py-20 lg:py-28 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
-        <BlurFade delay={0.08} inView>
-          <div className="text-center max-w-2xl mx-auto mb-14">
+        <div className="text-center max-w-2xl mx-auto mb-14">
+          <SectionRevealItem delay={0} prefersReducedMotion={prefersReducedMotion}>
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#D5F737]/10 border border-[#D5F737]/25 text-xs font-semibold text-[#D5F737] mb-3">
               Core Capabilities
             </div>
-            <h2 className="text-3xl sm:text-4xl font-bold text-white tracking-tight">
+          </SectionRevealItem>
+
+          <SectionRevealItem delay={0.08} prefersReducedMotion={prefersReducedMotion}>
+            <ParallaxHeading
+              prefersReducedMotion={prefersReducedMotion}
+              className="text-3xl sm:text-4xl font-bold text-white tracking-tight"
+            >
               Engineered for Precision Inventory
-            </h2>
+            </ParallaxHeading>
+          </SectionRevealItem>
+
+          <SectionRevealItem delay={0.16} prefersReducedMotion={prefersReducedMotion}>
             <p className="text-sm sm:text-base text-[#9A9A9A] mt-2.5">
               Everything you need to eliminate stockouts, reduce carrying costs, and automate replenishment.
             </p>
-          </div>
-        </BlurFade>
+          </SectionRevealItem>
+        </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
-          {/* Feature 1: Live Inventory */}
-          <BlurFade delay={0.12} inView>
+          {/* Feature 1 */}
+          <SectionRevealItem delay={0.24} prefersReducedMotion={prefersReducedMotion} className="h-full">
             <MagicCard
               gradientColor="#D5F73718"
               gradientSize={260}
@@ -365,10 +542,10 @@ export const LandingPage: React.FC = () => {
                 <CheckCircle2 className="w-3.5 h-3.5" />
               </div>
             </MagicCard>
-          </BlurFade>
+          </SectionRevealItem>
 
-          {/* Feature 2: Low-Stock Alerts */}
-          <BlurFade delay={0.16} inView>
+          {/* Feature 2 */}
+          <SectionRevealItem delay={0.32} prefersReducedMotion={prefersReducedMotion} className="h-full">
             <MagicCard
               gradientColor="#D5F73718"
               gradientSize={260}
@@ -387,10 +564,10 @@ export const LandingPage: React.FC = () => {
                 <span>Zero unexpected stockouts</span>
               </div>
             </MagicCard>
-          </BlurFade>
+          </SectionRevealItem>
 
-          {/* Feature 3: AI Assistant */}
-          <BlurFade delay={0.2} inView>
+          {/* Feature 3 */}
+          <SectionRevealItem delay={0.4} prefersReducedMotion={prefersReducedMotion} className="h-full">
             <MagicCard
               gradientColor="#D5F73718"
               gradientSize={260}
@@ -409,10 +586,10 @@ export const LandingPage: React.FC = () => {
                 <span>Autonomous decision support</span>
               </div>
             </MagicCard>
-          </BlurFade>
+          </SectionRevealItem>
 
-          {/* Feature 4: Smart Dashboard */}
-          <BlurFade delay={0.24} inView>
+          {/* Feature 4 */}
+          <SectionRevealItem delay={0.48} prefersReducedMotion={prefersReducedMotion} className="h-full">
             <MagicCard
               gradientColor="#D5F73718"
               gradientSize={260}
@@ -431,29 +608,41 @@ export const LandingPage: React.FC = () => {
                 <span>Executive analytics live</span>
               </div>
             </MagicCard>
-          </BlurFade>
+          </SectionRevealItem>
         </div>
       </section>
 
-      {/* 4. SECTION 2: HOW IT WORKS (3 STEPS) */}
-      <section id="how-it-works" className="py-20 lg:py-28 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto border-t border-white/10">
-        <BlurFade delay={0.08} inView>
-          <div className="text-center max-w-2xl mx-auto mb-14">
+      {/* 4. SECTION 2: HOW IT WORKS (STAGGERED REVEALS & SUBTLE PARALLAX) */}
+      <section
+        id="how-it-works"
+        className="py-20 lg:py-28 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto border-t border-white/10"
+      >
+        <div className="text-center max-w-2xl mx-auto mb-14">
+          <SectionRevealItem delay={0} prefersReducedMotion={prefersReducedMotion}>
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#D5F737]/10 border border-[#D5F737]/25 text-xs font-semibold text-[#D5F737] mb-3">
               Simple Workflow
             </div>
-            <h2 className="text-3xl sm:text-4xl font-bold text-white tracking-tight">
+          </SectionRevealItem>
+
+          <SectionRevealItem delay={0.08} prefersReducedMotion={prefersReducedMotion}>
+            <ParallaxHeading
+              prefersReducedMotion={prefersReducedMotion}
+              className="text-3xl sm:text-4xl font-bold text-white tracking-tight"
+            >
               How It Works
-            </h2>
+            </ParallaxHeading>
+          </SectionRevealItem>
+
+          <SectionRevealItem delay={0.16} prefersReducedMotion={prefersReducedMotion}>
             <p className="text-sm sm:text-base text-[#9A9A9A] mt-2.5">
               Three streamlined steps to full control of your supply chain.
             </p>
-          </div>
-        </BlurFade>
+          </SectionRevealItem>
+        </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8">
           {/* Step 1 */}
-          <BlurFade delay={0.12} inView>
+          <SectionRevealItem delay={0.24} prefersReducedMotion={prefersReducedMotion} className="h-full">
             <GlassCard className="p-7 border border-white/15 bg-white/[0.06] backdrop-blur-[18px] rounded-[24px] relative h-full flex flex-col justify-between">
               <div>
                 <div className="w-12 h-12 rounded-2xl bg-[#D5F737] text-black font-extrabold text-base flex items-center justify-center mb-6 shadow-md shadow-[#D5F737]/20">
@@ -468,10 +657,10 @@ export const LandingPage: React.FC = () => {
                 <span>Connect catalog</span> <ArrowRight className="w-3.5 h-3.5" />
               </div>
             </GlassCard>
-          </BlurFade>
+          </SectionRevealItem>
 
           {/* Step 2 */}
-          <BlurFade delay={0.18} inView>
+          <SectionRevealItem delay={0.32} prefersReducedMotion={prefersReducedMotion} className="h-full">
             <GlassCard className="p-7 border border-white/15 bg-white/[0.06] backdrop-blur-[18px] rounded-[24px] relative h-full flex flex-col justify-between">
               <div>
                 <div className="w-12 h-12 rounded-2xl bg-[#D5F737] text-black font-extrabold text-base flex items-center justify-center mb-6 shadow-md shadow-[#D5F737]/20">
@@ -486,10 +675,10 @@ export const LandingPage: React.FC = () => {
                 <span>Automated monitoring</span> <ArrowRight className="w-3.5 h-3.5" />
               </div>
             </GlassCard>
-          </BlurFade>
+          </SectionRevealItem>
 
           {/* Step 3 */}
-          <BlurFade delay={0.24} inView>
+          <SectionRevealItem delay={0.4} prefersReducedMotion={prefersReducedMotion} className="h-full">
             <GlassCard className="p-7 border border-white/15 bg-white/[0.06] backdrop-blur-[18px] rounded-[24px] relative h-full flex flex-col justify-between">
               <div>
                 <div className="w-12 h-12 rounded-2xl bg-[#D5F737] text-black font-extrabold text-base flex items-center justify-center mb-6 shadow-md shadow-[#D5F737]/20">
@@ -504,28 +693,40 @@ export const LandingPage: React.FC = () => {
                 <span>Actionable decisions</span> <ArrowRight className="w-3.5 h-3.5" />
               </div>
             </GlassCard>
-          </BlurFade>
+          </SectionRevealItem>
         </div>
       </section>
 
-      {/* 5. SECTION 3: AI ASSISTANT PREVIEW */}
-      <section id="ai-assistant" className="py-20 lg:py-28 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto border-t border-white/10">
-        <BlurFade delay={0.08} inView>
-          <div className="text-center max-w-2xl mx-auto mb-14">
+      {/* 5. SECTION 3: AI ASSISTANT PREVIEW (STAGGERED REVEALS & SUBTLE PARALLAX) */}
+      <section
+        id="ai-assistant"
+        className="py-20 lg:py-28 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto border-t border-white/10"
+      >
+        <div className="text-center max-w-2xl mx-auto mb-14">
+          <SectionRevealItem delay={0} prefersReducedMotion={prefersReducedMotion}>
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#D5F737]/10 border border-[#D5F737]/25 text-xs font-semibold text-[#D5F737] mb-3">
               Intelligence in Action
             </div>
-            <h2 className="text-3xl sm:text-4xl font-bold text-white tracking-tight">
+          </SectionRevealItem>
+
+          <SectionRevealItem delay={0.08} prefersReducedMotion={prefersReducedMotion}>
+            <ParallaxHeading
+              prefersReducedMotion={prefersReducedMotion}
+              className="text-3xl sm:text-4xl font-bold text-white tracking-tight"
+            >
               Meet Your Inventory Copilot
-            </h2>
+            </ParallaxHeading>
+          </SectionRevealItem>
+
+          <SectionRevealItem delay={0.16} prefersReducedMotion={prefersReducedMotion}>
             <p className="text-sm sm:text-base text-[#9A9A9A] mt-2.5">
               Ask questions in plain English and receive instant, data-backed operational actions.
             </p>
-          </div>
-        </BlurFade>
+          </SectionRevealItem>
+        </div>
 
-        <BlurFade delay={0.16} inView>
-          <div className="max-w-3xl mx-auto">
+        <div className="max-w-3xl mx-auto">
+          <SectionRevealItem delay={0.24} prefersReducedMotion={prefersReducedMotion}>
             <GlassCard className="p-6 sm:p-8 border border-white/15 bg-white/[0.08] backdrop-blur-[20px] rounded-[24px] shadow-2xl relative">
               {/* Chat Mock Header */}
               <div className="flex items-center justify-between pb-5 border-b border-white/10 mb-6">
@@ -583,36 +784,50 @@ export const LandingPage: React.FC = () => {
                 </div>
               </div>
             </GlassCard>
-          </div>
-        </BlurFade>
+          </SectionRevealItem>
+        </div>
       </section>
 
-      {/* 6. SECTION 4: CALL TO ACTION */}
+      {/* 6. SECTION 4: CALL TO ACTION (STAGGERED REVEALS & SUBTLE PARALLAX) */}
       <section className="py-20 lg:py-24 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto border-t border-white/10">
-        <BlurFade delay={0.08} inView>
+        <SectionRevealItem delay={0} prefersReducedMotion={prefersReducedMotion}>
           <GlassCard className="p-8 sm:p-14 border border-white/15 bg-white/[0.08] backdrop-blur-[24px] rounded-[32px] text-center relative overflow-hidden shadow-2xl">
             <div className="relative z-10 max-w-2xl mx-auto flex flex-col items-center">
-              <div className="w-12 h-12 rounded-2xl bg-[#D5F737] text-black font-extrabold flex items-center justify-center mb-6 shadow-lg shadow-[#D5F737]/25">
-                <Boxes className="w-6 h-6" />
-              </div>
-              <h2 className="text-3xl sm:text-5xl font-extrabold text-white tracking-tight mb-4">
-                Own Your Inventory Today
-              </h2>
-              <p className="text-sm sm:text-base text-[#9A9A9A] max-w-md mb-8 leading-relaxed">
-                Join high-growth supply chains eliminating stockouts and maximizing working capital efficiency with Inventra AI.
-              </p>
-              <Link to="/signup">
-                <ShimmerButton
-                  background="#D5F737"
-                  shimmerColor="#ffffff"
-                  className="text-black font-bold text-sm sm:text-base px-8 py-4 rounded-xl shadow-xl shadow-[#D5F737]/30 hover:brightness-105 active:scale-[0.99] transition-all cursor-pointer"
+              <SectionRevealItem delay={0.08} prefersReducedMotion={prefersReducedMotion}>
+                <div className="w-12 h-12 rounded-2xl bg-[#D5F737] text-black font-extrabold flex items-center justify-center mb-6 shadow-lg shadow-[#D5F737]/25">
+                  <Boxes className="w-6 h-6" />
+                </div>
+              </SectionRevealItem>
+
+              <SectionRevealItem delay={0.16} prefersReducedMotion={prefersReducedMotion}>
+                <ParallaxHeading
+                  prefersReducedMotion={prefersReducedMotion}
+                  className="text-3xl sm:text-5xl font-extrabold text-white tracking-tight mb-4"
                 >
-                  Create free account
-                </ShimmerButton>
-              </Link>
+                  Own Your Inventory Today
+                </ParallaxHeading>
+              </SectionRevealItem>
+
+              <SectionRevealItem delay={0.24} prefersReducedMotion={prefersReducedMotion}>
+                <p className="text-sm sm:text-base text-[#9A9A9A] max-w-md mb-8 leading-relaxed">
+                  Join high-growth supply chains eliminating stockouts and maximizing working capital efficiency with Inventra AI.
+                </p>
+              </SectionRevealItem>
+
+              <SectionRevealItem delay={0.32} prefersReducedMotion={prefersReducedMotion}>
+                <Link to="/signup">
+                  <ShimmerButton
+                    background="#D5F737"
+                    shimmerColor="#ffffff"
+                    className="text-black font-bold text-sm sm:text-base px-8 py-4 rounded-xl shadow-xl shadow-[#D5F737]/30 hover:brightness-105 active:scale-[0.99] transition-all cursor-pointer"
+                  >
+                    Create free account
+                  </ShimmerButton>
+                </Link>
+              </SectionRevealItem>
             </div>
           </GlassCard>
-        </BlurFade>
+        </SectionRevealItem>
       </section>
 
       {/* 7. SIMPLE FOOTER */}
@@ -654,6 +869,26 @@ export const LandingPage: React.FC = () => {
           </div>
         </div>
       </footer>
+
+      {/* Back to Top Round Lime Button */}
+      <AnimatePresence>
+        {showBackToTop && (
+          <motion.button
+            type="button"
+            aria-label="Back to top"
+            onClick={scrollToTop}
+            initial={{ opacity: 0, scale: 0.8, y: 16 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.8, y: 16 }}
+            transition={{ duration: 0.25, ease: 'easeOut' }}
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.95 }}
+            className="fixed bottom-6 right-6 sm:bottom-8 sm:right-8 z-50 w-11 h-11 rounded-full bg-[#D5F737] text-black shadow-xl shadow-[#D5F737]/30 flex items-center justify-center cursor-pointer transition-transform"
+          >
+            <ArrowUp className="w-5 h-5 stroke-[2.5]" />
+          </motion.button>
+        )}
+      </AnimatePresence>
     </div>
   );
 };
