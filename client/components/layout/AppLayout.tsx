@@ -68,12 +68,11 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
       <aside className="w-[240px] sm:w-[250px] h-screen bg-[#232323] border-r border-white/10 flex flex-col flex-shrink-0 z-20">
         {/* Brand Logo */}
         <div className="p-5 border-b border-white/10 flex items-center gap-3 flex-shrink-0">
-          <div className="w-8 h-8 rounded-lg bg-[#D5F737] flex items-center justify-center font-bold text-sm text-black shadow-md shadow-[#D5F737]/20">
+          <div className="w-9 h-9 rounded-xl bg-[#D5F737] flex items-center justify-center font-extrabold text-base text-black shadow-md shadow-[#D5F737]/20 flex-shrink-0">
             I
           </div>
           <div>
-            <div className="font-semibold text-sm text-white tracking-tight">Inventra AI</div>
-            <div className="text-[10px] text-[#9A9A9A] font-medium uppercase tracking-wider">Enterprise SaaS</div>
+            <div className="font-bold text-base sm:text-lg text-white tracking-tight leading-none">Inventra AI</div>
           </div>
         </div>
 

@@ -9,7 +9,6 @@ import {
   ArrowDownLeft,
   ArrowUpRight,
   RefreshCw,
-  Bot,
   CheckCircle2,
 } from 'lucide-react';
 import {
@@ -320,9 +319,8 @@ export const DashboardPage: React.FC = () => {
         {/* Lime Pill Button "Ask AI" */}
         <Link
           to="/assistant"
-          className="inline-flex items-center gap-1.5 self-start sm:self-auto px-4 py-2 rounded-full bg-[#D5F737] text-black font-semibold text-xs transition-all duration-200 ease-out shadow-sm shadow-[#D5F737]/20 hover:scale-[1.03] active:scale-[0.98] hover:shadow-[0_0_20px_rgba(213,247,55,0.45)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D5F737] focus-visible:ring-offset-2 focus-visible:ring-offset-[#181818]"
+          className="inline-flex items-center gap-2 self-start sm:self-auto px-5 py-2.5 sm:px-6 sm:py-2.5 rounded-full bg-[#D5F737] text-black font-bold text-sm sm:text-base transition-all duration-200 ease-out shadow-sm shadow-[#D5F737]/25 hover:scale-[1.03] active:scale-[0.98] hover:shadow-[0_0_22px_rgba(213,247,55,0.45)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D5F737] focus-visible:ring-offset-2 focus-visible:ring-offset-[#181818]"
         >
-          <Bot className="w-3.5 h-3.5 text-black" />
           <span>Ask AI</span>
         </Link>
       </section>
