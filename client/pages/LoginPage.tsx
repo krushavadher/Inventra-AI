@@ -147,8 +147,14 @@ export const LoginPage: React.FC = () => {
             </div>
           </form>
 
+          {/* Default Credentials Helper */}
+          <div className="mt-4 p-2.5 rounded-xl bg-white/[0.03] border border-white/5 text-[11px] text-[#9A9A9A] flex items-center justify-between">
+            <span>Demo: <span className="text-white font-mono">admin@inventra.ai</span></span>
+            <span>Pass: <span className="text-white font-mono">admin123</span></span>
+          </div>
+
           {/* Sign Up Link */}
-          <div className="mt-6 text-center text-xs text-[#9A9A9A]">
+          <div className="mt-4 text-center text-xs text-[#9A9A9A]">
             Don't have an account?{' '}
             <Link to="/signup" className="text-[#D5F737] hover:underline font-medium transition-colors">
               Sign up

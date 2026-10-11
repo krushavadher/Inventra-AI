@@ -155,23 +155,13 @@ export class DashboardService {
       }
     });
 
-    // If movement counts in last 6 months are zero or low, provide realistic baseline distribution
-    const hasMovements = last6Months.some((b) => b.in > 0 || b.out > 0);
-    const monthlyMovement = hasMovements
-      ? last6Months.map(({ month, in: stockIn, out: stockOut, total }) => ({
-          month,
-          in: stockIn,
-          out: stockOut,
-          total
-        }))
-      : [
-          { month: 'May', in: 450, out: 320, total: 770 },
-          { month: 'Jun', in: 520, out: 410, total: 930 },
-          { month: 'Jul', in: 680, out: 490, total: 1170 },
-          { month: 'Aug', in: 740, out: 580, total: 1320 },
-          { month: 'Sep', in: 890, out: 640, total: 1530 },
-          { month: 'Oct', in: 610, out: 480, total: 1090 }
-        ];
+    // 5. Monthly Movement mapped directly from actual movements
+    const monthlyMovement = last6Months.map(({ month, in: stockIn, out: stockOut, total }) => ({
+      month,
+      in: stockIn,
+      out: stockOut,
+      total
+    }));
 
     // 6. Recent Activity (last 5 movements)
     const recentActivity = movements.slice(0, 5).map((m: any) => {

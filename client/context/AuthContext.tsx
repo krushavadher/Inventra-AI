@@ -19,7 +19,7 @@ interface AuthContextType {
   isAuthenticated: boolean;
   isLoading: boolean;
   login: (token: string, user: User) => void;
-  logout: () => void;
+  logout: () => void | Promise<void>;
   updateUser: (updatedUser: User) => void;
   fetchCurrentUser: () => Promise<void>;
 }
@@ -79,11 +79,17 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setUser(newUser);
   };
 
-  const logout = () => {
-    localStorage.removeItem('inventra_token');
-    localStorage.removeItem('inventra_user');
-    setToken(null);
-    setUser(null);
+  const logout = async () => {
+    try {
+      await api.post('/api/auth/logout');
+    } catch {
+      // Ignore network errors during logout
+    } finally {
+      localStorage.removeItem('inventra_token');
+      localStorage.removeItem('inventra_user');
+      setToken(null);
+      setUser(null);
+    }
   };
 
   const updateUser = (updatedUser: User) => {

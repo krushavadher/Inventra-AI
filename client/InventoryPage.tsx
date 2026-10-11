@@ -37,6 +37,8 @@ export interface Product {
 const CATEGORY_COLORS: Record<string, string> = {
   Semiconductors: '#D5F737', // Lime
   'Wireless & IoT': '#2BB4A0', // Teal
+  'Single Board Computers': '#38BDF8', // Sky Blue
+  'Power & Regulators': '#F5A524', // Amber
   'Power & Batteries': '#F5A524', // Amber
   Sensors: '#A78BFA', // Purple
   Displays: '#60A5FA', // Blue
@@ -44,6 +46,18 @@ const CATEGORY_COLORS: Record<string, string> = {
   Mechanical: '#F0506E', // Red
   General: '#9A9A9A', // Grey
 };
+
+export const STANDARD_CATEGORIES = [
+  'Semiconductors',
+  'Wireless & IoT',
+  'Single Board Computers',
+  'Sensors',
+  'Displays',
+  'Power & Regulators',
+  'Passive Components',
+  'Mechanical',
+  'General',
+];
 
 const getCategoryColor = (cat: string) => {
   if (CATEGORY_COLORS[cat]) return CATEGORY_COLORS[cat];
@@ -119,6 +133,7 @@ export const InventoryPage: React.FC = () => {
 
   const [formError, setFormError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState<boolean>(false);
+  const [isCustomCategory, setIsCustomCategory] = useState<boolean>(false);
 
   // Load products
   const fetchProducts = async (showRefreshSpinner = false) => {
@@ -175,6 +190,15 @@ export const InventoryPage: React.FC = () => {
     return Array.from(set).sort();
   }, [products]);
 
+  // All category options for Add & Edit Product dropdown
+  const categoryOptions = useMemo(() => {
+    const set = new Set<string>(STANDARD_CATEGORIES);
+    products.forEach((p) => {
+      if (p.category) set.add(p.category);
+    });
+    return Array.from(set);
+  }, [products]);
+
   // Filtered products
   const filteredProducts = useMemo(() => {
     return products.filter((p) => {
@@ -226,6 +250,7 @@ export const InventoryPage: React.FC = () => {
   // Modal Openers with auto-focus
   const openAddModal = () => {
     setFormError(null);
+    setIsCustomCategory(false);
     setProductForm({
       name: '',
       sku: '',
@@ -243,10 +268,13 @@ export const InventoryPage: React.FC = () => {
   const openEditModal = (p: Product) => {
     setFormError(null);
     setActiveProduct(p);
+    const cat = p.category || 'General';
+    const isPreset = categoryOptions.includes(cat);
+    setIsCustomCategory(!isPreset);
     setProductForm({
       name: p.name,
       sku: p.sku,
-      category: p.category || 'General',
+      category: cat,
       supplier: p.supplier || '',
       stock: p.stock ?? 0,
       minStock: p.minStock ?? 10,
@@ -1067,13 +1095,41 @@ export const InventoryPage: React.FC = () => {
                   </div>
                   <div>
                     <label className="block text-xs font-semibold text-zinc-300 mb-1">Category</label>
-                    <input
-                      type="text"
-                      placeholder="e.g. Semiconductors"
-                      value={productForm.category}
-                      onChange={(e) => setProductForm({ ...productForm, category: e.target.value })}
-                      className="w-full bg-[#1C1C1C] border border-white/10 rounded-xl px-3.5 py-2 text-xs text-white placeholder-zinc-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D5F737]"
-                    />
+                    <div className="relative">
+                      <select
+                        value={isCustomCategory ? '__CUSTOM__' : productForm.category}
+                        onChange={(e) => {
+                          if (e.target.value === '__CUSTOM__') {
+                            setIsCustomCategory(true);
+                            setProductForm({ ...productForm, category: '' });
+                          } else {
+                            setIsCustomCategory(false);
+                            setProductForm({ ...productForm, category: e.target.value });
+                          }
+                        }}
+                        className="w-full bg-[#1C1C1C] border border-white/10 rounded-xl px-3.5 py-2 text-xs text-white appearance-none pr-9 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D5F737] cursor-pointer"
+                      >
+                        {categoryOptions.map((cat) => (
+                          <option key={cat} value={cat} className="bg-[#1C1C1C] text-white">
+                            {cat}
+                          </option>
+                        ))}
+                        <option value="__CUSTOM__" className="bg-[#1C1C1C] text-[#D5F737] font-medium">
+                          + Other / Custom Category...
+                        </option>
+                      </select>
+                      <ChevronDown className="w-3.5 h-3.5 text-zinc-400 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+                    </div>
+                    {isCustomCategory && (
+                      <input
+                        type="text"
+                        placeholder="Type custom category name..."
+                        value={productForm.category}
+                        onChange={(e) => setProductForm({ ...productForm, category: e.target.value })}
+                        className="w-full mt-2 bg-[#1C1C1C] border border-[#D5F737]/40 rounded-xl px-3.5 py-2 text-xs text-white placeholder-zinc-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D5F737]"
+                        autoFocus
+                      />
+                    )}
                   </div>
                 </div>
 
@@ -1221,12 +1277,41 @@ export const InventoryPage: React.FC = () => {
                   </div>
                   <div>
                     <label className="block text-xs font-semibold text-zinc-300 mb-1">Category</label>
-                    <input
-                      type="text"
-                      value={productForm.category}
-                      onChange={(e) => setProductForm({ ...productForm, category: e.target.value })}
-                      className="w-full bg-[#1C1C1C] border border-white/10 rounded-xl px-3.5 py-2 text-xs text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D5F737]"
-                    />
+                    <div className="relative">
+                      <select
+                        value={isCustomCategory ? '__CUSTOM__' : productForm.category}
+                        onChange={(e) => {
+                          if (e.target.value === '__CUSTOM__') {
+                            setIsCustomCategory(true);
+                            setProductForm({ ...productForm, category: '' });
+                          } else {
+                            setIsCustomCategory(false);
+                            setProductForm({ ...productForm, category: e.target.value });
+                          }
+                        }}
+                        className="w-full bg-[#1C1C1C] border border-white/10 rounded-xl px-3.5 py-2 text-xs text-white appearance-none pr-9 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D5F737] cursor-pointer"
+                      >
+                        {categoryOptions.map((cat) => (
+                          <option key={cat} value={cat} className="bg-[#1C1C1C] text-white">
+                            {cat}
+                          </option>
+                        ))}
+                        <option value="__CUSTOM__" className="bg-[#1C1C1C] text-[#D5F737] font-medium">
+                          + Other / Custom Category...
+                        </option>
+                      </select>
+                      <ChevronDown className="w-3.5 h-3.5 text-zinc-400 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+                    </div>
+                    {isCustomCategory && (
+                      <input
+                        type="text"
+                        placeholder="Type custom category name..."
+                        value={productForm.category}
+                        onChange={(e) => setProductForm({ ...productForm, category: e.target.value })}
+                        className="w-full mt-2 bg-[#1C1C1C] border border-[#D5F737]/40 rounded-xl px-3.5 py-2 text-xs text-white placeholder-zinc-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D5F737]"
+                        autoFocus
+                      />
+                    )}
                   </div>
                 </div>
 

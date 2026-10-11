@@ -1,8 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import {
-  Package,
-  IndianRupee,
   AlertTriangle,
   AlertCircle,
   TrendingUp,
@@ -10,6 +8,8 @@ import {
   ArrowUpRight,
   RefreshCw,
   CheckCircle2,
+  BarChart3,
+  PieChart as PieChartIcon,
 } from 'lucide-react';
 import {
   ResponsiveContainer,
@@ -74,81 +74,28 @@ interface DashboardData {
 // Fallback baseline data if API is loading or fails
 const DEFAULT_DATA: DashboardData = {
   kpis: {
-    totalProducts: 25,
-    stockValue: 542300,
-    lowStock: 4,
-    outOfStock: 2,
-    stockHealth: 76,
+    totalProducts: 0,
+    stockValue: 0,
+    lowStock: 0,
+    outOfStock: 0,
+    stockHealth: 100,
   },
-  categoryDistribution: [
-    { name: 'Semiconductors', value: 1445, count: 4 },
-    { name: 'Wireless & IoT', value: 1049, count: 4 },
-    { name: 'Power & Batteries', value: 1705, count: 4 },
-    { name: 'Sensors', value: 1170, count: 7 },
-    { name: 'Displays', value: 400, count: 2 },
-    { name: 'Passive Components', value: 265, count: 4 },
-  ],
+  categoryDistribution: [],
   monthlyMovement: [
-    { month: 'May', in: 450, out: 320, total: 770 },
-    { month: 'Jun', in: 520, out: 410, total: 930 },
-    { month: 'Jul', in: 680, out: 490, total: 1170 },
-    { month: 'Aug', in: 740, out: 580, total: 1320 },
-    { month: 'Sep', in: 890, out: 640, total: 1530 },
-    { month: 'Oct', in: 610, out: 480, total: 1090 },
+    { month: 'May', in: 0, out: 0, total: 0 },
+    { month: 'Jun', in: 0, out: 0, total: 0 },
+    { month: 'Jul', in: 0, out: 0, total: 0 },
+    { month: 'Aug', in: 0, out: 0, total: 0 },
+    { month: 'Sep', in: 0, out: 0, total: 0 },
+    { month: 'Oct', in: 0, out: 0, total: 0 },
   ],
-  recentActivity: [
-    {
-      _id: 'mov_030',
-      movementType: 'STOCK_IN',
-      productName: 'STM32F401RE ARM Cortex-M4 MCU',
-      sku: 'MCU-STM32-401',
-      quantity: 120,
-      referenceDocId: 'PO-98421',
-      createdAt: new Date().toISOString(),
-    },
-    {
-      _id: 'mov_029',
-      movementType: 'STOCK_OUT',
-      productName: 'ESP32-WROOM-32D Wi-Fi & BLE Module',
-      sku: 'WIFI-ESP32-32D',
-      quantity: 45,
-      referenceDocId: 'SO-10293',
-      createdAt: new Date(Date.now() - 3600000 * 4).toISOString(),
-    },
-    {
-      _id: 'mov_028',
-      movementType: 'STOCK_IN',
-      productName: 'Raspberry Pi 4 Model B (4GB RAM)',
-      sku: 'SBC-RPI4-4GB',
-      quantity: 15,
-      referenceDocId: 'PO-98419',
-      createdAt: new Date(Date.now() - 3600000 * 18).toISOString(),
-    },
-    {
-      _id: 'mov_027',
-      movementType: 'STOCK_OUT',
-      productName: 'BME280 Precision Temp & Humidity Sensor',
-      sku: 'SENS-BME280-THP',
-      quantity: 30,
-      referenceDocId: 'SO-10288',
-      createdAt: new Date(Date.now() - 3600000 * 28).toISOString(),
-    },
-    {
-      _id: 'mov_026',
-      movementType: 'ADJUSTMENT_ADD',
-      productName: 'LM2596 Step-Down DC-DC Buck Converter',
-      sku: 'POW-LM2596-BUCK',
-      quantity: 20,
-      referenceDocId: 'AUD-0041',
-      createdAt: new Date(Date.now() - 3600000 * 48).toISOString(),
-    },
-  ],
-  stockHealth: 76,
+  recentActivity: [],
+  stockHealth: 100,
 };
 
 // Lightweight SVG Sparkline Component
 const Sparkline: React.FC<{ data: number[]; color: string }> = ({ data, color }) => {
-  if (!data || data.length < 2) return null;
+  if (!data || data.length < 2 || data.every((val) => val === 0)) return null;
   const min = Math.min(...data);
   const max = Math.max(...data);
   const range = max - min || 1;
@@ -277,14 +224,23 @@ export const DashboardPage: React.FC = () => {
   }, [monthlyMovement]);
 
   const lowStockSparkline = useMemo(() => {
-    return [6, 5, 4, 7, 5, kpis.lowStock];
-  }, [kpis.lowStock]);
+    return monthlyMovement.map(() => kpis.lowStock);
+  }, [monthlyMovement, kpis.lowStock]);
 
+  const hasMovementData = useMemo(() => {
+    return monthlyMovement.some((m) => (m.in || 0) > 0 || (m.out || 0) > 0);
+  }, [monthlyMovement]);
+
+  const hasCategoryData = useMemo(() => {
+    return categoryDistribution.length > 0 && categoryDistribution.some((c) => (c.value || 0) > 0);
+  }, [categoryDistribution]);
+
+  const displayStockHealth = kpis.totalProducts > 0 ? stockHealth : 0;
   // Stock health circular progress math
   const radius = 42;
   const circumference = 2 * Math.PI * radius;
   const strokeDashoffset =
-    circumference - (circumference * Math.min(100, Math.max(0, stockHealth))) / 100;
+    circumference - (circumference * Math.min(100, Math.max(0, displayStockHealth))) / 100;
 
   const formatTimeAgo = (dateStr?: string) => {
     if (!dateStr) return 'Just now';
@@ -352,9 +308,6 @@ export const DashboardPage: React.FC = () => {
               <span className="text-[10px] text-[#9A9A9A] font-semibold uppercase tracking-wider">
                 Total Products
               </span>
-              <div className="w-6 h-6 rounded-md bg-[#D5F737]/15 border border-[#D5F737]/30 flex items-center justify-center text-[#D5F737]">
-                <Package className="w-3 h-3" />
-              </div>
             </div>
 
             <div className="text-lg sm:text-xl font-bold text-white tracking-tight mb-1">
@@ -387,9 +340,6 @@ export const DashboardPage: React.FC = () => {
               <span className="text-[10px] text-[#9A9A9A] font-semibold uppercase tracking-wider">
                 Stock Value
               </span>
-              <div className="w-6 h-6 rounded-md bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center text-emerald-400">
-                <IndianRupee className="w-3 h-3" />
-              </div>
             </div>
 
             <div className="text-lg sm:text-xl font-bold text-white tracking-tight mb-1 flex items-center">
@@ -423,9 +373,6 @@ export const DashboardPage: React.FC = () => {
               <span className="text-[10px] text-[#9A9A9A] font-semibold uppercase tracking-wider">
                 Low Stock
               </span>
-              <div className="w-6 h-6 rounded-md bg-amber-500/15 border border-amber-500/30 flex items-center justify-center text-amber-400">
-                <AlertTriangle className="w-3 h-3" />
-              </div>
             </div>
 
             <div className="text-lg sm:text-xl font-bold text-amber-400 tracking-tight mb-1">
@@ -458,9 +405,6 @@ export const DashboardPage: React.FC = () => {
               <span className="text-[10px] text-[#9A9A9A] font-semibold uppercase tracking-wider">
                 Out of Stock
               </span>
-              <div className="w-6 h-6 rounded-md bg-red-500/15 border border-red-500/30 flex items-center justify-center text-red-400">
-                <AlertCircle className="w-3 h-3" />
-              </div>
             </div>
 
             <div className="text-lg sm:text-xl font-bold text-red-400 tracking-tight mb-1">
@@ -502,103 +446,115 @@ export const DashboardPage: React.FC = () => {
             </div>
           </div>
 
-          <div className="h-64 sm:h-72 w-full">
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart
-                data={monthlyMovement}
-                margin={{ top: 12, right: 10, left: -20, bottom: 0 }}
-                onMouseMove={(state) => {
-                  if (state && state.activeTooltipIndex !== undefined) {
-                    setHoveredBarIndex(state.activeTooltipIndex);
-                  }
-                }}
-                onMouseLeave={() => setHoveredBarIndex(null)}
-              >
-                {/* Light dashed gridlines */}
-                <CartesianGrid
-                  strokeDasharray="4 4"
-                  stroke="rgba(255,255,255,0.06)"
-                  vertical={false}
-                />
-                <XAxis
-                  dataKey="month"
-                  stroke="#9A9A9A"
-                  tick={{ fill: '#9A9A9A', fontSize: 11, fontFamily: 'Outfit' }}
-                  axisLine={false}
-                  tickLine={false}
-                />
-                <YAxis
-                  stroke="#9A9A9A"
-                  tick={{ fill: '#9A9A9A', fontSize: 11, fontFamily: 'Outfit' }}
-                  axisLine={false}
-                  tickLine={false}
-                />
-                <Tooltip
-                  cursor={{ fill: 'rgba(255,255,255,0.04)' }}
-                  content={({ active, payload, label }) => {
-                    if (active && payload && payload.length) {
-                      return (
-                        <div className="p-3 rounded-2xl bg-[rgba(35,35,35,0.92)] backdrop-blur-[20px] saturate-[90%] border border-white/10 shadow-2xl text-xs space-y-1.5 min-w-[120px]">
-                          <div className="font-semibold text-[#D5F737]">{label}</div>
-                          {payload.map((entry, idx) => (
-                            <div
-                              key={idx}
-                              className="flex items-center justify-between gap-3 text-white"
-                            >
-                              <span className="text-[#9A9A9A]">{entry.name}:</span>
-                              <span className="font-semibold">{entry.value} units</span>
-                            </div>
-                          ))}
-                        </div>
-                      );
+          <div className="h-64 sm:h-72 w-full flex items-center justify-center">
+            {hasMovementData ? (
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart
+                  data={monthlyMovement}
+                  margin={{ top: 12, right: 10, left: -20, bottom: 0 }}
+                  onMouseMove={(state) => {
+                    if (state && state.activeTooltipIndex !== undefined) {
+                      setHoveredBarIndex(state.activeTooltipIndex);
                     }
-                    return null;
                   }}
-                />
-                {/* Stock In: thin rounded bars in lime */}
-                <Bar
-                  dataKey="in"
-                  name="Stock In"
-                  radius={[6, 6, 0, 0]}
-                  barSize={14}
-                  isAnimationActive={!prefersReducedMotion}
-                  animationDuration={1000}
-                  animationEasing="ease-out"
+                  onMouseLeave={() => setHoveredBarIndex(null)}
                 >
-                  {monthlyMovement.map((_, index) => (
-                    <Cell
-                      key={`cell-in-${index}`}
-                      fill="#D5F737"
-                      fillOpacity={
-                        hoveredBarIndex === null || hoveredBarIndex === index ? 1 : 0.35
+                  {/* Light dashed gridlines */}
+                  <CartesianGrid
+                    strokeDasharray="4 4"
+                    stroke="rgba(255,255,255,0.06)"
+                    vertical={false}
+                  />
+                  <XAxis
+                    dataKey="month"
+                    stroke="#9A9A9A"
+                    tick={{ fill: '#9A9A9A', fontSize: 11, fontFamily: 'Outfit' }}
+                    axisLine={false}
+                    tickLine={false}
+                  />
+                  <YAxis
+                    stroke="#9A9A9A"
+                    tick={{ fill: '#9A9A9A', fontSize: 11, fontFamily: 'Outfit' }}
+                    axisLine={false}
+                    tickLine={false}
+                  />
+                  <Tooltip
+                    cursor={{ fill: 'rgba(255,255,255,0.04)' }}
+                    content={({ active, payload, label }) => {
+                      if (active && payload && payload.length) {
+                        return (
+                          <div className="p-3 rounded-2xl bg-[rgba(35,35,35,0.92)] backdrop-blur-[20px] saturate-[90%] border border-white/10 shadow-2xl text-xs space-y-1.5 min-w-[120px]">
+                            <div className="font-semibold text-[#D5F737]">{label}</div>
+                            {payload.map((entry, idx) => (
+                              <div
+                                key={idx}
+                                className="flex items-center justify-between gap-3 text-white"
+                              >
+                                <span className="text-[#9A9A9A]">{entry.name}:</span>
+                                <span className="font-semibold">{entry.value} units</span>
+                              </div>
+                            ))}
+                          </div>
+                        );
                       }
-                      className="transition-opacity duration-200"
-                    />
-                  ))}
-                </Bar>
-                {/* Stock Out: thin rounded bars in #5A5A5A */}
-                <Bar
-                  dataKey="out"
-                  name="Stock Out"
-                  radius={[6, 6, 0, 0]}
-                  barSize={14}
-                  isAnimationActive={!prefersReducedMotion}
-                  animationDuration={1000}
-                  animationEasing="ease-out"
-                >
-                  {monthlyMovement.map((_, index) => (
-                    <Cell
-                      key={`cell-out-${index}`}
-                      fill="#5A5A5A"
-                      fillOpacity={
-                        hoveredBarIndex === null || hoveredBarIndex === index ? 1 : 0.35
-                      }
-                      className="transition-opacity duration-200"
-                    />
-                  ))}
-                </Bar>
-              </BarChart>
-            </ResponsiveContainer>
+                      return null;
+                    }}
+                  />
+                  {/* Stock In: thin rounded bars in lime */}
+                  <Bar
+                    dataKey="in"
+                    name="Stock In"
+                    radius={[6, 6, 0, 0]}
+                    barSize={14}
+                    isAnimationActive={!prefersReducedMotion}
+                    animationDuration={1000}
+                    animationEasing="ease-out"
+                  >
+                    {monthlyMovement.map((_, index) => (
+                      <Cell
+                        key={`cell-in-${index}`}
+                        fill="#D5F737"
+                        fillOpacity={
+                          hoveredBarIndex === null || hoveredBarIndex === index ? 1 : 0.35
+                        }
+                        className="transition-opacity duration-200"
+                      />
+                    ))}
+                  </Bar>
+                  {/* Stock Out: thin rounded bars in #5A5A5A */}
+                  <Bar
+                    dataKey="out"
+                    name="Stock Out"
+                    radius={[6, 6, 0, 0]}
+                    barSize={14}
+                    isAnimationActive={!prefersReducedMotion}
+                    animationDuration={1000}
+                    animationEasing="ease-out"
+                  >
+                    {monthlyMovement.map((_, index) => (
+                      <Cell
+                        key={`cell-out-${index}`}
+                        fill="#5A5A5A"
+                        fillOpacity={
+                          hoveredBarIndex === null || hoveredBarIndex === index ? 1 : 0.35
+                        }
+                        className="transition-opacity duration-200"
+                      />
+                    ))}
+                  </Bar>
+                </BarChart>
+              </ResponsiveContainer>
+            ) : (
+              <div className="w-full h-full flex flex-col items-center justify-center text-center p-6 bg-[#1C1C1C]/40 rounded-2xl border border-white/5">
+                <div className="w-12 h-12 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-[#9A9A9A] mb-3">
+                  <BarChart3 className="w-5 h-5 text-[#9A9A9A]" />
+                </div>
+                <div className="text-sm font-semibold text-white">No stock movements recorded</div>
+                <p className="text-xs text-[#9A9A9A] max-w-xs mt-1">
+                  Inflow and outflow graph will appear here once inventory adjustments or transactions take place.
+                </p>
+              </div>
+            )}
           </div>
         </div>
 
@@ -614,96 +570,110 @@ export const DashboardPage: React.FC = () => {
           </div>
 
           <div className="flex-1 flex flex-col sm:flex-row items-center justify-between gap-6">
-            {/* Donut Chart with total classes in center */}
-            <div className="relative w-48 h-48 sm:w-52 sm:h-52 flex-shrink-0">
-              <ResponsiveContainer width="100%" height="100%">
-                <PieChart>
-                  <Pie
-                    data={categoryDistribution}
-                    cx="50%"
-                    cy="50%"
-                    innerRadius="62%"
-                    outerRadius="86%"
-                    paddingAngle={3}
-                    dataKey="value"
-                    nameKey="name"
-                    isAnimationActive={!prefersReducedMotion}
-                    animationDuration={1100}
-                    animationEasing="ease-out"
-                  >
-                    {categoryDistribution.map((_, index) => (
-                      <Cell
-                        key={`cell-${index}`}
-                        fill={DONUT_COLORS[index % DONUT_COLORS.length]}
-                        fillOpacity={
-                          activeDonutIndex === null || activeDonutIndex === index
-                            ? 1
-                            : 0.25
-                        }
-                        stroke="#181818"
-                        strokeWidth={2}
-                        className="transition-opacity duration-200 cursor-pointer"
-                      />
-                    ))}
-                  </Pie>
-                  <Tooltip
-                    content={({ active, payload }) => {
-                      if (active && payload && payload.length) {
-                        const item = payload[0];
-                        return (
-                          <div className="p-2.5 rounded-xl bg-[rgba(35,35,35,0.92)] backdrop-blur-[16px] border border-white/10 shadow-xl text-xs">
-                            <span className="font-semibold text-white">{item.name}</span>: {item.value} units
-                          </div>
-                        );
-                      }
-                      return null;
-                    }}
-                  />
-                </PieChart>
-              </ResponsiveContainer>
-
-              {/* Total classes in center */}
-              <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-                <span className="text-xl sm:text-2xl font-extrabold text-white">
-                  {categoryDistribution.length}
-                </span>
-                <span className="text-[10px] uppercase tracking-wider text-[#9A9A9A] font-semibold">
-                  Classes
-                </span>
-              </div>
-            </div>
-
-            {/* Interactive Legend: Hovering a legend item highlights its segment */}
-            <div className="w-full sm:flex-1 space-y-2">
-              {categoryDistribution.slice(0, 6).map((cat, idx) => {
-                const isHovered = activeDonutIndex === idx;
-                return (
-                  <div
-                    key={cat.name}
-                    onMouseEnter={() => setActiveDonutIndex(idx)}
-                    onMouseLeave={() => setActiveDonutIndex(null)}
-                    className={`flex items-center justify-between p-1.5 px-2.5 rounded-xl transition-all cursor-pointer ${isHovered
-                        ? 'bg-white/[0.08] text-white scale-[1.02]'
-                        : 'text-[#9A9A9A] hover:bg-white/[0.04]'
-                      }`}
-                  >
-                    <div className="flex items-center gap-2 truncate pr-2">
-                      <span
-                        className="w-2.5 h-2.5 rounded-full flex-shrink-0 transition-transform"
-                        style={{
-                          backgroundColor: DONUT_COLORS[idx % DONUT_COLORS.length],
-                          transform: isHovered ? 'scale(1.2)' : 'scale(1)',
+            {hasCategoryData ? (
+              <>
+                {/* Donut Chart with total classes in center */}
+                <div className="relative w-48 h-48 sm:w-52 sm:h-52 flex-shrink-0">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <PieChart>
+                      <Pie
+                        data={categoryDistribution}
+                        cx="50%"
+                        cy="50%"
+                        innerRadius="62%"
+                        outerRadius="86%"
+                        paddingAngle={3}
+                        dataKey="value"
+                        nameKey="name"
+                        isAnimationActive={!prefersReducedMotion}
+                        animationDuration={1100}
+                        animationEasing="ease-out"
+                      >
+                        {categoryDistribution.map((_, index) => (
+                          <Cell
+                            key={`cell-${index}`}
+                            fill={DONUT_COLORS[index % DONUT_COLORS.length]}
+                            fillOpacity={
+                              activeDonutIndex === null || activeDonutIndex === index
+                                ? 1
+                                : 0.25
+                            }
+                            stroke="#181818"
+                            strokeWidth={2}
+                            className="transition-opacity duration-200 cursor-pointer"
+                          />
+                        ))}
+                      </Pie>
+                      <Tooltip
+                        content={({ active, payload }) => {
+                          if (active && payload && payload.length) {
+                            const item = payload[0];
+                            return (
+                              <div className="p-2.5 rounded-xl bg-[rgba(35,35,35,0.92)] backdrop-blur-[16px] border border-white/10 shadow-xl text-xs">
+                                <span className="font-semibold text-white">{item.name}</span>: {item.value} units
+                              </div>
+                            );
+                          }
+                          return null;
                         }}
                       />
-                      <span className="text-xs truncate">{cat.name}</span>
-                    </div>
-                    <span className="text-xs font-semibold text-white flex-shrink-0">
-                      {cat.value}
+                    </PieChart>
+                  </ResponsiveContainer>
+
+                  {/* Total classes in center */}
+                  <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
+                    <span className="text-xl sm:text-2xl font-extrabold text-white">
+                      {categoryDistribution.length}
+                    </span>
+                    <span className="text-[10px] uppercase tracking-wider text-[#9A9A9A] font-semibold">
+                      Classes
                     </span>
                   </div>
-                );
-              })}
-            </div>
+                </div>
+
+                {/* Interactive Legend: Hovering a legend item highlights its segment */}
+                <div className="w-full sm:flex-1 space-y-2">
+                  {categoryDistribution.slice(0, 6).map((cat, idx) => {
+                    const isHovered = activeDonutIndex === idx;
+                    return (
+                      <div
+                        key={cat.name}
+                        onMouseEnter={() => setActiveDonutIndex(idx)}
+                        onMouseLeave={() => setActiveDonutIndex(null)}
+                        className={`flex items-center justify-between p-1.5 px-2.5 rounded-xl transition-all cursor-pointer ${isHovered
+                            ? 'bg-white/[0.08] text-white scale-[1.02]'
+                            : 'text-[#9A9A9A] hover:bg-white/[0.04]'
+                          }`}
+                      >
+                        <div className="flex items-center gap-2 truncate pr-2">
+                          <span
+                            className="w-2.5 h-2.5 rounded-full flex-shrink-0 transition-transform"
+                            style={{
+                              backgroundColor: DONUT_COLORS[idx % DONUT_COLORS.length],
+                              transform: isHovered ? 'scale(1.2)' : 'scale(1)',
+                            }}
+                          />
+                          <span className="text-xs truncate">{cat.name}</span>
+                        </div>
+                        <span className="text-xs font-semibold text-white flex-shrink-0">
+                          {cat.value}
+                        </span>
+                      </div>
+                    );
+                  })}
+                </div>
+              </>
+            ) : (
+              <div className="w-full h-48 sm:h-52 flex flex-col items-center justify-center text-center p-6 bg-[#1C1C1C]/40 rounded-2xl border border-white/5">
+                <div className="w-12 h-12 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-[#9A9A9A] mb-3">
+                  <PieChartIcon className="w-5 h-5 text-[#9A9A9A]" />
+                </div>
+                <div className="text-sm font-semibold text-white">No categories to display</div>
+                <p className="text-xs text-[#9A9A9A] max-w-xs mt-1">
+                  Category breakdown will appear here once items are created in the inventory catalog.
+                </p>
+              </div>
+            )}
           </div>
         </div>
       </section>
@@ -737,59 +707,64 @@ export const DashboardPage: React.FC = () => {
 
           {/* 5 Movements rendered in full without inner scroll, with stagger and hover highlight */}
           <div className="space-y-2.5">
-            {recentActivity.slice(0, 5).map((act, index) => {
-              const isIn =
-                act.movementType === 'STOCK_IN' || act.movementType === 'ADJUSTMENT_ADD';
-              return (
-                <motion.div
-                  key={act._id}
-                  initial={{ opacity: 0, x: prefersReducedMotion ? 0 : -8 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{
-                    duration: 0.3,
-                    delay: prefersReducedMotion ? 0 : index * 0.06,
-                    ease: 'easeOut',
-                  }}
-                  className="flex items-center justify-between p-3 rounded-2xl bg-[#1C1C1C] border border-white/5 hover:border-white/15 hover:bg-white/[0.04] transition-all duration-200 group"
-                >
-                  <div className="flex items-center gap-3 min-w-0 pr-2">
-                    {/* Colored in/out icon */}
-                    <div
-                      className={`w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0 transition-transform group-hover:scale-105 ${isIn
-                          ? 'bg-[#D5F737]/15 text-[#D5F737] border border-[#D5F737]/30'
-                          : 'bg-[#5A5A5A]/25 text-[#9A9A9A] border border-white/10'
-                        }`}
-                    >
-                      {isIn ? (
-                        <ArrowDownLeft className="w-4 h-4" />
-                      ) : (
-                        <ArrowUpRight className="w-4 h-4" />
-                      )}
-                    </div>
-                    <div className="min-w-0">
-                      <div className="text-xs sm:text-sm font-semibold text-white truncate group-hover:text-[#D5F737] transition-colors">
-                        {act.productName}
+            {recentActivity.length === 0 ? (
+              <div className="py-8 text-center text-xs text-[#9A9A9A] bg-[#1C1C1C]/40 rounded-2xl border border-white/5">
+                No recent inventory movements recorded yet.
+              </div>
+            ) : (
+              recentActivity.slice(0, 5).map((act, index) => {
+                const isIn =
+                  act.movementType === 'STOCK_IN' || act.movementType === 'ADJUSTMENT_ADD';
+                return (
+                  <motion.div
+                    key={act._id}
+                    initial={{ opacity: 0, x: prefersReducedMotion ? 0 : -8 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{
+                      duration: 0.3,
+                      delay: prefersReducedMotion ? 0 : index * 0.06,
+                      ease: 'easeOut',
+                    }}
+                    className="flex items-center justify-between p-3 rounded-2xl bg-[#1C1C1C] border border-white/5 hover:border-white/15 hover:bg-white/[0.04] transition-all duration-200 group"
+                  >
+                    <div className="flex items-center gap-3 min-w-0 pr-2">
+                      {/* Colored in/out icon */}
+                      <div
+                        className={`w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0 transition-transform group-hover:scale-105 ${isIn
+                            ? 'bg-[#D5F737]/15 text-[#D5F737] border border-[#D5F737]/30'
+                            : 'bg-[#5A5A5A]/25 text-[#9A9A9A] border border-white/10'
+                          }`}
+                      >
+                        {isIn ? (
+                          <ArrowDownLeft className="w-4 h-4" />
+                        ) : (
+                          <ArrowUpRight className="w-4 h-4" />
+                        )}
                       </div>
-                      <div className="text-[10px] text-[#9A9A9A] truncate mt-0.5">
-                        {act.sku} • {act.referenceDocId || 'LOG'}
+                      <div className="min-w-0">
+                        <div className="text-xs sm:text-sm font-semibold text-white truncate group-hover:text-[#D5F737] transition-colors">
+                          {act.productName}
+                        </div>
+                        <div className="text-[10px] text-[#9A9A9A] truncate mt-0.5">
+                          {act.sku} • {act.referenceDocId || 'LOG'}
+                        </div>
                       </div>
                     </div>
-                  </div>
 
-                  <div className="text-right flex-shrink-0 pl-2">
-                    <div
-                      className={`text-xs sm:text-sm font-bold ${isIn ? 'text-[#D5F737]' : 'text-[#9A9A9A]'
-                        }`}
-                    >
-                      {isIn ? `+${act.quantity}` : `-${act.quantity}`} units
+                    <div className="text-right flex-shrink-0 pl-2">
+                      <div
+                        className={`text-xs sm:text-sm font-bold ${isIn ? 'text-[#D5F737]' : 'text-[#9A9A9A]'
+                          }`}
+                      >
+                        {isIn ? `+${act.quantity}` : `-${act.quantity}`} units
+                      </div>
+                      <div className="text-[10px] text-[#9A9A9A] mt-0.5">
+                        {formatTimeAgo(act.createdAt)}
+                      </div>
                     </div>
-                    <div className="text-[10px] text-[#9A9A9A] mt-0.5">
-                      {formatTimeAgo(act.createdAt)}
-                    </div>
-                  </div>
-                </motion.div>
-              );
-            })}
+                  </motion.div>
+                );
+              }))}
           </div>
         </div>
 
@@ -842,7 +817,7 @@ export const DashboardPage: React.FC = () => {
               {/* Number counts up in the center */}
               <div className="absolute inset-0 flex flex-col items-center justify-center">
                 <span className="text-2xl font-extrabold text-white tracking-tight">
-                  <NumberTicker value={stockHealth} className="text-white" />%
+                  <NumberTicker value={displayStockHealth} className="text-white" />%
                 </span>
                 <span className="text-[9px] uppercase tracking-wider text-[#9A9A9A] font-semibold">
                   Health
@@ -856,11 +831,13 @@ export const DashboardPage: React.FC = () => {
                 Inventory Buffer Ratio
               </div>
               <p className="text-xs text-[#9A9A9A] leading-relaxed max-w-[220px]">
-                {kpis.totalProducts - kpis.lowStock - kpis.outOfStock} of {kpis.totalProducts} active products in safe buffer inventory.
+                {kpis.totalProducts > 0
+                  ? `${kpis.totalProducts - kpis.lowStock - kpis.outOfStock} of ${kpis.totalProducts} active products in safe buffer inventory.`
+                  : 'No active products in catalog yet.'}
               </p>
               <div className="inline-flex items-center justify-center sm:justify-start gap-1.5 text-xs text-emerald-400 font-medium pt-1">
                 <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-                Stable Order Fulfillment
+                {kpis.totalProducts > 0 ? 'Stable Order Fulfillment' : 'Catalog Ready'}
               </div>
             </div>
           </div>

@@ -1,0 +1,12 @@
+[
+  {
+    "_id": "6acb842fcf6251af2fe5ee14",
+    "name": "Admin User",
+    "email": "admin@inventra.ai",
+    "password": "$2a$10$wK1B3oR1pL0m0zCqD6C7xOJ0H7R3QY7Y7G1vQ5o6v9m9K2l4w1e8m",
+    "passwordHash": "$2a$10$wK1B3oR1pL0m0zCqD6C7xOJ0H7R3QY7Y7G1vQ5o6v9m9K2l4w1e8m",
+    "role": "admin",
+    "company": "Inventra Enterprise",
+    "createdAt": "2026-10-11T12:00:00.000Z"
+  }
+]

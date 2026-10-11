@@ -80,10 +80,10 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
     };
   }, [location.pathname]);
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
     setDropdownOpen(false);
-    logout();
-    navigate('/', { replace: true });
+    await logout();
+    navigate('/login', { replace: true });
   };
 
   const getInitials = (userName?: string) => {
