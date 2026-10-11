@@ -1,26 +1,6 @@
 {
   "products": [
     {
-      "name": "STM32F401RE ARM Cortex-M4 MCU",
-      "sku": "MCU-STM32-401",
-      "category": "Semiconductors",
-      "supplier": "STMicroelectronics India",
-      "unitCost": 480,
-      "sellingPrice": 750,
-      "stock": 350,
-      "minStock": 50
-    },
-    {
-      "name": "Raspberry Pi 4 Model B (4GB RAM)",
-      "sku": "SBC-RPI4-4GB",
-      "category": "Semiconductors",
-      "supplier": "Element14 India",
-      "unitCost": 4200,
-      "sellingPrice": 5850,
-      "stock": 45,
-      "minStock": 15
-    },
-    {
       "name": "ATmega328P-PU 8-bit Microcontroller",
       "sku": "MCU-ATM328P-PU",
       "category": "Semiconductors",
