@@ -27,7 +27,7 @@ import {
 import { cn } from '@/lib/utils';
 import { AnimatedBackground } from '@/components/ui/AnimatedBackground';
 import { GlassCard } from '@/components/ui/GlassCard';
-import { AnimatedGridPattern } from '@/components/ui/animated-grid-pattern';
+import { HeroGridLayer } from '@/components/ui/HeroGridLayer';
 import { AuroraText } from '@/components/ui/aurora-text';
 import { ShimmerButton } from '@/components/ui/shimmer-button';
 import { NumberTicker } from '@/components/ui/number-ticker';
@@ -376,28 +376,12 @@ export const LandingPage: React.FC = () => {
         {/* Animated Background & Animated Grid Pattern */}
         <div className="absolute inset-0 pointer-events-none z-0">
           <AnimatedBackground className="w-full h-full" />
-          <AnimatedGridPattern
-            numSquares={45}
-            maxOpacity={0.25}
-            duration={3}
-            repeatDelay={0.5}
-            className="[mask-image:radial-gradient(750px_circle_at_center,white,transparent)]"
-          />
+          <HeroGridLayer />
         </div>
 
         <div className="relative z-10 max-w-7xl w-full mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 items-center">
           {/* Left Text Column */}
           <div className="lg:col-span-7 flex flex-col items-start text-left">
-            {/* Pill Badge */}
-            <motion.div
-              initial={{ opacity: 0, y: 12 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.4 }}
-              className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/[0.06] border border-white/15 backdrop-blur-md text-xs font-medium text-[#D5F737] mb-6 shadow-sm"
-            >
-              <span className="w-2 h-2 rounded-full bg-[#D5F737] animate-pulse" />
-              <span>AI-Powered Platform</span>
-            </motion.div>
 
             {/* Large Headline */}
             <motion.h1
