@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
+import Lenis from 'lenis';
 import {
   Package,
   Bell,
@@ -29,6 +30,55 @@ import { useAuth } from '@/context/AuthContext';
 
 export const LandingPage: React.FC = () => {
   const { isAuthenticated } = useAuth();
+  const lenisRef = useRef<Lenis | null>(null);
+
+  useEffect(() => {
+    // 1. Initialize Lenis on the window (native touch unchanged, smooth wheel on)
+    const lenis = new Lenis({
+      duration: 1.2,
+      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)), // easeOutExpo
+      smoothWheel: true,
+      syncTouch: false, // touch unchanged (native)
+    });
+
+    lenisRef.current = lenis;
+
+    // 2. Single requestAnimationFrame loop
+    let rafId: number | null = null;
+    const raf = (time: number) => {
+      lenis.raf(time);
+      rafId = requestAnimationFrame(raf);
+    };
+    rafId = requestAnimationFrame(raf);
+
+    // 3. React StrictMode-safe cleanup on unmount
+    return () => {
+      if (rafId !== null) {
+        cancelAnimationFrame(rafId);
+      }
+      lenis.destroy();
+      lenisRef.current = null;
+      document.documentElement.classList.remove('lenis', 'lenis-smooth', 'lenis-scrolling', 'lenis-stopped');
+    };
+  }, []);
+
+  const scrollToSection = (e: React.MouseEvent<HTMLAnchorElement>, target: string) => {
+    if (target.startsWith('#')) {
+      const element = document.querySelector(target);
+      if (element) {
+        e.preventDefault();
+        if (lenisRef.current) {
+          lenisRef.current.scrollTo(element as HTMLElement, {
+            offset: -64,
+            duration: 1.2,
+          });
+        } else {
+          const top = element.getBoundingClientRect().top + window.scrollY - 64;
+          window.scrollTo({ top, behavior: 'smooth' });
+        }
+      }
+    }
+  };
 
   return (
     <div className="relative min-h-screen w-full max-w-full overflow-x-hidden bg-[#181818] text-white font-['Outfit',sans-serif] selection:bg-[#D5F737] selection:text-black">
@@ -47,13 +97,25 @@ export const LandingPage: React.FC = () => {
 
           {/* Nav Links */}
           <div className="hidden md:flex items-center gap-8 text-sm font-medium text-[#9A9A9A]">
-            <a href="#features" className="hover:text-white transition-colors">
+            <a
+              href="#features"
+              onClick={(e) => scrollToSection(e, '#features')}
+              className="hover:text-white transition-colors"
+            >
               Features
             </a>
-            <a href="#ai-assistant" className="hover:text-white transition-colors">
+            <a
+              href="#ai-assistant"
+              onClick={(e) => scrollToSection(e, '#ai-assistant')}
+              className="hover:text-white transition-colors"
+            >
               AI Assistant
             </a>
-            <a href="#how-it-works" className="hover:text-white transition-colors">
+            <a
+              href="#how-it-works"
+              onClick={(e) => scrollToSection(e, '#how-it-works')}
+              className="hover:text-white transition-colors"
+            >
               How it works
             </a>
           </div>
@@ -565,13 +627,25 @@ export const LandingPage: React.FC = () => {
           </div>
 
           <div className="flex items-center gap-6 text-xs text-[#9A9A9A]">
-            <a href="#features" className="hover:text-white transition-colors">
+            <a
+              href="#features"
+              onClick={(e) => scrollToSection(e, '#features')}
+              className="hover:text-white transition-colors"
+            >
               Features
             </a>
-            <a href="#ai-assistant" className="hover:text-white transition-colors">
+            <a
+              href="#ai-assistant"
+              onClick={(e) => scrollToSection(e, '#ai-assistant')}
+              className="hover:text-white transition-colors"
+            >
               AI Assistant
             </a>
-            <a href="#how-it-works" className="hover:text-white transition-colors">
+            <a
+              href="#how-it-works"
+              onClick={(e) => scrollToSection(e, '#how-it-works')}
+              className="hover:text-white transition-colors"
+            >
               How it works
             </a>
             <Link to="/login" className="hover:text-white transition-colors">

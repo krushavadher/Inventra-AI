@@ -36,6 +36,30 @@ html, body, #root {
   overflow-x: hidden;
 }
 
+/* Scoped Lenis smooth scrolling (active only on landing page when Lenis instance is mounted) */
+html.lenis,
+html.lenis body,
+html.lenis #root {
+  height: auto;
+  max-height: none;
+}
+
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+
+.lenis.lenis-smooth [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+
+.lenis.lenis-stopped {
+  overflow: hidden;
+}
+
+.lenis.lenis-scrolling iframe {
+  pointer-events: none;
+}
+
 body {
   background-color: var(--background);
   color: var(--text);
