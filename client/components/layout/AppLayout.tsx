@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { NavLink, useNavigate, useLocation } from 'react-router-dom';
-import { LayoutDashboard, Package, Bell, Bot, LogOut, User as UserIcon, ChevronDown } from 'lucide-react';
+import { LogOut, User as UserIcon, ChevronDown } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 
 interface AppLayoutProps {
@@ -46,10 +46,10 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
 
   // Navigation items: only 4 pages as mandated
   const navItems = [
-    { to: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
-    { to: '/inventory', label: 'Inventory', icon: Package },
-    { to: '/alerts', label: 'Alerts', icon: Bell },
-    { to: '/assistant', label: 'AI Assistant', icon: Bot },
+    { to: '/dashboard', label: 'Dashboard' },
+    { to: '/inventory', label: 'Inventory' },
+    { to: '/alerts', label: 'Alerts' },
+    { to: '/assistant', label: 'AI Assistant' },
   ];
 
   // Breadcrumb current label
@@ -77,20 +77,18 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
         </div>
 
         {/* Navigation Items (strictly the 4 required pages) */}
-        <nav className="flex-1 p-3 space-y-1 overflow-y-auto">
+        <nav className="flex-1 p-3.5 space-y-1.5 overflow-y-auto">
           {navItems.map((item) => {
-            const Icon = item.icon;
             const isActive = location.pathname.startsWith(item.to);
             return (
               <NavLink
                 key={item.to}
                 to={item.to}
-                className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs sm:text-sm font-medium transition-all ${isActive
-                    ? 'bg-[#D5F737]/15 text-[#D5F737] border border-[#D5F737]/25 shadow-sm'
-                    : 'text-[#9A9A9A] hover:text-white hover:bg-white/[0.04]'
+                className={`flex items-center px-4 py-3 rounded-xl text-sm sm:text-base font-semibold tracking-tight transition-all duration-150 ${isActive
+                    ? 'bg-[#D5F737]/15 text-[#D5F737] border border-[#D5F737]/35 shadow-[0_0_12px_rgba(213,247,55,0.12)] font-bold'
+                    : 'text-zinc-100 hover:text-[#D5F737] hover:bg-[#D5F737]/10'
                   }`}
               >
-                <Icon className={`w-4 h-4 ${isActive ? 'text-[#D5F737]' : 'text-[#9A9A9A]'}`} />
                 <span>{item.label}</span>
               </NavLink>
             );
