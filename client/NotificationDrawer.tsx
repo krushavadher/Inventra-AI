@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
+import { apiFetch } from './apiClient';
 
 export interface NotificationItem {
   _id: string;
-  type: 'LOW_STOCK' | 'PURCHASE_APPROVAL' | 'ORDER_DELIVERED' | 'PRODUCT_EXPIRING' | 'AI_RECOMMENDATION';
+  type?: string;
   title: string;
   message: string;
   severity: 'INFO' | 'WARNING' | 'CRITICAL';
@@ -16,53 +17,29 @@ export const NotificationDrawer: React.FC = () => {
   const [notifications, setNotifications] = useState<NotificationItem[]>([]);
   const [unreadCount, setUnreadCount] = useState(0);
 
-  useEffect(() => {
-    // Mock Notification Fetch (Connects to GET /api/v1/notifications/unread)
-    const initialList: NotificationItem[] = [
-      {
-        _id: 'notif_1',
-        type: 'LOW_STOCK',
-        title: 'Critical Stockout Alert: SKU-8842-MCU',
-        message: 'Product SKU-8842-MCU is at 5 units available, breaching safety threshold of 20 units.',
-        severity: 'CRITICAL',
-        isRead: false,
-        actionUrl: '/inventory?sku=SKU-8842-MCU',
-        createdAt: '2026-08-03T17:45:00Z'
-      },
-      {
-        _id: 'notif_2',
-        type: 'PURCHASE_APPROVAL',
-        title: 'PO Approval Required: PO-88402',
-        message: 'Purchase Order PO-88402 for $6,000.00 requires executive sign-off.',
-        severity: 'WARNING',
-        isRead: false,
-        actionUrl: '/procurement/purchase-orders?po=PO-88402',
-        createdAt: '2026-08-03T17:30:00Z'
-      },
-      {
-        _id: 'notif_3',
-        type: 'ORDER_DELIVERED',
-        title: 'Inbound Shipment Received: GRN-99104',
-        message: 'Goods receipt note GRN-99104 for PO-88401 received at dock.',
-        severity: 'INFO',
-        isRead: false,
-        actionUrl: '/procurement/grn/GRN-99104',
-        createdAt: '2026-08-03T16:00:00Z'
-      },
-      {
-        _id: 'notif_4',
-        type: 'AI_RECOMMENDATION',
-        title: 'AI Procurement Advice: REC-99104',
-        message: 'Senior AI Procurement Manager generated a purchasing recommendation & draft PO for SKU-8842-MCU.',
-        severity: 'INFO',
-        isRead: false,
-        actionUrl: '/ai-procurement',
-        createdAt: '2026-08-03T15:30:00Z'
+  const fetchNotifications = async () => {
+    try {
+      const res = await apiFetch('/inventory/ai-alerts');
+      if (res && res.data && Array.isArray(res.data)) {
+        const items: NotificationItem[] = res.data.map((alert: any) => ({
+          _id: alert.id,
+          title: alert.title,
+          message: alert.message,
+          severity: alert.severity || 'WARNING',
+          isRead: !!alert.isRead,
+          createdAt: alert.time || new Date().toISOString()
+        }));
+        setNotifications(items);
+        setUnreadCount(items.filter(n => !n.isRead).length);
       }
-    ];
+    } catch {
+      setNotifications([]);
+      setUnreadCount(0);
+    }
+  };
 
-    setNotifications(initialList);
-    setUnreadCount(initialList.filter(n => !n.isRead).length);
+  useEffect(() => {
+    fetchNotifications();
   }, []);
 
   const handleMarkAllRead = () => {

@@ -1,48 +1,41 @@
 import mongoose, { Document, Schema } from 'mongoose';
-import { UserRole } from '../enums/user-role.enum.js';
+
+export type UserRoleType = 'admin' | 'manager' | 'staff';
 
 export interface IUser extends Document {
-  tenantId: mongoose.Types.ObjectId;
+  name: string;
   email: string;
-  passwordHash: string;
-  firstName: string;
-  lastName: string;
-  role: UserRole;
-  isEmailVerified: boolean;
-  emailVerificationToken?: string;
-  emailVerificationExpires?: Date;
-  passwordResetToken?: string;
-  passwordResetExpires?: Date;
-  assignedWarehouses: mongoose.Types.ObjectId[];
-  status: 'INVITED' | 'ACTIVE' | 'SUSPENDED';
-  isDeleted: boolean;
-  deletedAt?: Date;
+  password: string;
+  role: UserRoleType;
+  company?: string;
   createdAt: Date;
-  updatedAt: Date;
+  // Compatibility fields for existing ecosystem scripts
+  tenantId?: mongoose.Types.ObjectId;
+  firstName?: string;
+  lastName?: string;
+  passwordHash?: string;
+  isDeleted?: boolean;
 }
 
 const UserSchema: Schema<IUser> = new Schema(
   {
-    tenantId: { type: Schema.Types.ObjectId, ref: 'Tenant', required: true, index: true },
-    email: { type: String, required: true, lowercase: true, trim: true },
-    passwordHash: { type: String, required: true },
-    firstName: { type: String, required: true, trim: true },
-    lastName: { type: String, required: true, trim: true },
-    role: { type: String, enum: Object.values(UserRole), default: UserRole.PROCUREMENT_MANAGER },
-    isEmailVerified: { type: Boolean, default: false },
-    emailVerificationToken: { type: String },
-    emailVerificationExpires: { type: Date },
-    passwordResetToken: { type: String },
-    passwordResetExpires: { type: Date },
-    assignedWarehouses: [{ type: Schema.Types.ObjectId, ref: 'Warehouse' }],
-    status: { type: String, enum: ['INVITED', 'ACTIVE', 'SUSPENDED'], default: 'ACTIVE' },
-    isDeleted: { type: Boolean, default: false },
-    deletedAt: { type: Date }
+    name: { type: String, required: true, trim: true },
+    email: { type: String, required: true, unique: true, lowercase: true, trim: true },
+    password: { type: String, required: true },
+    role: { type: String, enum: ['admin', 'manager', 'staff'], default: 'admin' },
+    company: { type: String, trim: true },
+    createdAt: { type: Date, default: Date.now },
+    // Compatibility fields
+    tenantId: { type: Schema.Types.ObjectId, ref: 'Tenant' },
+    firstName: { type: String, trim: true },
+    lastName: { type: String, trim: true },
+    passwordHash: { type: String },
+    isDeleted: { type: Boolean, default: false }
   },
-  { timestamps: true }
+  { timestamps: false }
 );
 
-// Compound Index to enforce unique email per tenant
-UserSchema.index({ tenantId: 1, email: 1 }, { unique: true });
 
-export const UserModel = mongoose.model<IUser>('User', UserSchema);
+export const UserModel = (mongoose.models.User as mongoose.Model<IUser>) || mongoose.model<IUser>('User', UserSchema);
+export const User = UserModel;
+export default UserModel;

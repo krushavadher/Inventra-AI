@@ -14,8 +14,8 @@ export interface IStockMovement extends Document {
   tenantId: mongoose.Types.ObjectId;
   movementType: MovementType;
   productId: mongoose.Types.ObjectId;
-  warehouseId: mongoose.Types.ObjectId;
-  binCode: string;
+  warehouseId?: mongoose.Types.ObjectId;
+  binCode?: string;
   batchNumber?: string;
   quantity: number;
   balanceBefore: number;
@@ -45,8 +45,8 @@ const StockMovementSchema: Schema<IStockMovement> = new Schema(
       required: true
     },
     productId: { type: Schema.Types.ObjectId, ref: 'Product', required: true, index: true },
-    warehouseId: { type: Schema.Types.ObjectId, ref: 'Warehouse', required: true, index: true },
-    binCode: { type: String, required: true },
+    warehouseId: { type: Schema.Types.ObjectId, index: true },
+    binCode: { type: String, default: 'BIN-DEFAULT' },
     batchNumber: { type: String, default: 'BATCH-DEFAULT' },
     quantity: { type: Number, required: true },
     balanceBefore: { type: Number, required: true },

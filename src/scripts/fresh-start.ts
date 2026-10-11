@@ -9,13 +9,10 @@ try {
 
 import { TenantModel } from '../models/tenant.model.js';
 import { UserModel } from '../models/user.model.js';
-import { WarehouseModel } from '../models/warehouse.model.js';
-import { SupplierModel } from '../models/supplier.model.js';
 import { CategoryModel } from '../models/category.model.js';
 import { ProductModel } from '../models/product.model.js';
 import { InventoryLevelModel } from '../models/inventory-level.model.js';
 import { StockMovementModel } from '../models/stock-movement.model.js';
-import { PurchaseOrderModel } from '../models/purchase-order.model.js';
 import { UserRole } from '../enums/user-role.enum.js';
 import bcrypt from 'bcryptjs';
 
@@ -28,13 +25,10 @@ export const freshStart = async () => {
     console.log('🗑️ Wiping all existing collections...');
     await TenantModel.deleteMany({});
     await UserModel.deleteMany({});
-    await WarehouseModel.deleteMany({});
-    await SupplierModel.deleteMany({});
     await CategoryModel.deleteMany({});
     await ProductModel.deleteMany({});
     await InventoryLevelModel.deleteMany({});
     await StockMovementModel.deleteMany({});
-    await PurchaseOrderModel.deleteMany({});
 
     // Create Initial Clean Tenant & Admin User for login access
     console.log('🏢 Creating clean Organization Tenant & Admin User...');
@@ -48,11 +42,13 @@ export const freshStart = async () => {
     const passwordHash = await bcrypt.hash('admin123', 10);
     await UserModel.create({
       tenantId: tenant._id,
+      name: 'Admin User',
       email: 'admin@inventra.ai',
+      password: passwordHash,
       passwordHash,
       firstName: 'Admin',
       lastName: 'User',
-      role: UserRole.SUPER_ADMIN,
+      role: 'admin',
       status: 'ACTIVE'
     });
 

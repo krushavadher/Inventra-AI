@@ -26,15 +26,7 @@ export interface CreateProductDTO {
     height?: number;
     dimensionUom?: 'CM' | 'M' | 'IN' | 'FT';
   };
-  warehouseLocation?: {
-    defaultWarehouseId?: string;
-    defaultBinCode?: string;
-  };
-  supplierMapping?: {
-    primarySupplierId?: string;
-    secondarySupplierId?: string;
-    supplierSku?: string;
-  };
+  supplier?: string;
   abcClass?: 'A' | 'B' | 'C';
   status?: 'ACTIVE' | 'INACTIVE' | 'DISCONTINUED';
 }
@@ -96,15 +88,7 @@ export class ProductService {
         height: dto.physicalDimensions?.height || 2,
         dimensionUom: dto.physicalDimensions?.dimensionUom || 'CM'
       },
-      warehouseLocation: {
-        defaultWarehouseId: dto.warehouseLocation?.defaultWarehouseId as any,
-        defaultBinCode: dto.warehouseLocation?.defaultBinCode || 'BIN-A-01'
-      },
-      supplierMapping: {
-        primarySupplierId: dto.supplierMapping?.primarySupplierId as any,
-        secondarySupplierId: dto.supplierMapping?.secondarySupplierId as any,
-        supplierSku: dto.supplierMapping?.supplierSku || sku
-      },
+      supplier: dto.supplier,
       abcClass: dto.abcClass || 'A',
       status: dto.status || 'ACTIVE',
       isDeleted: false

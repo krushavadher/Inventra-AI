@@ -4,13 +4,11 @@ import cookieParser from 'cookie-parser';
 import authRoutes from './routes/auth.routes.js';
 import productRoutes from './routes/product.routes.js';
 import inventoryRoutes from './routes/inventory.routes.js';
-import warehouseRoutes from './routes/warehouse.routes.js';
-import supplierRoutes from './routes/supplier.routes.js';
-import purchaseOrderRoutes from './routes/purchase-order.routes.js';
 import dashboardRoutes from './routes/dashboard.routes.js';
+import stockRoutes from './routes/stock.routes.js';
+import alertsRoutes from './routes/alerts.routes.js';
+import assistantRoutes from './routes/assistant.routes.js';
 import aiRoutes from './routes/ai.routes.js';
-import aiProcurementAssistantRoutes from './routes/ai-procurement-assistant.routes.js';
-import reportRoutes from './routes/report.routes.js';
 import notificationRoutes from './routes/notification.routes.js';
 import { globalErrorHandler } from './middlewares/error.middleware.js';
 import { env } from './config/env.config.js';
@@ -28,23 +26,36 @@ app.use(
   })
 );
 
-// Health Check
-app.get('/health', (req, res) => {
-  res.status(200).json({ status: 'UP', timestamp: new Date().toISOString() });
+// Public Health Check Endpoints
+app.get('/api/health', (req, res) => {
+  res.status(200).json({ status: 'ok' });
 });
 
-// API Routes
+app.get('/health', (req, res) => {
+  res.status(200).json({ status: 'ok' });
+});
+
+// Primary /api Routes
+app.use('/api/auth', authRoutes);
+app.use('/api/products', productRoutes);
+app.use('/api/stock', stockRoutes);
+app.use('/api/alerts', alertsRoutes);
+app.use('/api/assistant', assistantRoutes);
+app.use('/api/inventory', inventoryRoutes);
+app.use('/api/dashboard', dashboardRoutes);
+app.use('/api/ai', aiRoutes);
+app.use('/api/notifications', notificationRoutes);
+
+// Backward Compatibility /api/v1 Routes
 app.use('/api/v1/auth', authRoutes);
 app.use('/api/v1/products', productRoutes);
+app.use('/api/v1/stock', stockRoutes);
+app.use('/api/v1/alerts', alertsRoutes);
+app.use('/api/v1/assistant', assistantRoutes);
 app.use('/api/v1/inventory', inventoryRoutes);
-app.use('/api/v1/warehouses', warehouseRoutes);
-app.use('/api/v1/suppliers', supplierRoutes);
-app.use('/api/v1/procurement/purchase-orders', purchaseOrderRoutes);
 app.use('/api/v1/dashboard', dashboardRoutes);
 app.use('/api/v1/ai', aiRoutes);
-app.use('/api/v1/ai-procurement', aiProcurementAssistantRoutes);
-app.use('/api/v1/reports', reportRoutes);
-app.use('/api/v1/notifications', notificationRoutes);
+app.use('/api/notifications', notificationRoutes);
 
 // Global Error Handler
 app.use(globalErrorHandler);

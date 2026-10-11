@@ -2,8 +2,8 @@ import mongoose, { Document, Schema } from 'mongoose';
 
 export interface IInventoryLevel extends Document {
   tenantId: mongoose.Types.ObjectId;
-  warehouseId: mongoose.Types.ObjectId;
-  binCode: string;
+  warehouseId?: mongoose.Types.ObjectId;
+  binCode?: string;
   productId: mongoose.Types.ObjectId;
   batchNumber: string;
   expiryDate?: Date;
@@ -20,7 +20,7 @@ export interface IInventoryLevel extends Document {
 const InventoryLevelSchema: Schema<IInventoryLevel> = new Schema(
   {
     tenantId: { type: Schema.Types.ObjectId, ref: 'Tenant', required: true, index: true },
-    warehouseId: { type: Schema.Types.ObjectId, ref: 'Warehouse', required: true, index: true },
+    warehouseId: { type: Schema.Types.ObjectId, index: true },
     binCode: { type: Schema.Types.ObjectId ? String : String, required: true, trim: true, default: 'BIN-DEFAULT' },
     productId: { type: Schema.Types.ObjectId, ref: 'Product', required: true, index: true },
     batchNumber: { type: String, default: 'BATCH-DEFAULT', trim: true },

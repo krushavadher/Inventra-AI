@@ -31,10 +31,6 @@ const chatCopilotSchema = z.object({
   history: z.array(z.any()).optional()
 });
 
-const generateReportSchema = z.object({
-  reportType: z.enum(['INVENTORY', 'PROCUREMENT', 'WAREHOUSE', 'EXECUTIVE']),
-  rawData: z.any().optional()
-});
 
 export class AIController {
   static async generateDescription(req: Request, res: Response, next: NextFunction) {
@@ -89,17 +85,6 @@ export class AIController {
       const result = await aiService.chatCopilot(validatedData.prompt, validatedData.history);
 
       return ApiResponse.success(res, 200, 'AI Copilot response generated', result);
-    } catch (error) {
-      next(error);
-    }
-  }
-
-  static async generateReport(req: Request, res: Response, next: NextFunction) {
-    try {
-      const validatedData = generateReportSchema.parse(req.body);
-      const report = await aiService.generateExecutiveReport(validatedData.reportType, validatedData.rawData);
-
-      return ApiResponse.success(res, 200, 'AI executive report synthesized', report);
     } catch (error) {
       next(error);
     }

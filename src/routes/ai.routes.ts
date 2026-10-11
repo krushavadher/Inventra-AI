@@ -12,6 +12,5 @@ router.post('/categorize-product', AIController.categorize);
 router.post('/inventory-insights', AIController.getInventoryInsights);
 router.post('/explain-forecast', AIController.explainForecast);
 router.post('/copilot/chat', AIController.chatCopilot);
-router.post('/generate-report', AIController.generateReport);
 
 export default router;

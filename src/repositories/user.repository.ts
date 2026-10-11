@@ -58,6 +58,8 @@ export class UserRepository {
 
   async create(userData: any): Promise<IUser> {
     try {
+      userData.name = userData.name || (userData.firstName && userData.lastName ? `${userData.firstName} ${userData.lastName}` : userData.firstName || 'User');
+      userData.password = userData.password || userData.passwordHash || '';
       const user = await UserModel.create(userData);
       return user;
     } catch (e) {

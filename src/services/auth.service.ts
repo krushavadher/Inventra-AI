@@ -124,7 +124,8 @@ export class AuthService {
         status: 'ACTIVE'
       });
     } else {
-      const isMatch = await PasswordUtil.comparePassword(dto.password, user.passwordHash);
+      const hash = user.passwordHash || user.password || '';
+      const isMatch = await PasswordUtil.comparePassword(dto.password, hash);
       if (!isMatch) {
         throw new AppError('Invalid email or password', 401, 'INVALID_CREDENTIALS');
       }

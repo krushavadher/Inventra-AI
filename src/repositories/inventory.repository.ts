@@ -16,8 +16,49 @@ export interface InventoryQueryFilter {
   limit?: number;
 }
 
+import fs from 'fs';
+import path from 'path';
+
 const memoryInventory: Map<string, any> = new Map();
 const memoryMovements: any[] = [];
+
+function loadSeedDataIntoMemory() {
+  if (memoryInventory.size === 0) {
+    try {
+      const seedFile = path.resolve(process.cwd(), 'src/data/seed-data.json');
+      if (fs.existsSync(seedFile)) {
+        const data = JSON.parse(fs.readFileSync(seedFile, 'utf-8'));
+        if (data.products) {
+          data.products.forEach((p: any, idx: number) => {
+            const id = 'inv_' + (idx + 1);
+            memoryInventory.set(id, {
+              _id: id,
+              id,
+              quantityOnHand: p.stock,
+              quantityAvailable: p.stock,
+              quantityCommitted: 0,
+              minSafetyStock: p.minStock,
+              reorderPoint: p.minStock * 2,
+              status: p.stock === 0 ? 'OUT_OF_STOCK' : p.stock <= p.minStock ? 'LOW_STOCK' : 'SALABLE',
+              productId: {
+                _id: 'prod_' + (idx + 1),
+                name: p.name,
+                sku: p.sku,
+                supplier: p.supplier,
+                categoryName: p.category,
+                pricing: { unitCost: p.unitCost, sellingPrice: p.sellingPrice }
+              }
+            });
+          });
+        }
+        if (data.movements && memoryMovements.length === 0) {
+          memoryMovements.push(...data.movements);
+        }
+      }
+    } catch (e) {}
+  }
+}
+loadSeedDataIntoMemory();
 
 export class InventoryRepository {
   /**
@@ -30,6 +71,7 @@ export class InventoryRepository {
     limit: number;
     totalPages: number;
   }> {
+    loadSeedDataIntoMemory();
     const page = options.page || 1;
     const limit = options.limit || 10;
 
@@ -48,22 +90,20 @@ export class InventoryRepository {
         const levels = await InventoryLevelModel.find(query)
           .populate({
             path: 'productId',
-            select: 'name sku pricing categoryId supplierMapping barcode image',
+            select: 'name sku pricing categoryId supplier barcode image',
             populate: [
-              { path: 'categoryId', select: 'name' },
-              { path: 'supplierMapping.primarySupplierId', select: 'name' }
+              { path: 'categoryId', select: 'name' }
             ]
           })
-          .populate({ path: 'warehouseId', select: 'name code capacity' })
           .sort({ createdAt: -1 });
 
         let items = levels.map((l) => {
           const obj: any = l.toObject();
           if (obj.productId && typeof obj.productId === 'object') {
-            obj.productId.unitCost = obj.productId.pricing?.unitCost ?? obj.productId.unitCost ?? 500;
-            obj.productId.sellingPrice = obj.productId.pricing?.sellingPrice ?? obj.productId.sellingPrice ?? 850;
-            obj.productId.category = obj.productId.categoryId?.name ?? obj.productId.category ?? 'Microcontrollers';
-            obj.productId.supplier = obj.productId.supplierMapping?.primarySupplierId?.name ?? obj.productId.supplier ?? 'Tech Components Ltd';
+            obj.productId.unitCost = obj.productId.pricing?.unitCost ?? obj.productId.unitCost ?? 0;
+            obj.productId.sellingPrice = obj.productId.pricing?.sellingPrice ?? obj.productId.sellingPrice ?? 0;
+            obj.productId.category = obj.productId.categoryId?.name ?? obj.productId.category ?? 'General';
+            obj.productId.supplier = obj.productId.supplier ?? '';
           }
           return obj;
         });
@@ -604,8 +644,7 @@ export class InventoryRepository {
         const movements = await StockMovementModel.find({})
           .sort({ createdAt: -1 })
           .limit(limit)
-          .populate('productId', 'name sku')
-          .populate('warehouseId', 'name code');
+          .populate('productId', 'name sku');
         return {
           movements: movements.map(m => m.toObject()),
           totalRecords: movements.length,

@@ -1,4 +1,5 @@
 import { AppError } from '../utils/app-error.util.js';
+import { InventoryLevelModel } from '../models/inventory-level.model.js';
 
 export interface GenerateDescriptionDTO {
   productName: string;
@@ -125,40 +126,33 @@ Description: "${dto.rawDescription || ''}"
     let suggestedActions: any[] = [];
 
     if (lowercase.includes("stockout") || lowercase.includes("low stock") || lowercase.includes("risk")) {
-      responseMarkdown = `I analyzed your global inventory ledger across all facilities. **1 item** is currently at critical stockout risk:\n\n- **SKU-8842-MCU (Microcontroller Unit)**: Only **5 units** remaining in *East Coast DC* (Safety threshold: 20 units).\n\nWould you like me to auto-draft a Purchase Order to *TechComponents Inc.* for 1,000 units?`;
-      suggestedActions = [
-        { actionType: "CREATE_DRAFT_PO", label: "Draft PO for 1,000 units of SKU-8842-MCU", payload: { sku: "SKU-8842-MCU", qty: 1000, supplier: "TechComponents Inc." } }
-      ];
-    } else if (lowercase.includes("supplier") || lowercase.includes("vendor") || lowercase.includes("otif")) {
-      responseMarkdown = `Here is your vendor performance summary:\n\n- **Top Performing**: *TechComponents Inc.* (OTIF Score: **98.4%**, Lead time: 5 days).\n- **Underperforming**: *Global Packaging LLC* (OTIF Score: **89.2%**, Lead time variance: +3.4 days).\n\nYour average supplier OTIF rating across all contracted vendors is **96.8%**.`;
+      const allLevels = await InventoryLevelModel.find().populate('productId').limit(50);
+      const lowStockItems = allLevels.filter((item: any) => {
+        const prod = item.productId as any;
+        const safety = prod?.safetyStock ?? 10;
+        return (item.quantityAvailable ?? item.quantityOnHand ?? 0) <= safety;
+      });
+
+      if (lowStockItems.length > 0) {
+        const itemList = lowStockItems.map((item: any) => {
+          const prod = item.productId as any;
+          const available = item.quantityAvailable ?? item.quantityOnHand ?? 0;
+          return `- **${prod?.sku || 'Unknown'}** (${prod?.name || 'Item'}): **${available} units** available (Safety stock: ${prod?.safetyStock ?? 0})`;
+        }).join('\n');
+        responseMarkdown = `I analyzed your inventory levels. **${lowStockItems.length} item(s)** are currently at or below safety stock:\n\n${itemList}\n\nReview them in the Inventory page.`;
+      } else {
+        responseMarkdown = `I analyzed your inventory ledger. All items are currently operating above their safety stock levels. There are **0 active stockout risks**.`;
+      }
+    } else if (lowercase.includes("supplier") || lowercase.includes("vendor")) {
+      responseMarkdown = `Suppliers are configured directly as an optional attribute on products in your inventory. You can view and update supplier names directly in the **Inventory** page.`;
     } else {
-      responseMarkdown = `Inventra AI Copilot at your service. I can help you with:\n- Identifying stockout risks & safety stock deficits\n- Auto-drafting Purchase Orders with vendor lead-time recommendations\n- Analyzing warehouse capacity & 2D bin heatmap density\n- Explaining AI demand forecasts\n\nWhat would you like to explore?`;
+      responseMarkdown = `Inventra AI Copilot at your service. I can help you with:\n- Identifying inventory stockout risks and safety stock thresholds\n- Reviewing stock levels\n- Explaining demand forecasts\n\nWhat would you like to explore?`;
     }
 
     return {
       responseMarkdown,
       suggestedActions,
       timestamp: new Date().toISOString()
-    };
-  }
-
-  /**
-   * 6. AI Executive Report Generator
-   */
-  async generateExecutiveReport(reportType: string, rawData?: any) {
-    return {
-      reportTitle: `Inventra AI — Executive ${reportType.toUpperCase()} Synthesis Report`,
-      generatedAt: new Date().toISOString(),
-      executiveSummary: `This automated AI report synthesizes operational data for Q3. Total working capital inventory valuation stands at **$285,000** with an overall warehouse occupancy rate of **74.5%**.`,
-      keyTakeaways: [
-        "Procurement cycle time accelerated by 42% following automated PO approval rules.",
-        "Warehouse picking accuracy reached 99.8% using TSP wave picking routes.",
-        "Zero unfulfilled B2B enterprise orders recorded during peak demand windows."
-      ],
-      strategicRecommendations: [
-        "Increase safety stock buffer by 10% for microchip categories facing international port delays.",
-        "Liquidate slow-moving packaging inventory in West Hub to free up $15,000 working capital."
-      ]
     };
   }
 }
