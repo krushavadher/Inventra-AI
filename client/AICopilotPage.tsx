@@ -10,7 +10,8 @@ import {
   Lightbulb,
   ShieldAlert,
   TrendingDown,
-  ShoppingCart
+  ShoppingCart,
+  Plus
 } from 'lucide-react';
 import { BorderBeam } from '@/components/ui/border-beam';
 import { TypingAnimation } from '@/components/ui/typing-animation';
@@ -30,22 +31,43 @@ const SUGGESTION_CHIPS = [
   { label: 'Why is stock dropping?', icon: TrendingDown },
 ];
 
+const createInitialMessage = (): ChatMessage => ({
+  id: `msg_initial_${Date.now()}`,
+  sender: 'AI',
+  text: "Hello! I am Inventra AI Assistant, powered by Gemini Flash.\nI have real-time access to your current warehouse stock levels, shortages, and movement ledger.\nHow can I help you optimize your inventory today?",
+  timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+  isStreaming: false,
+});
+
 export const AICopilotPage: React.FC = () => {
   const location = useLocation();
   const lastAutoSentQuestion = useRef<string | null>(null);
   const messageListRef = useRef<HTMLDivElement>(null);
 
-  const [messages, setMessages] = useState<ChatMessage[]>([
-    {
-      id: 'msg_initial',
-      sender: 'AI',
-      text: "Hello! I am Inventra AI Assistant, powered by Gemini Flash.\nI have real-time access to your current warehouse stock levels, shortages, and movement ledger.\nHow can I help you optimize your inventory today?",
-      timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-      isStreaming: false,
-    },
-  ]);
+  const [messages, setMessages] = useState<ChatMessage[]>([createInitialMessage()]);
   const [inputPrompt, setInputPrompt] = useState<string>('');
   const [isLoading, setIsLoading] = useState<boolean>(false);
+
+  // Start fresh chat session
+  const startNewChat = () => {
+    setMessages([createInitialMessage()]);
+    setInputPrompt('');
+    setIsLoading(false);
+  };
+
+  // Every time the page is loaded or navigated to, start with a fresh new chat
+  useEffect(() => {
+    const prefilled = (location.state as any)?.question || new URLSearchParams(location.search).get('q');
+    if (prefilled) {
+      if (prefilled !== lastAutoSentQuestion.current) {
+        lastAutoSentQuestion.current = prefilled;
+        setMessages([createInitialMessage()]);
+        handleSendMessage(prefilled);
+      }
+    } else {
+      startNewChat();
+    }
+  }, [location.pathname, location.search]);
 
   // Auto-scroll to bottom of message list without scrolling parent layout
   const scrollToBottom = () => {
@@ -60,15 +82,6 @@ export const AICopilotPage: React.FC = () => {
   useEffect(() => {
     scrollToBottom();
   }, [messages, isLoading]);
-
-  // Handle prefilled question from Alerts (sends automatically)
-  useEffect(() => {
-    const prefilled = (location.state as any)?.question || new URLSearchParams(location.search).get('q');
-    if (prefilled && prefilled !== lastAutoSentQuestion.current) {
-      lastAutoSentQuestion.current = prefilled;
-      handleSendMessage(prefilled);
-    }
-  }, [location]);
 
   const handleSendMessage = async (customText?: string) => {
     const query = (customText || inputPrompt).trim();
@@ -87,7 +100,13 @@ export const AICopilotPage: React.FC = () => {
 
     try {
       const res = await api.post('/api/assistant', { message: query });
-      const replyText = res.data?.reply || "I reviewed your inventory data. All metrics are logged in your system.";
+      const rawReply = res.data?.reply || "I reviewed your inventory data. All metrics are logged in your system.";
+      const replyText = rawReply
+        .replace(/\$/g, '₹')
+        .replace(/\*\*(.*?)\*\*/g, '$1')
+        .replace(/^(\s*)\*\s+/gm, '$1• ')
+        .replace(/\*/g, '')
+        .trim();
 
       const aiMessage: ChatMessage = {
         id: `ai_${Date.now()}`,
@@ -125,6 +144,26 @@ export const AICopilotPage: React.FC = () => {
           colorTo="#2BB4A0"
           borderWidth={1.5}
         />
+
+        {/* Chat Panel Header: Status + New Chat Button */}
+        <div className="flex-shrink-0 px-5 py-3 border-b border-white/10 flex items-center justify-between bg-black/20 backdrop-blur-md z-10">
+          <div className="flex items-center gap-2.5">
+            <span className="w-2 h-2 rounded-full bg-[#D5F737] shadow-[0_0_8px_#D5F737] animate-pulse" />
+            <div>
+              <span className="text-xs sm:text-sm font-semibold text-white tracking-tight">Inventra AI Assistant</span>
+              <span className="text-[10px] text-zinc-400 ml-2 hidden sm:inline">Gemini Flash • Real-time Context</span>
+            </div>
+          </div>
+          <button
+            type="button"
+            onClick={startNewChat}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium bg-white/5 hover:bg-white/10 border border-white/10 hover:border-[#D5F737]/40 text-zinc-300 hover:text-white transition-all active:scale-95 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D5F737]"
+            title="Start fresh conversation"
+          >
+            <Plus className="w-3.5 h-3.5 text-[#D5F737]" />
+            <span>New Chat</span>
+          </button>
+        </div>
 
         {/* Message List (Strictly only this scrolls) */}
         <div ref={messageListRef} className="flex-1 overflow-y-auto p-5 space-y-4 min-h-0">

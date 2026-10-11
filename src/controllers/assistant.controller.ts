@@ -195,28 +195,46 @@ ${lowStockStr}
 ${topMovingStr}
 `.trim();
 
-      const systemPrompt = "You are an inventory assistant for Inventra AI. Use only the data provided. Answer briefly. End with 3 numbered recommended next steps.";
+      const systemPrompt = `You are an intelligent inventory assistant for Inventra AI.
+- Answer the user's specific question directly, concisely, and accurately using the provided inventory data.
+- CURRENCY REQUIREMENT: Always use the Indian Rupee symbol (₹) for all currency and monetary valuations. NEVER use dollar signs ($) or USD under any circumstances.
+- TEXT FORMATTING REQUIREMENT: Do NOT use markdown asterisks (* or **) anywhere. Never use asterisks for bullet points or bold text. Use clean bullets (•) or dashes (-) for lists, and plain text without asterisks.
+- Do NOT provide unprompted "Recommended Next Steps", "Remediation", or numbered action lists unless the user explicitly asks for recommendations, advice, next steps, or action suggestions.
+- If the user asks a straightforward question (e.g. about stock levels, specific products, valuation, or greetings), provide a clear, direct answer without appending unsolicited advice.`;
 
       let reply = '';
       const apiKey = process.env.GEMINI_API_KEY;
 
       // Step 2 & 3: Send to Gemini if valid API key exists
       if (apiKey && apiKey.trim() && apiKey !== 'your_gemini_api_key_here') {
-        try {
-          const ai = new GoogleGenAI({ apiKey: apiKey.trim() });
-          const response = await ai.models.generateContent({
-            model: 'gemini-2.5-flash',
-            contents: `Current Inventory Data:\n${summaryText}\n\nUser Question:\n${message}`,
-            config: {
-              systemInstruction: systemPrompt
-            }
-          });
+        const candidateModels = ['gemini-2.5-flash', 'gemini-3.8-flash'];
+        const ai = new GoogleGenAI({ apiKey: apiKey.trim() });
+        for (const model of candidateModels) {
+          try {
+            const response = await ai.models.generateContent({
+              model,
+              contents: `Current Inventory Data:\n${summaryText}\n\nUser Question:\n${message}`,
+              config: {
+                systemInstruction: systemPrompt
+              }
+            });
 
-          if (response && response.text) {
-            reply = response.text.trim();
+            if (response && response.text) {
+              let sanitized = response.text.trim();
+              // Ensure currency is always Indian Rupee (₹) and never dollars ($)
+              sanitized = sanitized.replace(/\$/g, '₹');
+              // Remove markdown bold asterisks **text**
+              sanitized = sanitized.replace(/\*\*(.*?)\*\*/g, '$1');
+              // Replace markdown list bullet * with clean bullet •
+              sanitized = sanitized.replace(/^(\s*)\*\s+/gm, '$1• ');
+              // Strip any remaining stray asterisks
+              sanitized = sanitized.replace(/\*/g, '');
+              reply = sanitized.trim();
+              break;
+            }
+          } catch (geminiError: any) {
+            console.warn(`Gemini (${model}) returned error:`, geminiError?.message || geminiError);
           }
-        } catch (geminiError: any) {
-          console.warn('Gemini API call returned error, using fallback responder:', geminiError?.message || geminiError);
         }
       }
 
@@ -226,44 +244,47 @@ ${topMovingStr}
         const primaryOutOfStock = summary.outOfStockItems[0]?.name || 'depleted items';
         const primaryLowStock = summary.lowStockItems[0]?.name || 'low items';
         const primaryTopMoving = summary.topMovingProducts[0]?.name || 'fast moving items';
+        const wantsRecommendations = query.includes('step') || query.includes('recommend') || query.includes('what should') || query.includes('action') || query.includes('advice');
 
         if (query.includes('reorder') || query.includes('order')) {
-          reply = `Based on current inventory data, the highest priority reorders are:
-• Out of Stock: ${summary.outOfStockItems.map(i => `${i.name} (${i.sku})`).join(', ') || 'None'}
-• Low Stock: ${summary.lowStockItems.map(i => `${i.name} (${i.sku} - ${i.stock} left)`).join(', ') || 'None'}
-
-Recommended Next Steps:
-1. Immediately place emergency purchase orders for all 0-unit out-of-stock products (${primaryOutOfStock}).
-2. Reorder safety stock batches for items under buffer thresholds (${primaryLowStock}).
-3. Review supplier fulfillment lead times to prevent future stockouts.`;
+          reply = `Current reorder priority list:
+• Out of Stock (0 units): ${summary.outOfStockItems.map(i => `${i.name} (${i.sku})`).join(', ') || 'None'}
+• Low Stock: ${summary.lowStockItems.map(i => `${i.name} (${i.sku} - ${i.stock} units left)`).join(', ') || 'None'}`;
+          if (wantsRecommendations) {
+            reply += `\n\nRecommended Next Steps:
+1. Place immediate replenishment orders for 0-unit out-of-stock items (${primaryOutOfStock}).
+2. Reorder buffer batches for items below safety thresholds (${primaryLowStock}).
+3. Review supplier fulfillment lead times.`;
+          }
         } else if (query.includes('low') || query.includes('alert') || query.includes('shortage')) {
-          reply = `Current inventory highlights ${summary.outOfStockItems.length} out-of-stock items and ${summary.lowStockItems.length} low-stock items below their minimum safety limits.
-Total warehouse inventory valuation is ₹${summary.totalStockValue.toLocaleString('en-IN')}.
-
-Recommended Next Steps:
-1. Issue replenishment orders for the ${summary.lowStockItems.length} low-stock SKUs.
-2. Coordinate with suppliers for ${primaryOutOfStock} to restore safety levels.
-3. Schedule an automated stock audit for fastest-moving inventory.`;
+          reply = `Current inventory status: ${summary.outOfStockItems.length} out-of-stock items and ${summary.lowStockItems.length} low-stock items below minimum safety thresholds. Total warehouse valuation is ₹${summary.totalStockValue.toLocaleString('en-IN')}.`;
+          if (wantsRecommendations) {
+            reply += `\n\nRecommended Next Steps:
+1. Issue replenishment orders for ${summary.lowStockItems.length} low-stock SKUs.
+2. Coordinate with suppliers for ${primaryOutOfStock}.
+3. Schedule an automated stock audit for fast-moving inventory.`;
+          }
         } else if (query.includes('drop') || query.includes('moving') || query.includes('velocity')) {
-          reply = `Stock velocity is concentrated in your top moving products:
-${summary.topMovingProducts.map((p, i) => `${i + 1}. ${p.name} (${p.quantity} units)`).join('\n')}
-High outbound consumption in these lines accounts for the rapid stock depletion.
-
-Recommended Next Steps:
+          reply = `Fastest-moving items by recorded outbound volume:
+${summary.topMovingProducts.map((p, i) => `${i + 1}. ${p.name} (${p.quantity} units)`).join('\n')}`;
+          if (wantsRecommendations) {
+            reply += `\n\nRecommended Next Steps:
 1. Increase minimum safety stock buffers on ${primaryTopMoving}.
-2. Set up automated restock triggers at 1.5x supplier lead time.
-3. Audit dispatch logs to verify seasonal demand spikes.`;
+2. Set automated restock triggers based on supplier lead times.
+3. Audit dispatch logs to verify demand patterns.`;
+          }
         } else {
-          reply = `Here is your current inventory operational summary:
+          reply = `Current inventory overview:
 • Total Stock Valuation: ₹${summary.totalStockValue.toLocaleString('en-IN')}
-• Depleted Lines (0 stock): ${summary.outOfStockItems.length} items
-• Low Stock Lines: ${summary.lowStockItems.length} items
-• Top Velocity Line: ${primaryTopMoving}
-
-Recommended Next Steps:
-1. Restock depleted and critical threshold items immediately.
-2. Confirm active supplier quotes for upcoming purchase cycles.
-3. Review safety stock parameters across all ${summary.lowStockItems.length} flagged products.`;
+• Depleted Lines (0 units): ${summary.outOfStockItems.length}
+• Low Stock Lines: ${summary.lowStockItems.length}
+• Highest Velocity Line: ${primaryTopMoving}`;
+          if (wantsRecommendations) {
+            reply += `\n\nRecommended Next Steps:
+1. Restock depleted and critical threshold items.
+2. Request updated vendor quotes for upcoming orders.
+3. Review safety thresholds across flagged items.`;
+          }
         }
       }
 

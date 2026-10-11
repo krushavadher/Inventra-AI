@@ -111,7 +111,7 @@ const ParallaxHeading: React.FC<ParallaxHeadingProps> = ({
 };
 
 export const LandingPage: React.FC = () => {
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, logout } = useAuth();
   const prefersReducedMotion = useReducedMotion();
   const lenisRef = useRef<Lenis | null>(null);
 
@@ -305,65 +305,45 @@ export const LandingPage: React.FC = () => {
             })}
           </div>
 
-          {/* Right Action Buttons */}
+          {/* Right Action Buttons: Login & Sign Up */}
           <div className="flex items-center gap-3">
-            {isAuthenticated ? (
-              <Link
-                to="/dashboard"
-                className="group relative inline-flex rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D5F737] focus-visible:ring-offset-2 focus-visible:ring-offset-[#181818]"
+            <Link
+              to="/login"
+              onClick={() => {
+                if (isAuthenticated) logout();
+              }}
+              className={cn(
+                'px-3 sm:px-4 py-2 rounded-xl text-xs sm:text-sm font-medium text-[#9A9A9A] hover:text-white bg-white/[0.04] hover:bg-white/[0.12] border border-white/10 hover:border-[#D5F737] transition-all duration-200 ease-out',
+                'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D5F737] focus-visible:ring-offset-2 focus-visible:ring-offset-[#181818]',
+                prefersReducedMotion ? '' : 'active:scale-[0.97]'
+              )}
+            >
+              Login
+            </Link>
+            <Link
+              to="/signup"
+              onClick={() => {
+                if (isAuthenticated) logout();
+              }}
+              className="group relative inline-flex rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D5F737] focus-visible:ring-offset-2 focus-visible:ring-offset-[#181818]"
+            >
+              <ShimmerButton
+                background="#D5F737"
+                shimmerColor="#ffffff"
+                className={cn(
+                  'text-black font-semibold text-xs sm:text-sm px-3.5 sm:px-4.5 py-2 rounded-xl shadow-md shadow-[#D5F737]/20 transition-all duration-200 ease-out relative overflow-hidden',
+                  prefersReducedMotion
+                    ? 'hover:shadow-[0_0_24px_rgba(213,247,55,0.45)]'
+                    : 'hover:scale-[1.04] active:scale-[0.97] hover:shadow-[0_0_28px_rgba(213,247,55,0.45)]'
+                )}
               >
-                <ShimmerButton
-                  background="#D5F737"
-                  shimmerColor="#ffffff"
-                  className={cn(
-                    'text-black font-semibold text-xs sm:text-sm px-4 sm:px-5 py-2 rounded-xl shadow-md shadow-[#D5F737]/20 transition-all duration-200 ease-out relative overflow-hidden',
-                    prefersReducedMotion
-                      ? 'hover:shadow-[0_0_24px_rgba(213,247,55,0.45)]'
-                      : 'hover:scale-[1.04] active:scale-[0.97] hover:shadow-[0_0_28px_rgba(213,247,55,0.45)]'
-                  )}
-                >
-                  {/* Sweeping light shine on hover */}
-                  <span className="absolute inset-0 overflow-hidden rounded-[inherit] pointer-events-none">
-                    <span className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-700 ease-in-out bg-gradient-to-r from-transparent via-white/40 to-transparent skew-x-12" />
-                  </span>
-                  <span className="relative z-10">Go to Dashboard</span>
-                </ShimmerButton>
-              </Link>
-            ) : (
-              <>
-                <Link
-                  to="/login"
-                  className={cn(
-                    'px-3 sm:px-4 py-2 rounded-xl text-xs sm:text-sm font-medium text-[#9A9A9A] hover:text-white bg-white/[0.04] hover:bg-white/[0.12] border border-white/10 hover:border-[#D5F737] transition-all duration-200 ease-out',
-                    'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D5F737] focus-visible:ring-offset-2 focus-visible:ring-offset-[#181818]',
-                    prefersReducedMotion ? '' : 'active:scale-[0.97]'
-                  )}
-                >
-                  Login
-                </Link>
-                <Link
-                  to="/signup"
-                  className="group relative inline-flex rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D5F737] focus-visible:ring-offset-2 focus-visible:ring-offset-[#181818]"
-                >
-                  <ShimmerButton
-                    background="#D5F737"
-                    shimmerColor="#ffffff"
-                    className={cn(
-                      'text-black font-semibold text-xs sm:text-sm px-3.5 sm:px-4.5 py-2 rounded-xl shadow-md shadow-[#D5F737]/20 transition-all duration-200 ease-out relative overflow-hidden',
-                      prefersReducedMotion
-                        ? 'hover:shadow-[0_0_24px_rgba(213,247,55,0.45)]'
-                        : 'hover:scale-[1.04] active:scale-[0.97] hover:shadow-[0_0_28px_rgba(213,247,55,0.45)]'
-                    )}
-                  >
-                    {/* Sweeping light shine on hover */}
-                    <span className="absolute inset-0 overflow-hidden rounded-[inherit] pointer-events-none">
-                      <span className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-700 ease-in-out bg-gradient-to-r from-transparent via-white/40 to-transparent skew-x-12" />
-                    </span>
-                    <span className="relative z-10">Sign Up</span>
-                  </ShimmerButton>
-                </Link>
-              </>
-            )}
+                {/* Sweeping light shine on hover */}
+                <span className="absolute inset-0 overflow-hidden rounded-[inherit] pointer-events-none">
+                  <span className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-700 ease-in-out bg-gradient-to-r from-transparent via-white/40 to-transparent skew-x-12" />
+                </span>
+                <span className="relative z-10">Sign Up</span>
+              </ShimmerButton>
+            </Link>
           </div>
         </div>
       </nav>
@@ -407,7 +387,7 @@ export const LandingPage: React.FC = () => {
               Track stock, get low-stock alerts, and ask AI what to do next.
             </motion.p>
 
-            {/* Hero Buttons */}
+            {/* Hero Buttons: Get Started & Login */}
             <motion.div
               initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
@@ -416,6 +396,9 @@ export const LandingPage: React.FC = () => {
             >
               <Link
                 to="/signup"
+                onClick={() => {
+                  if (isAuthenticated) logout();
+                }}
                 className="group relative w-full sm:w-auto inline-flex rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D5F737] focus-visible:ring-offset-2 focus-visible:ring-offset-[#181818]"
               >
                 <ShimmerButton
@@ -438,6 +421,9 @@ export const LandingPage: React.FC = () => {
 
               <Link
                 to="/login"
+                onClick={() => {
+                  if (isAuthenticated) logout();
+                }}
                 className={cn(
                   'w-full sm:w-auto px-7 py-3.5 rounded-xl bg-white/[0.08] hover:bg-white/[0.14] border border-white/15 hover:border-[#D5F737] backdrop-blur-md text-white font-semibold text-sm sm:text-base transition-all duration-200 ease-out hover:shadow-[0_0_20px_rgba(213,247,55,0.2)] cursor-pointer text-center',
                   'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D5F737] focus-visible:ring-offset-2 focus-visible:ring-offset-[#181818]',

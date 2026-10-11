@@ -8,5 +8,14 @@
     "role": "admin",
     "company": "Inventra Enterprise",
     "createdAt": "2026-10-11T12:00:00.000Z"
+  },
+  {
+    "_id": "6acbb15cdc9cb0381599d0f6",
+    "name": "Krusha Vadher",
+    "email": "krushavadher14@gmail.com",
+    "password": "$2a$10$sv1yBa9hVeInn.db21hKvurWLizAPhKLTW.qB3j94Q4qs69nqnqCy",
+    "passwordHash": "$2a$10$sv1yBa9hVeInn.db21hKvurWLizAPhKLTW.qB3j94Q4qs69nqnqCy",
+    "role": "admin",
+    "createdAt": "2026-10-11T15:55:08.099Z"
   }
 ]
