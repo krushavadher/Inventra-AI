@@ -468,10 +468,10 @@ export const LandingPage: React.FC = () => {
               tabIndex={0}
               onMouseMove={handleCardMouseMove}
               className={cn(
-                'group relative h-full rounded-[24px] border border-white/10 bg-[#232323] p-6 flex flex-col justify-between overflow-hidden cursor-pointer transition-all duration-300 ease-out',
-                'hover:border-[#D5F737]/40 hover:shadow-[0_16px_36px_-8px_rgba(0,0,0,0.6),0_0_24px_rgba(213,247,55,0.12)]',
+                'group relative h-full min-h-[300px] rounded-[24px] border border-white/10 bg-[#232323] p-7 flex flex-col justify-between overflow-hidden cursor-pointer transition-all duration-300 ease-out',
+                'hover:border-[#D5F737]/45 hover:shadow-[0_20px_40px_-10px_rgba(0,0,0,0.65),0_0_28px_rgba(213,247,55,0.12)]',
                 'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D5F737] focus-visible:ring-offset-2 focus-visible:ring-offset-[#181818]',
-                prefersReducedMotion ? '' : 'hover:-translate-y-1.5'
+                prefersReducedMotion ? '' : 'hover:-translate-y-2'
               )}
             >
               {/* Radial lime glow cursor spotlight (disabled on touch devices) */}
@@ -483,15 +483,20 @@ export const LandingPage: React.FC = () => {
                 }}
               />
               <div className="relative z-10">
+                {/* Custom Isometric Layers Icon */}
                 <div
                   className={cn(
-                    'w-12 h-12 rounded-xl bg-[#D5F737]/15 border border-[#D5F737]/30 flex items-center justify-center text-[#D5F737] mb-5 transition-transform duration-300 ease-out',
-                    prefersReducedMotion ? '' : 'group-hover:scale-[1.08] group-hover:rotate-3'
+                    'w-[52px] h-[52px] rounded-2xl bg-[#D5F737]/15 border border-[#D5F737]/30 flex items-center justify-center text-[#D5F737] mb-6 shadow-[0_0_20px_rgba(213,247,55,0.1)] transition-transform duration-300 ease-out',
+                    prefersReducedMotion ? '' : 'group-hover:scale-110 group-hover:rotate-3'
                   )}
                 >
-                  <Package className="w-6 h-6" />
+                  <svg className="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M12 2L2 7l10 5 10-5-10-5z" />
+                    <path d="M2 17l10 5 10-5" />
+                    <path d="M2 12l10 5 10-5" />
+                  </svg>
                 </div>
-                <h3 className="text-lg font-bold text-white mb-2">Live Inventory</h3>
+                <h3 className="text-lg font-bold text-white mb-2.5">Live Inventory</h3>
                 <p className="text-xs sm:text-sm text-[#9A9A9A] leading-relaxed">
                   Real-time stock tracking with millisecond-level sync across warehouse bins and multiple fulfillment channels.
                 </p>
@@ -509,10 +514,10 @@ export const LandingPage: React.FC = () => {
               tabIndex={0}
               onMouseMove={handleCardMouseMove}
               className={cn(
-                'group relative h-full rounded-[24px] border border-white/10 bg-[#232323] p-6 flex flex-col justify-between overflow-hidden cursor-pointer transition-all duration-300 ease-out',
-                'hover:border-[#D5F737]/40 hover:shadow-[0_16px_36px_-8px_rgba(0,0,0,0.6),0_0_24px_rgba(213,247,55,0.12)]',
+                'group relative h-full min-h-[300px] rounded-[24px] border border-white/10 bg-[#232323] p-7 flex flex-col justify-between overflow-hidden cursor-pointer transition-all duration-300 ease-out',
+                'hover:border-[#D5F737]/45 hover:shadow-[0_20px_40px_-10px_rgba(0,0,0,0.65),0_0_28px_rgba(213,247,55,0.12)]',
                 'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D5F737] focus-visible:ring-offset-2 focus-visible:ring-offset-[#181818]',
-                prefersReducedMotion ? '' : 'hover:-translate-y-1.5'
+                prefersReducedMotion ? '' : 'hover:-translate-y-2'
               )}
             >
               {/* Radial lime glow cursor spotlight */}
@@ -524,15 +529,20 @@ export const LandingPage: React.FC = () => {
                 }}
               />
               <div className="relative z-10">
+                {/* Custom Radar Alert Beacon Icon */}
                 <div
                   className={cn(
-                    'w-12 h-12 rounded-xl bg-amber-500/15 border border-amber-500/30 flex items-center justify-center text-amber-400 mb-5 transition-transform duration-300 ease-out',
-                    prefersReducedMotion ? '' : 'group-hover:scale-[1.08] group-hover:rotate-3'
+                    'w-[52px] h-[52px] rounded-2xl bg-amber-500/15 border border-amber-500/30 flex items-center justify-center text-amber-400 mb-6 shadow-[0_0_20px_rgba(245,158,11,0.1)] transition-transform duration-300 ease-out',
+                    prefersReducedMotion ? '' : 'group-hover:scale-110 group-hover:rotate-3'
                   )}
                 >
-                  <Bell className="w-6 h-6" />
+                  <svg className="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
+                    <path d="M13.73 21a2 2 0 0 1-3.46 0" />
+                    <circle cx="18" cy="4" r="2.5" className="fill-amber-400 stroke-none" />
+                  </svg>
                 </div>
-                <h3 className="text-lg font-bold text-white mb-2">Low-Stock Alerts</h3>
+                <h3 className="text-lg font-bold text-white mb-2.5">Low-Stock Alerts</h3>
                 <p className="text-xs sm:text-sm text-[#9A9A9A] leading-relaxed">
                   Predictive safety threshold monitoring that notifies you before stock runs dry, factoring supplier lead times.
                 </p>
@@ -549,10 +559,10 @@ export const LandingPage: React.FC = () => {
               tabIndex={0}
               onMouseMove={handleCardMouseMove}
               className={cn(
-                'group relative h-full rounded-[24px] border border-white/10 bg-[#232323] p-6 flex flex-col justify-between overflow-hidden cursor-pointer transition-all duration-300 ease-out',
-                'hover:border-[#D5F737]/40 hover:shadow-[0_16px_36px_-8px_rgba(0,0,0,0.6),0_0_24px_rgba(213,247,55,0.12)]',
+                'group relative h-full min-h-[300px] rounded-[24px] border border-white/10 bg-[#232323] p-7 flex flex-col justify-between overflow-hidden cursor-pointer transition-all duration-300 ease-out',
+                'hover:border-[#D5F737]/45 hover:shadow-[0_20px_40px_-10px_rgba(0,0,0,0.65),0_0_28px_rgba(213,247,55,0.12)]',
                 'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D5F737] focus-visible:ring-offset-2 focus-visible:ring-offset-[#181818]',
-                prefersReducedMotion ? '' : 'hover:-translate-y-1.5'
+                prefersReducedMotion ? '' : 'hover:-translate-y-2'
               )}
             >
               {/* Radial lime glow cursor spotlight */}
@@ -564,20 +574,24 @@ export const LandingPage: React.FC = () => {
                 }}
               />
               <div className="relative z-10">
+                {/* Custom AI Intelligence Spark Icon */}
                 <div
                   className={cn(
-                    'w-12 h-12 rounded-xl bg-purple-500/15 border border-purple-500/30 flex items-center justify-center text-purple-400 mb-5 transition-transform duration-300 ease-out',
-                    prefersReducedMotion ? '' : 'group-hover:scale-[1.08] group-hover:rotate-3'
+                    'w-[52px] h-[52px] rounded-2xl bg-[#D5F737]/15 border border-[#D5F737]/30 flex items-center justify-center text-[#D5F737] mb-6 shadow-[0_0_20px_rgba(213,247,55,0.1)] transition-transform duration-300 ease-out',
+                    prefersReducedMotion ? '' : 'group-hover:scale-110 group-hover:rotate-3'
                   )}
                 >
-                  <Bot className="w-6 h-6" />
+                  <svg className="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83" />
+                    <circle cx="12" cy="12" r="2.5" className="fill-current" />
+                  </svg>
                 </div>
-                <h3 className="text-lg font-bold text-white mb-2">AI Assistant</h3>
+                <h3 className="text-lg font-bold text-white mb-2.5">AI Assistant</h3>
                 <p className="text-xs sm:text-sm text-[#9A9A9A] leading-relaxed">
                   Conversational intelligence that generates purchase recommendations, predicts demand spikes, and analyzes velocity.
                 </p>
               </div>
-              <div className="relative z-10 mt-6 pt-4 border-t border-white/10 flex items-center gap-1.5 text-xs text-purple-400 font-medium">
+              <div className="relative z-10 mt-6 pt-4 border-t border-white/10 flex items-center gap-1.5 text-xs text-[#D5F737] font-medium">
                 <span>Autonomous decision support</span>
               </div>
             </div>
@@ -589,10 +603,10 @@ export const LandingPage: React.FC = () => {
               tabIndex={0}
               onMouseMove={handleCardMouseMove}
               className={cn(
-                'group relative h-full rounded-[24px] border border-white/10 bg-[#232323] p-6 flex flex-col justify-between overflow-hidden cursor-pointer transition-all duration-300 ease-out',
-                'hover:border-[#D5F737]/40 hover:shadow-[0_16px_36px_-8px_rgba(0,0,0,0.6),0_0_24px_rgba(213,247,55,0.12)]',
+                'group relative h-full min-h-[300px] rounded-[24px] border border-white/10 bg-[#232323] p-7 flex flex-col justify-between overflow-hidden cursor-pointer transition-all duration-300 ease-out',
+                'hover:border-[#D5F737]/45 hover:shadow-[0_20px_40px_-10px_rgba(0,0,0,0.65),0_0_28px_rgba(213,247,55,0.12)]',
                 'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D5F737] focus-visible:ring-offset-2 focus-visible:ring-offset-[#181818]',
-                prefersReducedMotion ? '' : 'hover:-translate-y-1.5'
+                prefersReducedMotion ? '' : 'hover:-translate-y-2'
               )}
             >
               {/* Radial lime glow cursor spotlight */}
@@ -604,20 +618,26 @@ export const LandingPage: React.FC = () => {
                 }}
               />
               <div className="relative z-10">
+                {/* Custom Analytics Bento Matrix Icon */}
                 <div
                   className={cn(
-                    'w-12 h-12 rounded-xl bg-cyan-500/15 border border-cyan-500/30 flex items-center justify-center text-cyan-400 mb-5 transition-transform duration-300 ease-out',
-                    prefersReducedMotion ? '' : 'group-hover:scale-[1.08] group-hover:rotate-3'
+                    'w-[52px] h-[52px] rounded-2xl bg-[#D5F737]/15 border border-[#D5F737]/30 flex items-center justify-center text-[#D5F737] mb-6 shadow-[0_0_20px_rgba(213,247,55,0.1)] transition-transform duration-300 ease-out',
+                    prefersReducedMotion ? '' : 'group-hover:scale-110 group-hover:rotate-3'
                   )}
                 >
-                  <LayoutDashboard className="w-6 h-6" />
+                  <svg className="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <rect x="3" y="3" width="7" height="9" rx="1.5" />
+                    <rect x="14" y="3" width="7" height="5" rx="1.5" />
+                    <rect x="14" y="12" width="7" height="9" rx="1.5" />
+                    <rect x="3" y="16" width="7" height="5" rx="1.5" />
+                  </svg>
                 </div>
-                <h3 className="text-lg font-bold text-white mb-2">Smart Dashboard</h3>
+                <h3 className="text-lg font-bold text-white mb-2.5">Smart Dashboard</h3>
                 <p className="text-xs sm:text-sm text-[#9A9A9A] leading-relaxed">
                   Real-time visibility into turnover rates, inventory valuation, active SKUs, and immediate reorder urgency.
                 </p>
               </div>
-              <div className="relative z-10 mt-6 pt-4 border-t border-white/10 flex items-center gap-1.5 text-xs text-cyan-400 font-medium">
+              <div className="relative z-10 mt-6 pt-4 border-t border-white/10 flex items-center gap-1.5 text-xs text-[#D5F737] font-medium">
                 <span>Executive analytics live</span>
               </div>
             </div>
