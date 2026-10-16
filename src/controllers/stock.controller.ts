@@ -6,6 +6,7 @@ import { fileURLToPath } from 'url';
 import { ProductModel } from '../models/product.model.js';
 import { InventoryLevelModel } from '../models/inventory-level.model.js';
 import { StockMovementModel } from '../models/stock-movement.model.js';
+import { SalesService } from '../services/sales.service.js';
 import { ApiResponse } from '../utils/api-response.util.js';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -103,9 +104,9 @@ export class StockController {
         }
       }
 
-      // 2. Local fallback
-      if (!matchedProd && seedData.products.length > 0) {
-        matchedProd = seedData.products[0];
+      // 2. Local fallback - must find exact product
+      if (!matchedProd) {
+        return res.status(404).json({ success: false, error: 'Product not found in inventory' });
       }
 
       if (matchedProd) {
@@ -158,6 +159,31 @@ export class StockController {
 
       if (!qty || qty <= 0) {
         return res.status(400).json({ success: false, error: 'Quantity must be a positive number' });
+      }
+
+      // If reason is 'sale', delegate to the shared recordSale service
+      if (reason && String(reason).toLowerCase() === 'sale') {
+        const saleResult = await SalesService.recordSale({
+          productId,
+          sku,
+          quantity: qty,
+          salePrice: req.body.salePrice,
+          customer: req.body.customer,
+          note: req.body.note || reference,
+          date: req.body.date,
+          adjustStock: req.body.adjustStock,
+          tenantId: req.user?.tenantId,
+          userId: req.user?.id || req.user?.userId
+        });
+
+        return ApiResponse.success(res, 200, 'Stock Out recorded successfully', {
+          productId: saleResult.productId,
+          sku: saleResult.sku,
+          name: saleResult.name,
+          stock: (saleResult as any).balanceAfter,
+          quantityDeducted: qty,
+          sale: saleResult
+        });
       }
 
       const seedData = getSeedData();
@@ -217,9 +243,9 @@ export class StockController {
         }
       }
 
-      // 2. Local fallback
-      if (!matchedProd && seedData.products.length > 0) {
-        matchedProd = seedData.products[0];
+      // 2. Local fallback - must find exact product
+      if (!matchedProd) {
+        return res.status(404).json({ success: false, error: 'Product not found in inventory' });
       }
 
       if (matchedProd) {

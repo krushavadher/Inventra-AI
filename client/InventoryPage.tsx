@@ -30,6 +30,7 @@ export interface Product {
   sellingPrice: number;
   stock: number;
   minStock: number;
+  leadTimeDays?: number;
   status?: string;
 }
 
@@ -77,6 +78,7 @@ export const InventoryPage: React.FC = () => {
   const prefersReducedMotion = useReducedMotion();
 
   const [products, setProducts] = useState<Product[]>([]);
+  const [forecastMap, setForecastMap] = useState<Record<string, { daysLeft: number | null; risk: string }>>({});
   const [loading, setLoading] = useState<boolean>(true);
   const [isRefreshing, setIsRefreshing] = useState<boolean>(false);
 
@@ -123,12 +125,17 @@ export const InventoryPage: React.FC = () => {
     minStock: 10,
     unitCost: 100,
     sellingPrice: 150,
+    leadTimeDays: 7,
   });
 
+  const [stockOutReason, setStockOutReason] = useState<'sale' | 'damage' | 'return' | 'other'>('sale');
   const [stockMovementForm, setStockMovementForm] = useState({
     productId: '',
     quantity: 10,
-    reason: '',
+    reason: 'sale',
+    salePrice: 150,
+    customer: '',
+    note: '',
   });
 
   const [formError, setFormError] = useState<string | null>(null);
@@ -140,10 +147,31 @@ export const InventoryPage: React.FC = () => {
     if (showRefreshSpinner) setIsRefreshing(true);
     else setLoading(true);
     try {
-      const res = await api.get('/api/products');
-      const data = res.data?.data?.products || res.data?.data || res.data?.products || [];
-      if (Array.isArray(data)) {
-        setProducts(data);
+      const [res, forecastRes] = await Promise.allSettled([
+        api.get('/api/products'),
+        api.get('/api/forecast')
+      ]);
+
+      if (res.status === 'fulfilled') {
+        const data = res.value.data?.data?.products || res.value.data?.data || res.value.data?.products || [];
+        if (Array.isArray(data)) {
+          setProducts(data);
+        }
+      }
+
+      if (forecastRes.status === 'fulfilled') {
+        const fItems = forecastRes.value.data?.forecasts || forecastRes.value.data?.data || [];
+        if (Array.isArray(fItems)) {
+          const map: Record<string, { daysLeft: number | null; risk: string }> = {};
+          fItems.forEach((f: any) => {
+            const entry = { daysLeft: f.daysLeft, risk: f.risk };
+            if (f.productId) map[f.productId] = entry;
+            if (f._id) map[f._id] = entry;
+            if (f.id) map[f.id] = entry;
+            if (f.sku) map[f.sku] = entry;
+          });
+          setForecastMap(map);
+        }
       }
     } catch (err: any) {
       console.error('Failed to fetch products:', err);
@@ -260,6 +288,7 @@ export const InventoryPage: React.FC = () => {
       minStock: 10,
       unitCost: 100,
       sellingPrice: 150,
+      leadTimeDays: 7,
     });
     setIsAddModalOpen(true);
     setTimeout(() => addNameInputRef.current?.focus(), 50);
@@ -280,6 +309,7 @@ export const InventoryPage: React.FC = () => {
       minStock: p.minStock ?? 10,
       unitCost: p.unitCost ?? 100,
       sellingPrice: p.sellingPrice ?? 150,
+      leadTimeDays: p.leadTimeDays ?? 7,
     });
     setIsEditModalOpen(true);
     setTimeout(() => editNameInputRef.current?.focus(), 50);
@@ -292,6 +322,9 @@ export const InventoryPage: React.FC = () => {
       productId: target ? target._id || target.id || target.sku : '',
       quantity: 10,
       reason: 'Inbound shipment receipt',
+      salePrice: target?.sellingPrice ?? 150,
+      customer: '',
+      note: '',
     });
     setIsStockInModalOpen(true);
     setTimeout(() => stockInSelectRef.current?.focus(), 50);
@@ -300,10 +333,14 @@ export const InventoryPage: React.FC = () => {
   const openStockOutModal = (p?: Product) => {
     setFormError(null);
     const target = p || (filteredProducts.length > 0 ? filteredProducts[0] : null);
+    setStockOutReason('sale');
     setStockMovementForm({
       productId: target ? target._id || target.id || target.sku : '',
       quantity: 5,
-      reason: 'Outbound dispatch / sales order',
+      reason: 'sale',
+      salePrice: target?.sellingPrice ?? 150,
+      customer: '',
+      note: '',
     });
     setIsStockOutModalOpen(true);
     setTimeout(() => stockOutSelectRef.current?.focus(), 50);
@@ -329,6 +366,7 @@ export const InventoryPage: React.FC = () => {
         minStock: Number(productForm.minStock),
         unitCost: Number(productForm.unitCost),
         sellingPrice: Number(productForm.sellingPrice),
+        leadTimeDays: Number(productForm.leadTimeDays ?? 7),
       });
       setIsAddModalOpen(false);
       showToast(`Product "${productForm.name}" created successfully`);
@@ -359,6 +397,7 @@ export const InventoryPage: React.FC = () => {
         minStock: Number(productForm.minStock),
         unitCost: Number(productForm.unitCost),
         sellingPrice: Number(productForm.sellingPrice),
+        leadTimeDays: Number(productForm.leadTimeDays ?? 7),
       });
       setIsEditModalOpen(false);
       showToast(`Product "${productForm.name}" updated successfully`);
@@ -420,10 +459,16 @@ export const InventoryPage: React.FC = () => {
     setFormError(null);
     setSubmitting(true);
     try {
+      const isSale = stockOutReason === 'sale';
       await api.post('/api/stock/out', {
         productId: stockMovementForm.productId,
         quantity: Number(stockMovementForm.quantity),
-        reason: stockMovementForm.reason,
+        reason: stockOutReason,
+        ...(isSale && {
+          salePrice: Number(stockMovementForm.salePrice),
+          customer: stockMovementForm.customer?.trim() || undefined,
+        }),
+        note: stockMovementForm.note?.trim() || undefined,
       });
       setIsStockOutModalOpen(false);
       showToast(`Stock out recorded (-${stockMovementForm.quantity} units)`);
@@ -763,6 +808,11 @@ export const InventoryPage: React.FC = () => {
                         <div className="text-[11px] text-[#9A9A9A] font-mono mt-0.5">
                           ₹{p.sellingPrice?.toLocaleString('en-IN')} retail
                         </div>
+                        {p.unitCost !== undefined && p.unitCost !== null && p.sellingPrice > 0 && (
+                          <div className="text-[10px] text-[#9A9A9A] font-mono">
+                            Margin {Math.round(((p.sellingPrice - p.unitCost) / p.sellingPrice) * 100)}%
+                          </div>
+                        )}
                       </td>
 
                       {/* SKU (1 line whitespace-nowrap, monospace chip) */}
@@ -810,6 +860,16 @@ export const InventoryPage: React.FC = () => {
                             }}
                           />
                         </div>
+                        {/* Days left under stock bar */}
+                        {(() => {
+                          const f = forecastMap[p._id] || forecastMap[p.id || ''] || forecastMap[p.sku];
+                          if (!f || f.risk === 'no_data' || f.daysLeft === null || f.daysLeft === undefined) return null;
+                          return (
+                            <div className="text-[10px] text-[#9A9A9A] font-mono mt-1">
+                              ~{f.daysLeft} days left
+                            </div>
+                          );
+                        })()}
                       </td>
 
                       {/* Min Stock (hidden <1024px) */}
@@ -996,6 +1056,15 @@ export const InventoryPage: React.FC = () => {
                           }}
                         />
                       </div>
+                      {(() => {
+                        const f = forecastMap[p._id] || forecastMap[p.id || ''] || forecastMap[p.sku];
+                        if (!f || f.risk === 'no_data' || f.daysLeft === null || f.daysLeft === undefined) return null;
+                        return (
+                          <div className="text-[10px] text-[#9A9A9A] font-mono mt-0.5 text-right">
+                            ~{f.daysLeft} days left
+                          </div>
+                        );
+                      })()}
                     </div>
                   </div>
 
@@ -1190,6 +1259,17 @@ export const InventoryPage: React.FC = () => {
                   </div>
                 </div>
 
+                <div>
+                  <label className="block text-xs font-semibold text-zinc-300 mb-1">Lead time (days)</label>
+                  <input
+                    type="number"
+                    min="0"
+                    value={productForm.leadTimeDays}
+                    onChange={(e) => setProductForm({ ...productForm, leadTimeDays: Math.max(0, Number(e.target.value)) })}
+                    className="w-full bg-[#1C1C1C] border border-white/10 rounded-xl px-3.5 py-2 text-xs text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D5F737] font-mono"
+                  />
+                </div>
+
                 <div className="flex items-center justify-end gap-2.5 pt-3 border-t border-white/10">
                   <button
                     type="button"
@@ -1371,6 +1451,17 @@ export const InventoryPage: React.FC = () => {
                   </div>
                 </div>
 
+                <div>
+                  <label className="block text-xs font-semibold text-zinc-300 mb-1">Lead time (days)</label>
+                  <input
+                    type="number"
+                    min="0"
+                    value={productForm.leadTimeDays}
+                    onChange={(e) => setProductForm({ ...productForm, leadTimeDays: Math.max(0, Number(e.target.value)) })}
+                    className="w-full bg-[#1C1C1C] border border-white/10 rounded-xl px-3.5 py-2 text-xs text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D5F737] font-mono"
+                  />
+                </div>
+
                 <div className="flex items-center justify-end gap-2.5 pt-3 border-t border-white/10">
                   <button
                     type="button"
@@ -1542,70 +1633,221 @@ export const InventoryPage: React.FC = () => {
                 </div>
               )}
 
-              <form onSubmit={handleStockOut} className="mt-4 space-y-3.5">
-                <div>
-                  <label className="block text-xs font-semibold text-zinc-300 mb-1">Select Product *</label>
-                  <select
-                    ref={stockOutSelectRef}
-                    required
-                    value={stockMovementForm.productId}
-                    onChange={(e) => setStockMovementForm({ ...stockMovementForm, productId: e.target.value })}
-                    className="w-full bg-[#1C1C1C] border border-white/10 rounded-xl px-3.5 py-2 text-xs text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 cursor-pointer"
-                  >
-                    <option value="">-- Choose a product --</option>
-                    {products.map((p) => (
-                      <option key={p._id || p.id || p.sku} value={p._id || p.id || p.sku}>
-                        {p.name} ({p.sku}) — Available: {p.stock} units
-                      </option>
-                    ))}
-                  </select>
-                </div>
+              {(() => {
+                const selectedProd = products.find(
+                  (p) => (p._id || p.id || p.sku) === stockMovementForm.productId
+                );
+                const previewQty = Number(stockMovementForm.quantity) || 0;
+                const previewPrice = Number(stockMovementForm.salePrice ?? selectedProd?.sellingPrice ?? 0);
+                const previewCost = Number(selectedProd?.unitCost ?? 0);
+                const previewRevenue = Math.round(previewQty * previewPrice * 100) / 100;
+                const previewTotalCost = Math.round(previewQty * previewCost * 100) / 100;
+                const previewProfit = Math.round((previewRevenue - previewTotalCost) * 100) / 100;
+                const previewMargin =
+                  previewRevenue > 0
+                    ? Math.round(((previewProfit / previewRevenue) * 100) * 10) / 10
+                    : 0;
 
-                <div>
-                  <label className="block text-xs font-semibold text-zinc-300 mb-1">Quantity to Deduct *</label>
-                  <input
-                    required
-                    type="number"
-                    min="1"
-                    value={stockMovementForm.quantity}
-                    onChange={(e) =>
-                      setStockMovementForm({
-                        ...stockMovementForm,
-                        quantity: Math.max(1, Number(e.target.value)),
-                      })
-                    }
-                    className="w-full bg-[#1C1C1C] border border-white/10 rounded-xl px-3.5 py-2 text-xs text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 font-mono"
-                  />
-                </div>
+                return (
+                  <form onSubmit={handleStockOut} className="mt-4 space-y-3.5">
+                    {/* Reason Segmented Control: Sold, Damaged, Returned, Other */}
+                    <div>
+                      <label className="block text-xs font-semibold text-zinc-300 mb-1.5">
+                        Reason
+                      </label>
+                      <div className="grid grid-cols-4 gap-1 p-1 bg-[#1C1C1C] rounded-full border border-white/10">
+                        {[
+                          { key: 'sale', label: 'Sold' },
+                          { key: 'damage', label: 'Damaged' },
+                          { key: 'return', label: 'Returned' },
+                          { key: 'other', label: 'Other' },
+                        ].map((r) => {
+                          const active = stockOutReason === r.key;
+                          return (
+                            <button
+                              key={r.key}
+                              type="button"
+                              onClick={() => {
+                                setStockOutReason(r.key as any);
+                                if (r.key === 'sale' && selectedProd) {
+                                  setStockMovementForm((prev) => ({
+                                    ...prev,
+                                    salePrice: selectedProd.sellingPrice ?? prev.salePrice,
+                                  }));
+                                }
+                              }}
+                              className={`py-1.5 text-xs font-semibold rounded-full transition-all duration-200 ${
+                                active
+                                  ? 'bg-[#D5F737] text-black shadow-md shadow-[#D5F737]/20 font-bold'
+                                  : 'text-[#9A9A9A] hover:text-white'
+                              }`}
+                            >
+                              {r.label}
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
 
-                <div>
-                  <label className="block text-xs font-semibold text-zinc-300 mb-1">Reason / Document Reference</label>
-                  <input
-                    type="text"
-                    placeholder="e.g. SO-4421 Dispatched to Customer"
-                    value={stockMovementForm.reason}
-                    onChange={(e) => setStockMovementForm({ ...stockMovementForm, reason: e.target.value })}
-                    className="w-full bg-[#1C1C1C] border border-white/10 rounded-xl px-3.5 py-2 text-xs text-white placeholder-zinc-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400"
-                  />
-                </div>
+                    {/* Product Selection */}
+                    <div>
+                      <label className="block text-xs font-semibold text-zinc-300 mb-1">
+                        Select Product *
+                      </label>
+                      <select
+                        ref={stockOutSelectRef}
+                        required
+                        value={stockMovementForm.productId}
+                        onChange={(e) => {
+                          const chosenId = e.target.value;
+                          const p = products.find(
+                            (prod) => (prod._id || prod.id || prod.sku) === chosenId
+                          );
+                          setStockMovementForm({
+                            ...stockMovementForm,
+                            productId: chosenId,
+                            salePrice: p ? p.sellingPrice ?? 0 : stockMovementForm.salePrice,
+                          });
+                        }}
+                        className="w-full bg-[#1C1C1C] border border-white/10 rounded-xl px-3.5 py-2 text-xs text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D5F737] cursor-pointer"
+                      >
+                        <option value="">-- Choose a product --</option>
+                        {products.map((p) => (
+                          <option key={p._id || p.id || p.sku} value={p._id || p.id || p.sku}>
+                            {p.name} ({p.sku}) — Available: {p.stock} units
+                          </option>
+                        ))}
+                      </select>
+                    </div>
 
-                <div className="flex items-center justify-end gap-2.5 pt-3 border-t border-white/10">
-                  <button
-                    type="button"
-                    onClick={() => setIsStockOutModalOpen(false)}
-                    className="px-4 py-2 rounded-full text-xs font-semibold border border-white/10 hover:bg-white/5 text-zinc-300 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400"
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    type="submit"
-                    disabled={submitting || !stockMovementForm.productId}
-                    className="px-5 py-2 rounded-full text-xs font-bold bg-amber-400 hover:bg-amber-300 text-black transition-all hover:scale-[1.02] active:scale-[0.97] disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400"
-                  >
-                    {submitting ? 'Recording...' : 'Confirm Stock Out'}
-                  </button>
-                </div>
-              </form>
+                    {/* Quantity to Deduct */}
+                    <div>
+                      <label className="block text-xs font-semibold text-zinc-300 mb-1">
+                        Quantity to Deduct *
+                      </label>
+                      <input
+                        required
+                        type="number"
+                        min="1"
+                        value={stockMovementForm.quantity}
+                        onChange={(e) =>
+                          setStockMovementForm({
+                            ...stockMovementForm,
+                            quantity: Math.max(1, Number(e.target.value)),
+                          })
+                        }
+                        className="w-full bg-[#1C1C1C] border border-white/10 rounded-xl px-3.5 py-2 text-xs text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D5F737] font-mono"
+                      />
+                    </div>
+
+                    {/* Conditional Fields based on Reason */}
+                    {stockOutReason === 'sale' ? (
+                      <>
+                        <div className="grid grid-cols-2 gap-3">
+                          <div>
+                            <label className="block text-xs font-semibold text-zinc-300 mb-1">
+                              Selling Price (₹) *
+                            </label>
+                            <input
+                              required
+                              type="number"
+                              min="0"
+                              value={stockMovementForm.salePrice}
+                              onChange={(e) =>
+                                setStockMovementForm({
+                                  ...stockMovementForm,
+                                  salePrice: Number(e.target.value),
+                                })
+                              }
+                              className="w-full bg-[#1C1C1C] border border-white/10 rounded-xl px-3.5 py-2 text-xs text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D5F737] font-mono"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-xs font-semibold text-zinc-300 mb-1">
+                              Customer (Optional)
+                            </label>
+                            <input
+                              type="text"
+                              placeholder="e.g. Acme Corp / Walk-in"
+                              value={stockMovementForm.customer}
+                              onChange={(e) =>
+                                setStockMovementForm({
+                                  ...stockMovementForm,
+                                  customer: e.target.value,
+                                })
+                              }
+                              className="w-full bg-[#1C1C1C] border border-white/10 rounded-xl px-3.5 py-2 text-xs text-white placeholder-zinc-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D5F737]"
+                            />
+                          </div>
+                        </div>
+
+                        {/* Live Profit Preview */}
+                        <div className="p-3 rounded-2xl bg-[#1C1C1C] border border-white/10 text-xs">
+                          <div className="text-[10px] text-[#9A9A9A] uppercase tracking-wider mb-1 font-semibold">
+                            Live Profit Preview
+                          </div>
+                          <div className="text-white flex items-center flex-wrap gap-1.5 font-mono text-[11px] sm:text-xs">
+                            <span>
+                              Revenue <strong className="text-white">₹{previewRevenue.toLocaleString('en-IN')}</strong>
+                            </span>
+                            <span className="text-[#9A9A9A]">•</span>
+                            <span>
+                              Cost <strong className="text-white">₹{previewTotalCost.toLocaleString('en-IN')}</strong>
+                            </span>
+                            <span className="text-[#9A9A9A]">•</span>
+                            <span>
+                              Profit{' '}
+                              <strong
+                                className={
+                                  previewProfit >= 0 ? 'text-[#D5F737]' : 'text-[#F0506E]'
+                                }
+                              >
+                                ₹{previewProfit.toLocaleString('en-IN')}
+                              </strong>
+                            </span>
+                            <span className="text-[#9A9A9A]">({previewMargin}% margin)</span>
+                          </div>
+                        </div>
+                      </>
+                    ) : (
+                      <div>
+                        <label className="block text-xs font-semibold text-zinc-300 mb-1">
+                          Optional Note / Reference
+                        </label>
+                        <input
+                          type="text"
+                          placeholder="e.g. Broken packaging / supplier return"
+                          value={stockMovementForm.note}
+                          onChange={(e) =>
+                            setStockMovementForm({
+                              ...stockMovementForm,
+                              note: e.target.value,
+                            })
+                          }
+                          className="w-full bg-[#1C1C1C] border border-white/10 rounded-xl px-3.5 py-2 text-xs text-white placeholder-zinc-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D5F737]"
+                        />
+                      </div>
+                    )}
+
+                    <div className="flex items-center justify-end gap-2.5 pt-3 border-t border-white/10">
+                      <button
+                        type="button"
+                        onClick={() => setIsStockOutModalOpen(false)}
+                        className="px-4 py-2 rounded-full text-xs font-semibold border border-white/10 hover:bg-white/5 text-zinc-300 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D5F737]"
+                      >
+                        Cancel
+                      </button>
+                      <button
+                        type="submit"
+                        disabled={submitting || !stockMovementForm.productId}
+                        className="px-5 py-2 rounded-full text-xs font-bold bg-[#D5F737] hover:bg-[#D9F958] text-black transition-all hover:scale-[1.02] active:scale-[0.97] disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D5F737]"
+                      >
+                        {submitting ? 'Recording...' : 'Confirm Stock Out'}
+                      </button>
+                    </div>
+                  </form>
+                );
+              })()}
             </motion.div>
           </div>
         )}

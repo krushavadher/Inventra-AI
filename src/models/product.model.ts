@@ -37,6 +37,7 @@ export interface IProduct extends Document {
   supplier?: string;
   abcClass: 'A' | 'B' | 'C';
   status: 'ACTIVE' | 'INACTIVE' | 'DISCONTINUED';
+  leadTimeDays?: number;
   isDeleted: boolean;
   deletedAt?: Date;
   createdAt: Date;
@@ -77,11 +78,20 @@ const ProductSchema: Schema<IProduct> = new Schema(
     supplier: { type: String, trim: true },
     abcClass: { type: String, enum: ['A', 'B', 'C'], default: 'B' },
     status: { type: String, enum: ['ACTIVE', 'INACTIVE', 'DISCONTINUED'], default: 'ACTIVE' },
+    leadTimeDays: { type: Number, default: 7, min: 0 },
     isDeleted: { type: Boolean, default: false },
     deletedAt: { type: Date }
   },
   { timestamps: true }
 );
+
+// Virtual accessors for unitCost and sellingPrice
+ProductSchema.virtual('unitCost').get(function () {
+  return this.pricing?.unitCost;
+});
+ProductSchema.virtual('sellingPrice').get(function () {
+  return this.pricing?.sellingPrice;
+});
 
 // Indexes
 ProductSchema.index({ tenantId: 1, sku: 1 }, { unique: true });

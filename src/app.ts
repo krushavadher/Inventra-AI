@@ -10,6 +10,8 @@ import alertsRoutes from './routes/alerts.routes.js';
 import assistantRoutes from './routes/assistant.routes.js';
 import aiRoutes from './routes/ai.routes.js';
 import notificationRoutes from './routes/notification.routes.js';
+import salesRoutes from './routes/sales.routes.js';
+import forecastRoutes from './routes/forecast.routes.js';
 import { globalErrorHandler } from './middlewares/error.middleware.js';
 import { env } from './config/env.config.js';
 
@@ -39,6 +41,8 @@ app.get('/health', (req, res) => {
 app.use('/api/auth', authRoutes);
 app.use('/api/products', productRoutes);
 app.use('/api/stock', stockRoutes);
+app.use('/api/sales', salesRoutes);
+app.use('/api/forecast', forecastRoutes);
 app.use('/api/alerts', alertsRoutes);
 app.use('/api/assistant', assistantRoutes);
 app.use('/api/inventory', inventoryRoutes);
@@ -50,12 +54,14 @@ app.use('/api/notifications', notificationRoutes);
 app.use('/api/v1/auth', authRoutes);
 app.use('/api/v1/products', productRoutes);
 app.use('/api/v1/stock', stockRoutes);
+app.use('/api/v1/sales', salesRoutes);
+app.use('/api/v1/forecast', forecastRoutes);
 app.use('/api/v1/alerts', alertsRoutes);
 app.use('/api/v1/assistant', assistantRoutes);
 app.use('/api/v1/inventory', inventoryRoutes);
 app.use('/api/v1/dashboard', dashboardRoutes);
 app.use('/api/v1/ai', aiRoutes);
-app.use('/api/notifications', notificationRoutes);
+app.use('/api/v1/notifications', notificationRoutes);
 
 // Global Error Handler
 app.use(globalErrorHandler);

@@ -7,6 +7,8 @@ import { GoogleGenAI } from '@google/genai';
 import { ProductModel } from '../models/product.model.js';
 import { InventoryLevelModel } from '../models/inventory-level.model.js';
 import { StockMovementModel } from '../models/stock-movement.model.js';
+import { SalesService } from '../services/sales.service.js';
+import { ForecastService } from '../services/forecast.service.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -118,10 +120,11 @@ export class AssistantController {
 
       // Group movements by SKU
       const movementMap = new Map<string, { name: string; sku: string; quantity: number }>();
-      (seedData.movements || []).forEach((m: any) => {
+      (seedData.movements || seedData.sales || []).forEach((m: any) => {
         const sku = m.sku || m.productName;
+        if (!sku) return;
         const existing = movementMap.get(sku);
-        const qty = m.quantity ?? 10;
+        const qty = m.quantity ?? 1;
         if (existing) {
           existing.quantity += qty;
         } else {
@@ -136,14 +139,6 @@ export class AssistantController {
       topMovingProducts = Array.from(movementMap.values())
         .sort((a, b) => b.quantity - a.quantity)
         .slice(0, 5);
-
-      if (topMovingProducts.length === 0 && seedData.products?.length > 0) {
-        topMovingProducts = seedData.products.slice(0, 5).map((p: any) => ({
-          name: p.name,
-          sku: p.sku,
-          quantity: 250
-        }));
-      }
     }
 
     return {
@@ -170,6 +165,27 @@ export class AssistantController {
       // Step 1: Build inventory summary
       const summary = await AssistantController.buildInventorySummary();
 
+      let salesSummary: any = null;
+      try {
+        salesSummary = await SalesService.getSalesSummary();
+      } catch (e) {
+        console.warn('Sales summary error in assistant:', e);
+      }
+
+      let forecastSummary: any = null;
+      let nearestStockouts: any[] = [];
+      try {
+        const tenantId = (req as any).user?.tenantId;
+        forecastSummary = await ForecastService.getSummary(tenantId);
+        const allForecasts = await ForecastService.computeAllForecasts(tenantId);
+        nearestStockouts = allForecasts
+          .filter(f => f.stock > 0 && f.risk !== 'no_data' && f.risk !== 'no_demand' && (f.risk === 'critical' || f.risk === 'warning') && f.daysLeft !== null && f.daysLeft <= 90)
+          .sort((a, b) => (a.daysLeft ?? 9999) - (b.daysLeft ?? 9999))
+          .slice(0, 5);
+      } catch (e) {
+        console.warn('Forecast summary error in assistant:', e);
+      }
+
       const outOfStockStr = summary.outOfStockItems.length > 0
         ? summary.outOfStockItems.map((item) => `- ${item.name} (${item.sku}): 0 units (Min safety: ${item.minStock})`).join('\n')
         : 'None (all products have available units)';
@@ -182,6 +198,22 @@ export class AssistantController {
         ? summary.topMovingProducts.map((item, idx) => `${idx + 1}. ${item.name} (${item.sku}) - ${item.quantity.toLocaleString()} units moved`).join('\n')
         : 'No recorded stock movements';
 
+      const revNum = salesSummary?.revenue ?? 0;
+      const profitNum = salesSummary?.profit ?? 0;
+      const marginNum = salesSummary?.marginPercent ?? 0;
+      const topProfitableProducts = (salesSummary?.topProducts || []).slice(0, 3);
+      const topProfitStr = topProfitableProducts.length > 0
+        ? topProfitableProducts.map((p: any, idx: number) => `${idx + 1}. ${p.name} (${p.sku}): Profit ₹${p.profit.toLocaleString('en-IN')}, Revenue ₹${p.revenue.toLocaleString('en-IN')}, ${p.units} units sold`).join('\n')
+        : 'No sales recorded yet this month';
+
+      const forecastSummaryStr = forecastSummary
+        ? `Critical risk: ${forecastSummary.counts.critical}, Warning risk: ${forecastSummary.counts.warning}, Out of stock: ${forecastSummary.counts.out}, Healthy: ${forecastSummary.counts.healthy}. At risk this week: ${forecastSummary.atRiskThisWeek}. Average cover: ${forecastSummary.averageDaysOfCover} days. Total suggested reorder cost: ₹${forecastSummary.totalSuggestedOrderCost.toLocaleString('en-IN')}.`
+        : 'Forecast summary unavailable';
+
+      const nearestStockoutsStr = nearestStockouts.length > 0
+        ? nearestStockouts.map((item: any, idx: number) => `${idx + 1}. ${item.name} (${item.sku}): ${item.stock} in stock ~ ${item.daysLeft} days left (Estimated stockout: ${item.stockoutDate || 'N/A'}, Daily demand: ${item.dailyDemand}/day, Suggested order: ${item.suggestedOrderQty} units)`).join('\n')
+        : 'None. All active inventory lines currently have safe stock buffers. No imminent stockout risks predicted in the next 90 days.';
+
       const summaryText = `
 INVENTORY SUMMARY DATA:
 - Total Warehouse Stock Valuation: ₹${summary.totalStockValue.toLocaleString('en-IN')}
@@ -193,10 +225,26 @@ ${lowStockStr}
 
 - Top 5 Moving Products:
 ${topMovingStr}
+
+THIS MONTH'S FINANCIALS:
+- Revenue: ₹${revNum.toLocaleString('en-IN')}
+- Profit: ₹${profitNum.toLocaleString('en-IN')}
+- Margin: ${marginNum}%
+
+TOP 3 PRODUCTS BY PROFIT:
+${topProfitStr}
+
+DEMAND FORECAST SUMMARY:
+${forecastSummaryStr}
+
+5 NEAREST PREDICTED STOCKOUTS:
+${nearestStockoutsStr}
 `.trim();
 
       const systemPrompt = `You are an intelligent inventory assistant for Inventra AI.
-- Answer the user's specific question directly, concisely, and accurately using the provided inventory data.
+- Answer the user's specific question directly, concisely, and accurately using ONLY the provided real inventory, sales, and forecast data.
+- REAL DATA ONLY: Never hallucinate numbers, make up dates, or predict false stockouts years in the future (e.g. beyond 90 days). If there are no immediate stockouts in the provided data (under "5 NEAREST PREDICTED STOCKOUTS"), clearly confirm that all products currently have healthy stock levels and no immediate stockouts are predicted.
+- If a product has no recorded demand or insufficient sales history, clearly state that more sales transaction history is required to forecast stock depletion.
 - CURRENCY REQUIREMENT: Always use the Indian Rupee symbol (₹) for all currency and monetary valuations. NEVER use dollar signs ($) or USD under any circumstances.
 - TEXT FORMATTING REQUIREMENT: Do NOT use markdown asterisks (* or **) anywhere. Never use asterisks for bullet points or bold text. Use clean bullets (•) or dashes (-) for lists, and plain text without asterisks.
 - Do NOT provide unprompted "Recommended Next Steps", "Remediation", or numbered action lists unless the user explicitly asks for recommendations, advice, next steps, or action suggestions.
@@ -213,7 +261,7 @@ ${topMovingStr}
           try {
             const response = await ai.models.generateContent({
               model,
-              contents: `Current Inventory Data:\n${summaryText}\n\nUser Question:\n${message}`,
+              contents: `Current Inventory & Forecast Data:\n${summaryText}\n\nUser Question:\n${message}`,
               config: {
                 systemInstruction: systemPrompt
               }
@@ -246,7 +294,35 @@ ${topMovingStr}
         const primaryTopMoving = summary.topMovingProducts[0]?.name || 'fast moving items';
         const wantsRecommendations = query.includes('step') || query.includes('recommend') || query.includes('what should') || query.includes('action') || query.includes('advice');
 
-        if (query.includes('reorder') || query.includes('order')) {
+        if (query.includes('run out') || query.includes('when will i run out') || query.includes('nearest stockout') || query.includes('stockout')) {
+          if (nearestStockouts.length > 0) {
+            reply = `Based on current sales velocity and lead times, here are the nearest predicted stockouts:
+${nearestStockouts.map((p, i) => `• ${p.name} (${p.sku}): ${p.stock} units left (~${p.daysLeft} days until stockout, reorder recommendation: ${p.suggestedOrderQty} units)`).join('\n')}`;
+          } else {
+            reply = `No imminent stockouts predicted! All items have adequate stock cover based on current sales velocity.`;
+          }
+          if (wantsRecommendations) {
+            reply += `\n\nRecommended Next Steps:
+1. Review supplier lead times for upcoming replenishment.
+2. Visit the Forecast page to inspect daily demand trends.
+3. Check the Alerts tab for critical notifications.`;
+          }
+        } else if (query.includes('most profit') || query.includes('profit') || query.includes('profitable') || query.includes('margin')) {
+          if (topProfitableProducts.length > 0) {
+            reply = `Top products generating the highest profit this month:
+${topProfitableProducts.map((p: any, i: number) => `• ${p.name} (${p.sku}): Profit ₹${p.profit.toLocaleString('en-IN')} (Revenue ₹${p.revenue.toLocaleString('en-IN')}, ${p.units} units sold)`).join('\n')}
+
+This month's total revenue is ₹${revNum.toLocaleString('en-IN')} with profit of ₹${profitNum.toLocaleString('en-IN')} (${marginNum}% margin).`;
+          } else {
+            reply = `This month's total revenue is ₹${revNum.toLocaleString('en-IN')} with profit of ₹${profitNum.toLocaleString('en-IN')} (${marginNum}% margin). No individual sales records have been recorded yet this month.`;
+          }
+          if (wantsRecommendations) {
+            reply += `\n\nRecommended Next Steps:
+1. Promote highest-margin inventory to accelerate profit growth.
+2. Check the Sales dashboard for weekly margin trends.
+3. Optimize purchase costs with bulk vendor discounts.`;
+          }
+        } else if (query.includes('reorder') || query.includes('order')) {
           reply = `Current reorder priority list:
 • Out of Stock (0 units): ${summary.outOfStockItems.map(i => `${i.name} (${i.sku})`).join(', ') || 'None'}
 • Low Stock: ${summary.lowStockItems.map(i => `${i.name} (${i.sku} - ${i.stock} units left)`).join(', ') || 'None'}`;
@@ -278,7 +354,8 @@ ${summary.topMovingProducts.map((p, i) => `${i + 1}. ${p.name} (${p.quantity} un
 • Total Stock Valuation: ₹${summary.totalStockValue.toLocaleString('en-IN')}
 • Depleted Lines (0 units): ${summary.outOfStockItems.length}
 • Low Stock Lines: ${summary.lowStockItems.length}
-• Highest Velocity Line: ${primaryTopMoving}`;
+• Highest Velocity Line: ${primaryTopMoving}
+• Month-to-date Revenue: ₹${revNum.toLocaleString('en-IN')} (Profit: ₹${profitNum.toLocaleString('en-IN')})`;
           if (wantsRecommendations) {
             reply += `\n\nRecommended Next Steps:
 1. Restock depleted and critical threshold items.

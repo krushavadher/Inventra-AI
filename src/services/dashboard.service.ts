@@ -168,16 +168,70 @@ export class DashboardService {
       const pName = m.productName || m.productId?.name || 'Inventory SKU';
       const sku = m.sku || m.productId?.sku || 'SKU-ITEM';
       return {
-        _id: m._id?.toString() || Math.random().toString(),
-        movementType: m.movementType || 'STOCK_IN',
+        _id: m._id?.toString() || `mov_${Date.now()}`,
+        movementType: m.movementType || (m.reason === 'sale' ? 'STOCK_OUT' : 'STOCK_IN'),
         productName: pName,
         sku: sku,
-        quantity: m.quantity || 10,
-        referenceDocId: m.referenceDocId || 'REF-PO',
-        reason: m.reason || 'Restocking update',
-        createdAt: m.createdAt || new Date().toISOString()
+        quantity: Number(m.quantity) || 0,
+        referenceDocId: m.referenceDocId || m.reference || '-',
+        reason: m.reason || (m.movementType === 'STOCK_IN' ? 'Stock In' : 'Stock Out'),
+        createdAt: m.createdAt || m.date || new Date().toISOString()
       };
     });
+
+    // 7. This month's sales metrics
+    const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1, 0, 0, 0, 0);
+    const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59, 999);
+
+    let thisMonthSales: any[] = [];
+    if (mongoose.connection.readyState === 1) {
+      try {
+        thisMonthSales = await StockMovementModel.find({
+          reason: 'sale',
+          voided: { $ne: true },
+          date: { $gte: startOfMonth, $lte: endOfMonth }
+        }).lean();
+      } catch (err) {
+        console.warn('DashboardService sales query fallback:', err);
+      }
+    }
+
+    if (thisMonthSales.length === 0) {
+      const seedData = this.getSeedDataFallback();
+      const localSales = (seedData?.sales || []).filter((s: any) => {
+        if (s.reason !== 'sale' || s.voided) return false;
+        const d = new Date(s.date || s.createdAt);
+        return d >= startOfMonth && d <= endOfMonth;
+      });
+      thisMonthSales = localSales;
+    }
+
+    let salesRevenue = 0;
+    let salesCost = 0;
+    let salesUnits = 0;
+
+    thisMonthSales.forEach((s: any) => {
+      const q = s.quantity || 0;
+      const uCost = Number(s.unitCost ?? 0);
+      const sPrice = Number(s.salePrice ?? 0);
+      salesRevenue += q * sPrice;
+      salesCost += q * uCost;
+      salesUnits += q;
+    });
+
+    salesRevenue = Math.round(salesRevenue * 100) / 100;
+    salesCost = Math.round(salesCost * 100) / 100;
+    const salesProfit = Math.round((salesRevenue - salesCost) * 100) / 100;
+    const salesMarginPercent = salesRevenue > 0 ? Math.round(((salesProfit / salesRevenue) * 100) * 100) / 100 : 0;
+
+    const sales = {
+      revenue: salesRevenue,
+      profit: salesProfit,
+      marginPercent: salesMarginPercent,
+      costOfGoods: salesCost,
+      unitsSold: salesUnits,
+      salesCount: thisMonthSales.length
+    };
 
     return {
       kpis: {
@@ -196,7 +250,8 @@ export class DashboardService {
       categoryDistribution,
       monthlyMovement,
       recentActivity,
-      stockHealth
+      stockHealth,
+      sales
     };
   }
 }

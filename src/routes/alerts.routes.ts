@@ -5,6 +5,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import { ProductModel } from '../models/product.model.js';
 import { InventoryLevelModel } from '../models/inventory-level.model.js';
+import { ForecastService } from '../services/forecast.service.js';
 import { authenticateJwt } from '../middlewares/auth.middleware.js';
 import { ApiResponse } from '../utils/api-response.util.js';
 
@@ -18,6 +19,7 @@ router.use(authenticateJwt);
 router.get('/', async (req: Request, res: Response, next: NextFunction) => {
   try {
     const alertItems: any[] = [];
+    const tenantId = req.user?.tenantId;
 
     // 1. Try MongoDB
     if (mongoose.connection.readyState === 1) {
@@ -45,17 +47,13 @@ router.get('/', async (req: Request, res: Response, next: NextFunction) => {
             });
           }
         });
-
-        if (alertItems.length > 0) {
-          return ApiResponse.success(res, 200, 'Alerts retrieved successfully', alertItems);
-        }
       } catch (dbErr) {
         console.warn('MongoDB alerts query fallback to seed dataset:', dbErr);
       }
     }
 
-    // 2. Fallback to seed dataset
-    if (fs.existsSync(SEED_FILE)) {
+    // 2. Fallback to seed dataset if needed
+    if (alertItems.length === 0 && fs.existsSync(SEED_FILE)) {
       const seedData = JSON.parse(fs.readFileSync(SEED_FILE, 'utf-8'));
       (seedData.products || []).forEach((p: any, idx: number) => {
         if (p.stock <= p.minStock) {
@@ -76,7 +74,35 @@ router.get('/', async (req: Request, res: Response, next: NextFunction) => {
       });
     }
 
-    return ApiResponse.success(res, 200, 'Alerts retrieved successfully', alertItems);
+    // 3. Compute predicted critical & warning products with stock > 0 from forecast service
+    let predicted: any[] = [];
+    try {
+      const allForecasts = await ForecastService.computeAllForecasts(tenantId);
+      predicted = allForecasts
+        .filter((p) => p.stock > 0 && (p.risk === 'critical' || p.risk === 'warning'))
+        .map((p) => ({
+          name: p.name,
+          SKU: p.sku,
+          sku: p.sku,
+          stock: p.stock,
+          daysLeft: p.daysLeft,
+          stockoutDate: p.stockoutDate,
+          suggestedOrderQty: p.suggestedOrderQty,
+          risk: p.risk,
+          category: p.category
+        }));
+    } catch (forecastErr) {
+      console.warn('Failed to compute forecast for alerts:', forecastErr);
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: 'Alerts retrieved successfully',
+      data: alertItems,
+      alerts: alertItems,
+      predicted,
+      timestamp: new Date().toISOString()
+    });
   } catch (error) {
     next(error);
   }

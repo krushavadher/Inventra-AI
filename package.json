@@ -10,7 +10,10 @@
     "dev:backend": "node --loader ts-node/esm src/server.ts",
     "dev:frontend": "vite",
     "seed": "node --loader ts-node/esm src/scripts/seed-database.ts",
-    "fresh-start": "node --loader ts-node/esm src/scripts/fresh-start.ts"
+    "seed:demo": "node --loader ts-node/esm src/scripts/seed-demo.ts",
+    "seed:demo:clear": "node --loader ts-node/esm src/scripts/clear-demo.ts",
+    "fresh-start": "node --loader ts-node/esm src/scripts/fresh-start.ts",
+    "test": "node --loader ts-node/esm tests/forecast.test.ts"
   },
   "dependencies": {
     "@google/genai": "^2.28.0",

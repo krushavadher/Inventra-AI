@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { NavLink, useNavigate, useLocation } from 'react-router-dom';
 import { LogOut, User as UserIcon, ChevronDown } from 'lucide-react';
+import { motion } from 'framer-motion';
 import Lenis from 'lenis';
 import { useAuth } from '@/context/AuthContext';
 import { AppGridBackground } from '@/components/ui/AppGridBackground';
@@ -98,10 +99,12 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
   const displayName = user?.name || `${user?.firstName || ''} ${user?.lastName || ''}`.trim() || 'User';
   const displayRole = user?.role || 'admin';
 
-  // Navigation items: only 4 pages as mandated
+  // Navigation items: with Sales between Inventory and Alerts, and Forecast after Sales
   const navItems = [
     { to: '/dashboard', label: 'Dashboard' },
     { to: '/inventory', label: 'Inventory' },
+    { to: '/sales', label: 'Sales' },
+    { to: '/forecast', label: 'Forecast' },
     { to: '/alerts', label: 'Alerts' },
     { to: '/assistant', label: 'AI Assistant' },
   ];
@@ -114,7 +117,7 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
         style={{ width: `${scrollProgress}%` }}
       />
 
-      {/* Sidebar - Strictly 4 pages + User footer with Logout */}
+      {/* Sidebar */}
       <aside className="w-[240px] sm:w-[250px] h-screen bg-[#232323] border-r border-white/10 flex flex-col flex-shrink-0 z-20">
         {/* Brand Logo */}
         <div className="p-5 border-b border-white/10 flex items-center gap-3 flex-shrink-0">
@@ -126,7 +129,7 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
           </div>
         </div>
 
-        {/* Navigation Items (strictly the 4 required pages) */}
+        {/* Navigation Items */}
         <nav className="flex-1 p-3.5 space-y-1.5 overflow-y-auto">
           {navItems.map((item) => {
             const isActive = location.pathname.startsWith(item.to);
@@ -189,6 +192,14 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
                 <span className="bg-gradient-to-r from-[#D5F737] to-[#7BE0A5] bg-clip-text text-transparent font-bold">
                   Inventory
                 </span>
+              ) : location.pathname.startsWith('/sales') ? (
+                <span className="bg-gradient-to-r from-[#D5F737] to-[#7BE0A5] bg-clip-text text-transparent font-bold">
+                  Sales
+                </span>
+              ) : location.pathname.startsWith('/forecast') ? (
+                <span className="bg-gradient-to-r from-[#D5F737] to-[#7BE0A5] bg-clip-text text-transparent font-bold">
+                  Forecast
+                </span>
               ) : location.pathname.startsWith('/alerts') ? (
                 <span className="bg-gradient-to-r from-[#D5F737] to-[#7BE0A5] bg-clip-text text-transparent font-bold">
                   Alerts
@@ -214,6 +225,8 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
               )}
             </span>
           </div>
+
+
 
           {/* Top Bar Right: Profile Avatar with Glass Dropdown */}
           <div className="flex items-center gap-4 sm:gap-6">

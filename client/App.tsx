@@ -7,6 +7,8 @@ import { ProfilePage } from './pages/ProfilePage';
 import { DashboardPage } from './DashboardPage';
 import { InventoryPage } from './InventoryPage';
 import { AlertsPage } from './AlertsPage';
+import { SalesPage } from './pages/SalesPage';
+import { ForecastPage } from './pages/ForecastPage';
 import { AICopilotPage } from './AICopilotPage';
 import { AppLayout } from './components/layout/AppLayout';
 import { AnimatedBackground } from './components/ui/AnimatedBackground';
@@ -100,6 +102,26 @@ export const App: React.FC = () => {
               <ProtectedRoute>
                 <AppLayout>
                   <InventoryPage />
+                </AppLayout>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/sales"
+            element={
+              <ProtectedRoute>
+                <AppLayout>
+                  <SalesPage />
+                </AppLayout>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/forecast"
+            element={
+              <ProtectedRoute>
+                <AppLayout>
+                  <ForecastPage />
                 </AppLayout>
               </ProtectedRoute>
             }

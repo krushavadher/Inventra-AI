@@ -29,13 +29,27 @@ export interface AlertItem {
   message: string;
 }
 
+export interface PredictedAlertItem {
+  productId?: string;
+  name: string;
+  sku: string;
+  SKU?: string;
+  stock: number;
+  daysLeft: number;
+  stockoutDate?: string | null;
+  suggestedOrderQty: number;
+  risk: string;
+  category?: string;
+}
+
 export const AlertsPage: React.FC = () => {
   const navigate = useNavigate();
   const [alerts, setAlerts] = useState<AlertItem[]>([]);
+  const [predictedAlerts, setPredictedAlerts] = useState<PredictedAlertItem[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [isRefreshing, setIsRefreshing] = useState<boolean>(false);
   const [search, setSearch] = useState<string>('');
-  const [filterSeverity, setFilterSeverity] = useState<'ALL' | 'CRITICAL' | 'WARNING'>('ALL');
+  const [filterSeverity, setFilterSeverity] = useState<'ALL' | 'CRITICAL' | 'WARNING' | 'PREDICTED'>('ALL');
 
   // Lightweight Toast System
   const [toastMessage, setToastMessage] = useState<string | null>(null);
@@ -54,9 +68,13 @@ export const AlertsPage: React.FC = () => {
     else setLoading(true);
     try {
       const res = await api.get('/api/alerts');
-      const data = res.data?.data || res.data || [];
+      const data = res.data?.data || res.data?.alerts || [];
       if (Array.isArray(data)) {
         setAlerts(data);
+      }
+      const pred = res.data?.predicted || res.data?.data?.predicted || [];
+      if (Array.isArray(pred)) {
+        setPredictedAlerts(pred);
       }
       if (showSpinner) {
         showToast('Alerts updated');
@@ -87,6 +105,7 @@ export const AlertsPage: React.FC = () => {
   );
 
   const filteredAlerts = useMemo(() => {
+    if (filterSeverity === 'PREDICTED') return [];
     return alerts.filter((a) => {
       const q = search.trim().toLowerCase();
       const matchesSearch =
@@ -108,6 +127,20 @@ export const AlertsPage: React.FC = () => {
     });
   }, [alerts, search, filterSeverity]);
 
+  const filteredPredicted = useMemo(() => {
+    if (filterSeverity !== 'ALL' && filterSeverity !== 'PREDICTED') return [];
+    return predictedAlerts.filter((p) => {
+      const q = search.trim().toLowerCase();
+      const sku = p.sku || p.SKU || '';
+      const matchesSearch =
+        !q ||
+        p.name.toLowerCase().includes(q) ||
+        sku.toLowerCase().includes(q) ||
+        (p.category && p.category.toLowerCase().includes(q));
+      return matchesSearch;
+    });
+  }, [predictedAlerts, search, filterSeverity]);
+
   const handleAskAI = (alert: AlertItem) => {
     const isOut = alert.stock === 0;
     const question = isOut
@@ -119,10 +152,22 @@ export const AlertsPage: React.FC = () => {
     });
   };
 
+  const handleAskAIForPredicted = (item: PredictedAlertItem) => {
+    const sku = item.sku || item.SKU || '';
+    const question = `Predicted Stockout Alert: The product "${item.name}" (${sku}) has ${item.stock} units remaining and is forecasted to run out of stock in ${item.daysLeft} days. Suggested replenishment order quantity is ${item.suggestedOrderQty} units. What is the optimal supplier ordering schedule to prevent stockout?`;
+
+    navigate('/assistant', {
+      state: { question },
+    });
+  };
+
+  const totalCount = alerts.length + predictedAlerts.length;
+
   const FILTER_TABS = [
-    { key: 'ALL' as const, label: `All (${alerts.length})` },
+    { key: 'ALL' as const, label: `All (${totalCount})` },
     { key: 'CRITICAL' as const, label: `Critical (${criticalCount})` },
     { key: 'WARNING' as const, label: `Warnings (${warningCount})` },
+    { key: 'PREDICTED' as const, label: `Predicted (${predictedAlerts.length})` },
   ];
 
   return (
@@ -167,8 +212,8 @@ export const AlertsPage: React.FC = () => {
         </div>
       </section>
 
-      {/* 2. Summary Cards: Critical, Low Stock Warnings, Total Active Alerts */}
-      <section className="grid grid-cols-1 lg:grid-cols-3 gap-3.5">
+      {/* 2. Summary Cards: Critical, Low Stock Warnings, Predicted, Total Active Alerts */}
+      <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5">
         {/* Critical Card (Click applies Critical filter) */}
         <GlassCard
           onClick={() => setFilterSeverity('CRITICAL')}
@@ -211,6 +256,27 @@ export const AlertsPage: React.FC = () => {
           </div>
         </GlassCard>
 
+        {/* Predicted Card (Click applies Predicted filter) */}
+        <GlassCard
+          onClick={() => setFilterSeverity('PREDICTED')}
+          className={`p-4 sm:p-5 border transition-all duration-200 cursor-pointer hover:-translate-y-1 hover:border-[#818CF8]/40 hover:shadow-[0_8px_24px_-6px_rgba(129,140,248,0.35)] flex items-center justify-between ${
+            filterSeverity === 'PREDICTED'
+              ? 'border-[#818CF8] shadow-[0_0_16px_rgba(129,140,248,0.25)] bg-[rgba(35,35,60,0.5)]'
+              : 'border-indigo-500/20 bg-indigo-500/[0.05]'
+          }`}
+        >
+          <div>
+            <div className="text-[11px] font-semibold text-indigo-300 uppercase tracking-wider flex items-center gap-1.5">
+              <span className="w-2 h-2 rounded-full bg-[#818CF8]" />
+              Predicted Stockouts
+            </div>
+            <div className="text-2xl sm:text-3xl font-bold font-mono text-white mt-1 leading-tight">
+              <NumberTicker value={predictedAlerts.length} className="text-white" />
+            </div>
+            <div className="text-[11px] text-[#9A9A9A] mt-0.5">Forecast risk warnings</div>
+          </div>
+        </GlassCard>
+
         {/* Total Active Alerts Card (Click applies ALL filter) */}
         <GlassCard
           onClick={() => setFilterSeverity('ALL')}
@@ -226,10 +292,10 @@ export const AlertsPage: React.FC = () => {
               Total Active Alerts
             </div>
             <div className="text-2xl sm:text-3xl font-bold font-mono text-white mt-1 leading-tight">
-              <NumberTicker value={alerts.length} className="text-white" />
+              <NumberTicker value={totalCount} className="text-white" />
             </div>
             <div className="text-[11px] text-[#9A9A9A] mt-0.5">
-              {alerts.length === 0 ? 'Catalog healthy' : 'Catalog items flagged'}
+              {totalCount === 0 ? 'Catalog healthy' : 'Catalog items flagged'}
             </div>
           </div>
         </GlassCard>
@@ -271,6 +337,8 @@ export const AlertsPage: React.FC = () => {
                       ? 'text-rose-400'
                       : tab.key === 'WARNING'
                       ? 'text-amber-400'
+                      : tab.key === 'PREDICTED'
+                      ? 'text-indigo-300'
                       : 'text-white'
                     : 'text-[#9A9A9A] hover:text-white'
                 }`}
@@ -283,6 +351,8 @@ export const AlertsPage: React.FC = () => {
                         ? 'bg-rose-500/20 border border-rose-500/35 shadow-sm'
                         : tab.key === 'WARNING'
                         ? 'bg-amber-500/20 border border-amber-500/35 shadow-sm'
+                        : tab.key === 'PREDICTED'
+                        ? 'bg-indigo-500/25 border border-indigo-500/40 shadow-sm'
                         : 'bg-white/15 border border-white/20 shadow-sm'
                     }`}
                     transition={{ type: 'spring', stiffness: 400, damping: 30 }}
@@ -315,9 +385,10 @@ export const AlertsPage: React.FC = () => {
               </GlassCard>
             ))}
           </div>
-        ) : filteredAlerts.length > 0 ? (
+        ) : filteredAlerts.length > 0 || filteredPredicted.length > 0 ? (
           /* EXACT PRESERVED ENTRANCE ANIMATION: AnimatedList with delay={150} */
           <AnimatedList delay={150} className="w-full flex flex-col gap-3.5 pb-2">
+            {/* Existing critical and warning cards */}
             {filteredAlerts.map((item) => {
               const isOut = item.stock === 0;
               const bufferRatio = Math.min(100, Math.round((item.stock / Math.max(item.minStock, 1)) * 100));
@@ -335,60 +406,60 @@ export const AlertsPage: React.FC = () => {
                     {/* Left: Product & Alert Info */}
                     <div className="flex flex-col gap-1 min-w-0 flex-1">
                       <div className="flex flex-wrap items-center gap-2">
-                          <span
-                            className={`text-[11px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full border ${
-                              isOut
-                                ? 'bg-rose-500/15 text-rose-400 border-rose-500/30'
-                                : 'bg-amber-500/15 text-amber-400 border-amber-500/30'
-                            }`}
-                          >
-                            {isOut ? 'Critical • Out of Stock' : 'Warning • Low Stock'}
-                          </span>
-                          <span className="font-mono text-xs px-2.5 py-0.5 rounded-md bg-white/5 border border-white/10 text-zinc-300">
-                            {item.sku}
-                          </span>
-                          <span className="text-xs text-[#9A9A9A] px-2.5 py-0.5 rounded-full bg-white/5">
-                            {item.category || 'General'}
+                        <span
+                          className={`text-[11px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full border ${
+                            isOut
+                              ? 'bg-rose-500/15 text-rose-400 border-rose-500/30'
+                              : 'bg-amber-500/15 text-amber-400 border-amber-500/30'
+                          }`}
+                        >
+                          {isOut ? 'Critical • Out of Stock' : 'Warning • Low Stock'}
+                        </span>
+                        <span className="font-mono text-xs px-2.5 py-0.5 rounded-md bg-white/5 border border-white/10 text-zinc-300">
+                          {item.sku}
+                        </span>
+                        <span className="text-xs text-[#9A9A9A] px-2.5 py-0.5 rounded-full bg-white/5">
+                          {item.category || 'General'}
+                        </span>
+                      </div>
+
+                      <h3 className="text-base font-bold text-white tracking-tight mt-0.5 leading-snug">
+                        {item.name}
+                      </h3>
+
+                      <p className="text-xs text-zinc-300 font-medium leading-relaxed">{item.message}</p>
+
+                      <div className="flex flex-wrap items-center gap-4 text-xs text-[#9A9A9A] mt-1">
+                        <div>
+                          Current Stock:{' '}
+                          <span className={`font-mono font-bold ${isOut ? 'text-[#F0506E]' : 'text-[#F5A524]'}`}>
+                            {item.stock} units
                           </span>
                         </div>
-
-                        <h3 className="text-base font-bold text-white tracking-tight mt-0.5 leading-snug">
-                          {item.name}
-                        </h3>
-
-                        <p className="text-xs text-zinc-300 font-medium leading-relaxed">{item.message}</p>
-
-                        <div className="flex flex-wrap items-center gap-4 text-xs text-[#9A9A9A] mt-1">
-                          <div>
-                            Current Stock:{' '}
-                            <span className={`font-mono font-bold ${isOut ? 'text-[#F0506E]' : 'text-[#F5A524]'}`}>
-                              {item.stock} units
-                            </span>
-                          </div>
-                          <div>
-                            Safety Buffer:{' '}
-                            <span className="font-mono text-zinc-300">{item.minStock} units</span>
-                          </div>
-                          {item.supplier && (
-                            <div className="truncate max-w-[200px]">
-                              Supplier: <span className="text-zinc-300">{item.supplier}</span>
-                            </div>
-                          )}
+                        <div>
+                          Safety Buffer:{' '}
+                          <span className="font-mono text-zinc-300">{item.minStock} units</span>
                         </div>
-
-                        {/* Thin stock bar comparing Current Stock to Safety Buffer */}
-                        <div className="w-full max-w-[260px] pt-1">
-                          <div className="w-full h-1.5 bg-white/10 rounded-full overflow-hidden">
-                            <div
-                              className="h-full rounded-full transition-all duration-700 ease-out"
-                              style={{
-                                width: `${bufferRatio}%`,
-                                backgroundColor: isOut ? '#F0506E' : '#F5A524',
-                              }}
-                            />
+                        {item.supplier && (
+                          <div className="truncate max-w-[200px]">
+                            Supplier: <span className="text-zinc-300">{item.supplier}</span>
                           </div>
+                        )}
+                      </div>
+
+                      {/* Thin stock bar comparing Current Stock to Safety Buffer */}
+                      <div className="w-full max-w-[260px] pt-1">
+                        <div className="w-full h-1.5 bg-white/10 rounded-full overflow-hidden">
+                          <div
+                            className="h-full rounded-full transition-all duration-700 ease-out"
+                            style={{
+                              width: `${bufferRatio}%`,
+                              backgroundColor: isOut ? '#F0506E' : '#F5A524',
+                            }}
+                          />
                         </div>
                       </div>
+                    </div>
 
                     {/* Right: Ask AI Action Button (Pill with shine sweep, arrow slide, pulse dot) */}
                     <div className="flex flex-row lg:flex-col items-center lg:items-end justify-between lg:justify-center gap-2 flex-shrink-0 pt-3 lg:pt-0 border-t lg:border-t-0 border-white/5">
@@ -408,6 +479,96 @@ export const AlertsPage: React.FC = () => {
                       <span className="text-[10px] text-zinc-400 font-mono flex items-center gap-1.5">
                         <span className="w-1.5 h-1.5 rounded-full bg-[#D5F737] animate-pulse" />
                         Prompt ready
+                      </span>
+                    </div>
+                  </div>
+                </GlassCard>
+              );
+            })}
+
+            {/* Predicted-stockout cards (blue/violet accent #818CF8, Predicted stockout in N days, suggested order qty, Ask AI) */}
+            {filteredPredicted.map((item) => {
+              const sku = item.sku || item.SKU || '';
+              const days = item.daysLeft ?? 0;
+              const barWidth = Math.min(100, Math.max(8, (days / 30) * 100));
+
+              return (
+                <GlassCard
+                  key={`pred-${item.productId || sku || item.name}`}
+                  className="p-5 rounded-[24px] border transition-colors duration-200 backdrop-blur-xl group border-l-[3px] border-l-[#818CF8] hover:border-indigo-400/40 hover:shadow-[0_8px_24px_-8px_rgba(129,140,248,0.25)]"
+                >
+                  <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+                    {/* Left: Product & Predicted Info */}
+                    <div className="flex flex-col gap-1 min-w-0 flex-1">
+                      <div className="flex flex-wrap items-center gap-2">
+                        <span className="text-[11px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full border bg-indigo-500/15 text-indigo-300 border-indigo-500/30">
+                          Predicted Stockout
+                        </span>
+                        <span className="font-mono text-xs px-2.5 py-0.5 rounded-md bg-white/5 border border-white/10 text-zinc-300">
+                          {sku}
+                        </span>
+                        <span className="text-xs text-[#9A9A9A] px-2.5 py-0.5 rounded-full bg-white/5">
+                          {item.category || 'General'}
+                        </span>
+                      </div>
+
+                      <h3 className="text-base font-bold text-white tracking-tight mt-0.5 leading-snug">
+                        {item.name}
+                      </h3>
+
+                      <p className="text-xs text-indigo-200 font-medium leading-relaxed">
+                        Predicted stockout in {days} {days === 1 ? 'day' : 'days'}
+                        {item.stockoutDate ? ` (~${new Date(item.stockoutDate).toLocaleDateString('en-IN', { month: 'short', day: 'numeric', year: 'numeric' })})` : ''}
+                      </p>
+
+                      <div className="flex flex-wrap items-center gap-4 text-xs text-[#9A9A9A] mt-1">
+                        <div>
+                          Current Stock:{' '}
+                          <span className="font-mono font-bold text-indigo-300">
+                            {item.stock} units
+                          </span>
+                        </div>
+                        <div>
+                          Suggested Order:{' '}
+                          <span className="font-mono text-white font-semibold">
+                            {item.suggestedOrderQty} units
+                          </span>
+                        </div>
+                        <div>
+                          Risk Level:{' '}
+                          <span className="font-mono uppercase text-indigo-300 font-semibold">
+                            {item.risk}
+                          </span>
+                        </div>
+                      </div>
+
+                      {/* Days-left progress bar */}
+                      <div className="w-full max-w-[260px] pt-1">
+                        <div className="w-full h-1.5 bg-white/10 rounded-full overflow-hidden">
+                          <div
+                            className="h-full rounded-full transition-all duration-700 ease-out bg-[#818CF8]"
+                            style={{ width: `${barWidth}%` }}
+                          />
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Right: Ask AI Action Button */}
+                    <div className="flex flex-row lg:flex-col items-center lg:items-end justify-between lg:justify-center gap-2 flex-shrink-0 pt-3 lg:pt-0 border-t lg:border-t-0 border-white/5">
+                      <button
+                        onClick={() => handleAskAIForPredicted(item)}
+                        className="relative overflow-hidden group/btn px-4 py-2 rounded-full text-xs font-bold flex items-center gap-2 bg-[#818CF8]/15 hover:bg-[#818CF8]/25 border border-[#818CF8]/40 text-indigo-300 shadow-sm hover:shadow-[0_0_15px_rgba(129,140,248,0.25)] transition-all duration-200 active:scale-[0.97] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#818CF8]"
+                        title="Analyze forecast with Inventra AI Assistant"
+                      >
+                        <span className="absolute inset-0 -translate-x-full group-hover/btn:translate-x-full transition-transform duration-700 bg-gradient-to-r from-transparent via-white/40 to-transparent pointer-events-none" />
+                        <Sparkles className="w-3.5 h-3.5 stroke-[2.5]" />
+                        <span>Ask AI</span>
+                        <ArrowRight className="w-3 h-3 ml-0.5 group-hover/btn:translate-x-1 transition-transform duration-200" />
+                      </button>
+
+                      <span className="text-[10px] text-zinc-400 font-mono flex items-center gap-1.5">
+                        <span className="w-1.5 h-1.5 rounded-full bg-[#818CF8] animate-pulse" />
+                        Forecast ready
                       </span>
                     </div>
                   </div>

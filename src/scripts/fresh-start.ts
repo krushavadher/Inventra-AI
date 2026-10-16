@@ -1,6 +1,12 @@
 import mongoose from 'mongoose';
 import dns from 'dns';
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
 import { env } from '../config/env.config.js';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 // Fix Node.js Windows SRV lookup issue for MongoDB Atlas
 try {
@@ -51,6 +57,14 @@ export const freshStart = async () => {
       role: 'admin',
       status: 'ACTIVE'
     });
+
+    // Reset local JSON storage files for offline/standalone repository parity
+    const dataDir = path.resolve(__dirname, '../data');
+    if (!fs.existsSync(dataDir)) {
+      fs.mkdirSync(dataDir, { recursive: true });
+    }
+    const seedFile = path.resolve(dataDir, 'seed-data.json');
+    fs.writeFileSync(seedFile, JSON.stringify({ products: [], movements: [], sales: [], generatedAt: new Date().toISOString() }, null, 2), 'utf-8');
 
     console.log('✨ FRESH START COMPLETE!');
     console.log('🔒 All inventory items, products, warehouses, suppliers, and movement logs have been completely wiped.');

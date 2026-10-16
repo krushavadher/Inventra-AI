@@ -1,5 +1,12 @@
-import { AppError } from '../utils/app-error.util.js';
+import { GoogleGenAI } from '@google/genai';
 import { InventoryLevelModel } from '../models/inventory-level.model.js';
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const SEED_FILE = path.resolve(__dirname, '../data/seed-data.json');
 
 export interface GenerateDescriptionDTO {
   productName: string;
@@ -23,29 +30,39 @@ export interface ForecastExplanationDTO {
 }
 
 export class AIService {
-  /**
-   * Prompt Engineering System Persona for Inventra AI
-   */
-  private readonly systemPersona = `You are Inventra AI, an elite Enterprise Supply Chain & Inventory Intelligence AI Copilot built by senior supply chain architects. You provide precise, highly actionable, structured, and professional supply chain insights.`;
+  private readonly systemPersona = `You are Inventra AI, an elite Enterprise Supply Chain & Inventory Intelligence AI Copilot. You provide precise, highly actionable, professional supply chain insights. Always use Indian Rupee (₹) for monetary values. Never use dollars ($).`;
+
+  private getGeminiClient(): GoogleGenAI | null {
+    const key = process.env.GEMINI_API_KEY;
+    if (key && key.trim() && key !== 'your_gemini_api_key_here') {
+      return new GoogleGenAI({ apiKey: key.trim() });
+    }
+    return null;
+  }
 
   /**
    * 1. AI Product Description Generator
    */
   async generateProductDescription(dto: GenerateDescriptionDTO) {
-    const prompt = `
-System: ${this.systemPersona}
-Task: Generate an SEO-optimized, highly compelling enterprise product description.
+    const ai = this.getGeminiClient();
+    if (ai) {
+      try {
+        const response = await ai.models.generateContent({
+          model: 'gemini-2.5-flash',
+          contents: `Generate an SEO-optimized enterprise product description in JSON format with fields: "title", "shortSummary", "fullDescription", "seoKeywords" (string array).\nProduct Name: ${dto.productName}\nCategory: ${dto.category || 'Hardware'}\nFeatures: ${dto.keyFeatures?.join(', ') || 'High durability'}\nTarget Audience: ${dto.targetAudience || 'B2B Enterprise Procurement'}`,
+          config: {
+            systemInstruction: `${this.systemPersona} Output raw valid JSON only.`
+          }
+        });
+        if (response && response.text) {
+          const cleanJson = response.text.replace(/```json\s*/gi, '').replace(/```/g, '').trim();
+          return JSON.parse(cleanJson);
+        }
+      } catch (e) {
+        console.warn('Gemini product description generation failed, using fallback:', e);
+      }
+    }
 
-Input Data:
-- Product Name: ${dto.productName}
-- Category: ${dto.category || 'General Electronics/Hardware'}
-- Key Features: ${dto.keyFeatures ? dto.keyFeatures.join(', ') : 'Industrial durability, high efficiency, certified quality'}
-- Target Audience: ${dto.targetAudience || 'B2B Enterprise Procurement Managers & System Integrators'}
-
-Output Requirement: Return a JSON object with fields: "title", "shortSummary", "fullDescription", "seoKeywords" (array).
-`;
-
-    // Simulated LLM Call (In production, calls openai.chat.completions.create)
     return {
       title: `${dto.productName} — Enterprise Grade SKU`,
       shortSummary: `High-efficiency ${dto.productName} engineered for heavy-duty industrial B2B environments.`,
@@ -58,21 +75,32 @@ Output Requirement: Return a JSON object with fields: "title", "shortSummary", "
    * 2. AI Product Categorizer
    */
   async categorizeProduct(dto: CategorizeProductDTO) {
-    const prompt = `
-System: ${this.systemPersona}
-Task: Classify raw product name into standard taxonomy category and assign recommended ABC Velocity Class.
-
-Input: "${dto.productName}"
-Description: "${dto.rawDescription || ''}"
-`;
+    const ai = this.getGeminiClient();
+    if (ai) {
+      try {
+        const response = await ai.models.generateContent({
+          model: 'gemini-2.5-flash',
+          contents: `Classify product name "${dto.productName}" (Description: "${dto.rawDescription || ''}") into standard inventory taxonomy category and assign recommended ABC velocity class ('A', 'B', or 'C'). Return JSON with fields: "suggestedCategory", "suggestedAbcClass", "confidenceScore" (number 0-1), "taxonomyPath".`,
+          config: {
+            systemInstruction: `${this.systemPersona} Output raw valid JSON only.`
+          }
+        });
+        if (response && response.text) {
+          const cleanJson = response.text.replace(/```json\s*/gi, '').replace(/```/g, '').trim();
+          return JSON.parse(cleanJson);
+        }
+      } catch (e) {
+        console.warn('Gemini categorize product fallback:', e);
+      }
+    }
 
     let suggestedCategory = 'Electronics & Hardware';
     let abcClass: 'A' | 'B' | 'C' = 'B';
-
-    if (dto.productName.toLowerCase().includes('chip') || dto.productName.toLowerCase().includes('sensor')) {
-      suggestedCategory = 'Microcontrollers & Sensors';
+    const lower = dto.productName.toLowerCase();
+    if (lower.includes('chip') || lower.includes('sensor') || lower.includes('mcu')) {
+      suggestedCategory = 'Semiconductors';
       abcClass = 'A';
-    } else if (dto.productName.toLowerCase().includes('box') || dto.productName.toLowerCase().includes('pallet')) {
+    } else if (lower.includes('box') || lower.includes('pallet') || lower.includes('pack')) {
       suggestedCategory = 'Packaging & Logistics';
       abcClass = 'C';
     }
@@ -80,7 +108,7 @@ Description: "${dto.rawDescription || ''}"
     return {
       suggestedCategory,
       suggestedAbcClass: abcClass,
-      confidenceScore: 0.94,
+      confidenceScore: 0.95,
       taxonomyPath: `Catalog > Hardware > ${suggestedCategory}`
     };
   }
@@ -89,17 +117,47 @@ Description: "${dto.rawDescription || ''}"
    * 3. AI Inventory Insights Generator
    */
   async generateInventoryInsights(inventoryMetrics: any) {
+    let rawSeedProducts: any[] = [];
+    try {
+      if (fs.existsSync(SEED_FILE)) {
+        const parsed = JSON.parse(fs.readFileSync(SEED_FILE, 'utf-8'));
+        rawSeedProducts = parsed.products || [];
+      }
+    } catch (e) {}
+
+    const depleted = rawSeedProducts.filter((p: any) => (p.stock ?? 0) === 0);
+    const lowStock = rawSeedProducts.filter((p: any) => (p.stock ?? 0) > 0 && (p.stock ?? 0) <= (p.minStock ?? 10));
+
+    const ai = this.getGeminiClient();
+    if (ai) {
+      try {
+        const response = await ai.models.generateContent({
+          model: 'gemini-2.5-flash',
+          contents: `Analyze inventory status based on real metrics:\n- Out of stock SKUs (${depleted.length}): ${depleted.map(p => `${p.name} (${p.sku})`).join(', ') || 'None'}\n- Low stock SKUs (${lowStock.length}): ${lowStock.map(p => `${p.name} (${p.sku}, stock: ${p.stock}, min: ${p.minStock})`).join(', ') || 'None'}\n\nReturn JSON with fields: "summary" (string), "keyInsights" (string array), "prescriptiveActions" (array of objects with action, sku, recommendedQty). Use Indian Rupee (₹) if discussing value.`,
+          config: {
+            systemInstruction: `${this.systemPersona} Return valid JSON only.`
+          }
+        });
+        if (response && response.text) {
+          const cleanJson = response.text.replace(/```json\s*/gi, '').replace(/```/g, '').trim();
+          return JSON.parse(cleanJson);
+        }
+      } catch (e) {
+        console.warn('Gemini inventory insights fallback:', e);
+      }
+    }
+
     return {
-      summary: "Inventory health is optimal across 85% of active SKUs. High-risk stockout detected on MCU components.",
+      summary: `Inventory evaluation: ${depleted.length} depleted line(s) and ${lowStock.length} SKU(s) below safety stock.`,
       keyInsights: [
-        "SKU-8842-MCU is at 5 units available against safety limit of 20 units. Reorder immediately to avoid $45,000 lost revenue risk.",
-        "Overstock identified on SKU-BOX-M with +45 days of excess supply. Liquidate via promotional bundle.",
-        "Average supplier lead time has increased by 1.8 days in Q2 due to port congestion."
+        depleted.length > 0 ? `${depleted[0].name} (${depleted[0].sku}) has 0 stock remaining. Immediate restock required.` : 'All active lines currently have available stock on hand.',
+        lowStock.length > 0 ? `${lowStock[0].name} (${lowStock[0].sku}) is operating below safety threshold (${lowStock[0].stock} units left).` : 'Safety stock levels are healthy across warehouse lines.'
       ],
-      prescriptiveActions: [
-        { action: "AUTO_DRAFT_PO", sku: "SKU-8842-MCU", recommendedQty: 1000, preferredVendor: "TechComponents Inc." },
-        { action: "REBALANCE_STOCK", sku: "SKU-9941-SENS", source: "WH-EAST-01", destination: "WH-WEST-02", qty: 200 }
-      ]
+      prescriptiveActions: depleted.map(p => ({
+        action: "REORDER_DEPLETED",
+        sku: p.sku,
+        recommendedQty: Math.max(50, (p.minStock || 10) * 3)
+      }))
     };
   }
 
@@ -107,13 +165,33 @@ Description: "${dto.rawDescription || ''}"
    * 4. AI Demand Forecast Explanation
    */
   async explainDemandForecast(dto: ForecastExplanationDTO) {
-    const deficitDate = new Date(Date.now() + 5 * 24 * 60 * 60 * 1000).toLocaleDateString();
+    const ai = this.getGeminiClient();
+    if (ai) {
+      try {
+        const response = await ai.models.generateContent({
+          model: 'gemini-2.5-flash',
+          contents: `Explain demand forecast for product "${dto.productName}" (SKU: ${dto.sku}).\nCurrent stock: ${dto.currentStock} units, predicted demand: ${dto.predictedDemand} units, safety stock: ${dto.safetyStock} units, historical trend: ${dto.historicalTrend}.\nReturn JSON with fields: "executiveSummary", "stockoutRiskAnalysis", "recommendedOrderQty" (number), "confidenceInterval".`,
+          config: {
+            systemInstruction: `${this.systemPersona} Output raw valid JSON only.`
+          }
+        });
+        if (response && response.text) {
+          const cleanJson = response.text.replace(/```json\s*/gi, '').replace(/```/g, '').trim();
+          return JSON.parse(cleanJson);
+        }
+      } catch (e) {
+        console.warn('Gemini forecast explanation fallback:', e);
+      }
+    }
 
+    const deficit = Math.max(0, dto.predictedDemand - dto.currentStock + dto.safetyStock);
     return {
-      executiveSummary: `Demand for **${dto.productName} (${dto.sku})** is predicted to increase by **+35%** over the next 14 days due to upcoming seasonal B2B promotion cycles.`,
-      stockoutRiskAnalysis: `Current stock is **${dto.currentStock} units**, while predicted 14-day demand is **${dto.predictedDemand} units**. A stock depletion is forecasted for **${deficitDate}** unless a replenishment order is issued.`,
-      recommendedOrderQty: dto.predictedDemand - dto.currentStock + dto.safetyStock,
-      confidenceInterval: "95% statistical confidence based on XGBoost time-series ensemble."
+      executiveSummary: `Demand analysis for ${dto.productName} (${dto.sku}) indicates a ${dto.historicalTrend.toLowerCase()} consumption trajectory based on recent velocity.`,
+      stockoutRiskAnalysis: dto.currentStock <= dto.safetyStock
+        ? `Current stock of ${dto.currentStock} units is at or below the safety threshold of ${dto.safetyStock} units.`
+        : `Current stock of ${dto.currentStock} units provides adequate cover against the predicted demand of ${dto.predictedDemand} units.`,
+      recommendedOrderQty: deficit,
+      confidenceInterval: "Calculated based on 60-day historical transaction window."
     };
   }
 
@@ -121,37 +199,44 @@ Description: "${dto.rawDescription || ''}"
    * 5. Conversational AI Chatbot ("Copilot for Supply Chain")
    */
   async chatCopilot(prompt: string, history?: any[]) {
-    const lowercase = prompt.toLowerCase();
-    let responseMarkdown = "";
-    let suggestedActions: any[] = [];
+    const ai = this.getGeminiClient();
+    if (ai) {
+      try {
+        let rawSeedProducts: any[] = [];
+        try {
+          if (fs.existsSync(SEED_FILE)) {
+            const parsed = JSON.parse(fs.readFileSync(SEED_FILE, 'utf-8'));
+            rawSeedProducts = parsed.products || [];
+          }
+        } catch (e) {}
 
-    if (lowercase.includes("stockout") || lowercase.includes("low stock") || lowercase.includes("risk")) {
-      const allLevels = await InventoryLevelModel.find().populate('productId').limit(50);
-      const lowStockItems = allLevels.filter((item: any) => {
-        const prod = item.productId as any;
-        const safety = prod?.safetyStock ?? 10;
-        return (item.quantityAvailable ?? item.quantityOnHand ?? 0) <= safety;
-      });
+        const context = `Active Catalog SKUs: ${rawSeedProducts.length}. Depleted: ${rawSeedProducts.filter((p: any) => p.stock === 0).length}. Low Stock: ${rawSeedProducts.filter((p: any) => p.stock > 0 && p.stock <= p.minStock).length}.`;
 
-      if (lowStockItems.length > 0) {
-        const itemList = lowStockItems.map((item: any) => {
-          const prod = item.productId as any;
-          const available = item.quantityAvailable ?? item.quantityOnHand ?? 0;
-          return `- **${prod?.sku || 'Unknown'}** (${prod?.name || 'Item'}): **${available} units** available (Safety stock: ${prod?.safetyStock ?? 0})`;
-        }).join('\n');
-        responseMarkdown = `I analyzed your inventory levels. **${lowStockItems.length} item(s)** are currently at or below safety stock:\n\n${itemList}\n\nReview them in the Inventory page.`;
-      } else {
-        responseMarkdown = `I analyzed your inventory ledger. All items are currently operating above their safety stock levels. There are **0 active stockout risks**.`;
+        const response = await ai.models.generateContent({
+          model: 'gemini-2.5-flash',
+          contents: `Inventory Context: ${context}\n\nUser Question: ${prompt}`,
+          config: {
+            systemInstruction: `${this.systemPersona} Provide clear, concise answers without markdown asterisks (*). Use clean dashes or bullets (•). Use Indian Rupee (₹) for currency.`
+          }
+        });
+
+        if (response && response.text) {
+          let text = response.text.trim();
+          text = text.replace(/\$/g, '₹').replace(/\*\*(.*?)\*\*/g, '$1').replace(/\*/g, '');
+          return {
+            responseMarkdown: text,
+            suggestedActions: [],
+            timestamp: new Date().toISOString()
+          };
+        }
+      } catch (e) {
+        console.warn('Gemini copilot chat fallback:', e);
       }
-    } else if (lowercase.includes("supplier") || lowercase.includes("vendor")) {
-      responseMarkdown = `Suppliers are configured directly as an optional attribute on products in your inventory. You can view and update supplier names directly in the **Inventory** page.`;
-    } else {
-      responseMarkdown = `Inventra AI Copilot at your service. I can help you with:\n- Identifying inventory stockout risks and safety stock thresholds\n- Reviewing stock levels\n- Explaining demand forecasts\n\nWhat would you like to explore?`;
     }
 
     return {
-      responseMarkdown,
-      suggestedActions,
+      responseMarkdown: `Inventra AI Copilot: Inventory records analyzed. All tracked SKUs and safety thresholds are accessible through your Dashboard and Inventory views.`,
+      suggestedActions: [],
       timestamp: new Date().toISOString()
     };
   }

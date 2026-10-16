@@ -10,6 +10,8 @@ import {
   Lightbulb,
   ShieldAlert,
   TrendingDown,
+  TrendingUp,
+  AlertTriangle,
   ShoppingCart,
   Plus
 } from 'lucide-react';
@@ -26,9 +28,10 @@ export interface ChatMessage {
 }
 
 const SUGGESTION_CHIPS = [
+  { label: 'When will I run out of stock?', icon: AlertTriangle },
+  { label: 'Which products make the most profit?', icon: TrendingUp },
   { label: 'What should I reorder?', icon: ShoppingCart },
   { label: 'Low stock items', icon: ShieldAlert },
-  { label: 'Why is stock dropping?', icon: TrendingDown },
 ];
 
 const createInitialMessage = (): ChatMessage => ({
@@ -219,6 +222,30 @@ export const AICopilotPage: React.FC = () => {
               </div>
             );
           })}
+
+          {/* Empty State Suggestion Pills */}
+          {messages.length <= 1 && !isLoading && (
+            <div className="flex flex-wrap gap-2.5 pt-1 pl-11 animate-in fade-in duration-300">
+              <button
+                type="button"
+                onClick={() => handleSendMessage('When will I run out of stock?')}
+                className="px-3.5 py-1.5 rounded-full text-xs font-semibold bg-white/5 hover:bg-[#D5F737]/15 border border-white/10 hover:border-[#D5F737]/40 text-zinc-300 hover:text-[#D5F737] transition-all flex items-center gap-1.5 active:scale-95 shadow-sm cursor-pointer"
+              >
+                <AlertTriangle className="w-3.5 h-3.5 text-amber-400" />
+                <span>When will I run out of stock?</span>
+                <ArrowUpRight className="w-3 h-3 opacity-60" />
+              </button>
+              <button
+                type="button"
+                onClick={() => handleSendMessage('Which products make the most profit?')}
+                className="px-3.5 py-1.5 rounded-full text-xs font-semibold bg-white/5 hover:bg-[#D5F737]/15 border border-white/10 hover:border-[#D5F737]/40 text-zinc-300 hover:text-[#D5F737] transition-all flex items-center gap-1.5 active:scale-95 shadow-sm cursor-pointer"
+              >
+                <TrendingUp className="w-3.5 h-3.5 text-[#D5F737]" />
+                <span>Which products make the most profit?</span>
+                <ArrowUpRight className="w-3 h-3 opacity-60" />
+              </button>
+            </div>
+          )}
 
           {/* Loading Indicator without copilot symbol beside Inventra AI */}
           {isLoading && (

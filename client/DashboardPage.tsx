@@ -8,6 +8,8 @@ import {
   ArrowUpRight,
   RefreshCw,
   CheckCircle2,
+  CheckCircle,
+  ArrowRight,
   BarChart3,
   PieChart as PieChartIcon,
 } from 'lucide-react';
@@ -46,6 +48,14 @@ interface DashboardData {
     outOfStock: number;
     stockHealth: number;
   };
+  sales?: {
+    revenue: number;
+    profit: number;
+    marginPercent: number;
+    costOfGoods?: number;
+    unitsSold?: number;
+    salesCount?: number;
+  };
   categoryDistribution: {
     name: string;
     value: number;
@@ -79,6 +89,14 @@ const DEFAULT_DATA: DashboardData = {
     lowStock: 0,
     outOfStock: 0,
     stockHealth: 100,
+  },
+  sales: {
+    revenue: 0,
+    profit: 0,
+    marginPercent: 0,
+    costOfGoods: 0,
+    unitsSold: 0,
+    salesCount: 0,
   },
   categoryDistribution: [],
   monthlyMovement: [
@@ -131,6 +149,7 @@ export const DashboardPage: React.FC = () => {
   const [data, setData] = useState<DashboardData>(DEFAULT_DATA);
   const [loading, setLoading] = useState<boolean>(true);
   const [refreshing, setRefreshing] = useState<boolean>(false);
+  const [stockoutRisks, setStockoutRisks] = useState<any[]>([]);
 
   // Hover states for interactive charts
   const [hoveredBarIndex, setHoveredBarIndex] = useState<number | null>(null);
@@ -145,19 +164,20 @@ export const DashboardPage: React.FC = () => {
         setData({
           kpis: {
             totalProducts:
-              payload.kpis.totalProducts ?? payload.kpis.totalProductsCount ?? 25,
+              payload.kpis.totalProducts ?? payload.kpis.totalProductsCount ?? 0,
             stockValue:
               payload.kpis.stockValue ??
               payload.kpis.stockValueINR ??
               payload.kpis.totalInventoryValueINR ??
               0,
             lowStock:
-              payload.kpis.lowStock ?? payload.kpis.lowStockCount ?? 4,
+              payload.kpis.lowStock ?? payload.kpis.lowStockCount ?? 0,
             outOfStock:
-              payload.kpis.outOfStock ?? payload.kpis.outOfStockCount ?? 2,
+              payload.kpis.outOfStock ?? payload.kpis.outOfStockCount ?? 0,
             stockHealth:
-              payload.kpis.stockHealth ?? payload.stockHealth ?? 76,
+              payload.kpis.stockHealth ?? payload.stockHealth ?? 100,
           },
+          sales: payload.sales || DEFAULT_DATA.sales,
           categoryDistribution:
             payload.categoryDistribution || DEFAULT_DATA.categoryDistribution,
           monthlyMovement:
@@ -165,8 +185,27 @@ export const DashboardPage: React.FC = () => {
           recentActivity:
             payload.recentActivity || DEFAULT_DATA.recentActivity,
           stockHealth:
-            payload.stockHealth ?? payload.kpis.stockHealth ?? 76,
+            payload.stockHealth ?? payload.kpis.stockHealth ?? 100,
         });
+      }
+
+      // Fetch forecast for Stockout Risk card
+      try {
+        const forecastRes = await api.get('/api/forecast?sort=daysLeft');
+        const fList = forecastRes.data.forecasts || forecastRes.data.data || [];
+        const nearest = fList
+          .filter(
+            (item: any) =>
+              item.stock > 0 &&
+              (item.risk === 'critical' || item.risk === 'warning') &&
+              item.daysLeft !== null &&
+              item.daysLeft > 0 &&
+              item.daysLeft <= 90
+          )
+          .slice(0, 3);
+        setStockoutRisks(nearest);
+      } catch (fErr) {
+        console.warn('Failed to load forecast for stockout risk card:', fErr);
       }
     } catch (err) {
       console.warn('Dashboard summary fetch failed, using fallback:', err);
@@ -180,7 +219,7 @@ export const DashboardPage: React.FC = () => {
     fetchDashboardData();
   }, []);
 
-  const { kpis, categoryDistribution, monthlyMovement, recentActivity, stockHealth } = data;
+  const { kpis, sales, categoryDistribution, monthlyMovement, recentActivity, stockHealth } = data;
 
   // Time-of-day greeting
   const greeting = useMemo(() => {
@@ -252,7 +291,7 @@ export const DashboardPage: React.FC = () => {
   };
 
   // Cursor spotlight handler for KPI glass cards
-  const handleCardMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+  const handleCardMouseMove = (e: React.MouseEvent<HTMLElement>) => {
     const rect = e.currentTarget.getBoundingClientRect();
     e.currentTarget.style.setProperty('--mouse-x', `${e.clientX - rect.left}px`);
     e.currentTarget.style.setProperty('--mouse-y', `${e.clientY - rect.top}px`);
@@ -270,10 +309,7 @@ export const DashboardPage: React.FC = () => {
                 {firstName}
               </span>
             </h1>
-            <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 text-xs font-semibold rounded-full bg-[#D5F737]/15 text-[#D5F737] border border-[#D5F737]/30">
-              <span className="w-1.5 h-1.5 rounded-full bg-[#D5F737] animate-pulse" />
-              Live Dashboard
-            </span>
+
           </div>
           <p className="text-xs text-[#9A9A9A] mt-1 font-medium">
             {todayFormatted} • Welcome to your inventory overview
@@ -289,8 +325,8 @@ export const DashboardPage: React.FC = () => {
         </Link>
       </section>
 
-      {/* 2. FOUR KPI CARDS IN ONE ROW (COMPACT) */}
-      <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-3">
+      {/* 2. KPI CARDS (INCLUDING SALES & PROFIT) */}
+      <section className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-2.5 sm:gap-3">
         {/* KPI 1: Total Products */}
         <div
           onMouseMove={handleCardMouseMove}
@@ -419,6 +455,94 @@ export const DashboardPage: React.FC = () => {
             </div>
           </div>
         </div>
+
+        {/* KPI 5: Revenue (this month) */}
+        <Link
+          to="/sales"
+          onMouseMove={handleCardMouseMove}
+          className="group relative p-2.5 sm:p-3 rounded-2xl bg-[rgba(40,40,40,0.45)] backdrop-blur-[20px] saturate-[90%] border border-white/10 shadow-md transition-all duration-300 hover:-translate-y-0.5 hover:border-[#D5F737]/35 hover:shadow-[0_8px_20px_-8px_rgba(0,0,0,0.6),0_0_12px_rgba(213,247,55,0.12)] overflow-hidden flex flex-col justify-between focus:outline-none focus-visible:ring-2 focus-visible:ring-[#D5F737]"
+        >
+          <div
+            className="absolute inset-0 pointer-events-none rounded-2xl transition-opacity duration-300 opacity-0 group-hover:opacity-100"
+            style={{
+              background:
+                'radial-gradient(120px circle at var(--mouse-x, -500px) var(--mouse-y, -500px), rgba(213, 247, 55, 0.12), transparent 75%)',
+            }}
+          />
+          <div className="relative z-10 flex flex-col justify-between h-full">
+            <div className="flex items-center justify-between mb-1">
+              <span className="text-[10px] text-[#9A9A9A] font-semibold uppercase tracking-wider">
+                Revenue (this month)
+              </span>
+              <ArrowUpRight className="w-3 h-3 text-[#9A9A9A] group-hover:text-[#D5F737] transition-colors" />
+            </div>
+
+            <div className="text-lg sm:text-xl font-bold text-white tracking-tight mb-1 flex items-center">
+              <span>₹</span>
+              <NumberTicker value={sales?.revenue ?? 0} decimalPlaces={2} className="text-white" />
+            </div>
+
+            <div className="flex items-center justify-between pt-1 border-t border-white/5">
+              <span className="text-[9px] sm:text-[10px] text-[#D5F737] font-medium flex items-center gap-1">
+                <TrendingUp className="w-2.5 h-2.5" /> {sales?.salesCount ?? 0} sales
+              </span>
+              <span className="text-[9px] sm:text-[10px] text-[#9A9A9A]">
+                {sales?.unitsSold ?? 0} units
+              </span>
+            </div>
+          </div>
+        </Link>
+
+        {/* KPI 6: Profit (this month) */}
+        <Link
+          to="/sales"
+          onMouseMove={handleCardMouseMove}
+          className="group relative p-2.5 sm:p-3 rounded-2xl bg-[rgba(40,40,40,0.45)] backdrop-blur-[20px] saturate-[90%] border border-white/10 shadow-md transition-all duration-300 hover:-translate-y-0.5 hover:border-[#D5F737]/35 hover:shadow-[0_8px_20px_-8px_rgba(0,0,0,0.6),0_0_12px_rgba(213,247,55,0.12)] overflow-hidden flex flex-col justify-between focus:outline-none focus-visible:ring-2 focus-visible:ring-[#D5F737]"
+        >
+          <div
+            className="absolute inset-0 pointer-events-none rounded-2xl transition-opacity duration-300 opacity-0 group-hover:opacity-100"
+            style={{
+              background:
+                'radial-gradient(120px circle at var(--mouse-x, -500px) var(--mouse-y, -500px), rgba(213, 247, 55, 0.12), transparent 75%)',
+            }}
+          />
+          <div className="relative z-10 flex flex-col justify-between h-full">
+            <div className="flex items-center justify-between mb-1">
+              <span className="text-[10px] text-[#9A9A9A] font-semibold uppercase tracking-wider">
+                Profit (this month)
+              </span>
+              <ArrowUpRight className="w-3 h-3 text-[#9A9A9A] group-hover:text-[#D5F737] transition-colors" />
+            </div>
+
+            <div
+              className={`text-lg sm:text-xl font-bold tracking-tight mb-1 flex items-center ${
+                (sales?.profit ?? 0) >= 0 ? 'text-[#D5F737]' : 'text-[#F0506E]'
+              }`}
+            >
+              <span>{(sales?.profit ?? 0) < 0 ? '-₹' : '₹'}</span>
+              <NumberTicker
+                value={Math.abs(sales?.profit ?? 0)}
+                decimalPlaces={2}
+                className={(sales?.profit ?? 0) >= 0 ? 'text-[#D5F737]' : 'text-[#F0506E]'}
+              />
+            </div>
+
+            <div className="flex items-center justify-between pt-1 border-t border-white/5">
+              <span
+                className={`text-[9px] sm:text-[10px] font-semibold px-1.5 py-0.5 rounded-full ${
+                  (sales?.marginPercent ?? 0) >= 0
+                    ? 'bg-[#D5F737]/15 text-[#D5F737]'
+                    : 'bg-[#F0506E]/15 text-[#F0506E]'
+                }`}
+              >
+                {(sales?.marginPercent ?? 0).toFixed(1)}% margin
+              </span>
+              <span className="text-[9px] sm:text-[10px] text-[#9A9A9A]">
+                Cost: ₹{Number(sales?.costOfGoods ?? 0).toLocaleString('en-IN', { maximumFractionDigits: 0 })}
+              </span>
+            </div>
+          </div>
+        </Link>
       </section>
 
       {/* 3. ROW: STOCK MOVEMENT CHART (~60%) & INVENTORY BY CATEGORY DONUT (~40%) */}
@@ -678,17 +802,17 @@ export const DashboardPage: React.FC = () => {
         </div>
       </section>
 
-      {/* 4. ROW: RECENT ACTIVITY (~60%) & STOCK HEALTH % (~40%) */}
+      {/* 4. ROW: RECENT ACTIVITY (~42%), STOCKOUT RISK (~33%) & STOCK HEALTH % (~25%) */}
       <section className="grid grid-cols-1 lg:grid-cols-12 gap-5">
-        {/* Left Card: Recent Activity (lg:col-span-7) */}
-        <div className="lg:col-span-7 p-5 sm:p-6 rounded-[24px] bg-[rgba(40,40,40,0.45)] backdrop-blur-[20px] saturate-[90%] border border-white/10 shadow-lg transition-all duration-300 hover:-translate-y-1 hover:border-[#D5F737]/35 hover:shadow-[0_12px_30px_-10px_rgba(0,0,0,0.6),0_0_20px_rgba(213,247,55,0.12)] flex flex-col justify-between">
+        {/* Left Card: Recent Activity (lg:col-span-5) */}
+        <div className="lg:col-span-5 p-5 sm:p-6 rounded-[24px] bg-[rgba(40,40,40,0.45)] backdrop-blur-[20px] saturate-[90%] border border-white/10 shadow-lg transition-all duration-300 hover:-translate-y-1 hover:border-[#D5F737]/35 hover:shadow-[0_12px_30px_-10px_rgba(0,0,0,0.6),0_0_20px_rgba(213,247,55,0.12)] flex flex-col justify-between">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-2.5">
               <h2 className="text-sm sm:text-base font-semibold text-white tracking-tight">
                 Recent Activity
               </h2>
               <span className="text-[10px] font-semibold px-2.5 py-0.5 rounded-full bg-white/[0.06] text-[#9A9A9A] border border-white/10">
-                Latest 5 movements
+                Latest 5
               </span>
             </div>
 
@@ -768,26 +892,96 @@ export const DashboardPage: React.FC = () => {
           </div>
         </div>
 
-        {/* Right Card: Stock Health % (lg:col-span-5) */}
-        <div className="lg:col-span-5 p-5 sm:p-6 rounded-[24px] bg-[rgba(40,40,40,0.45)] backdrop-blur-[20px] saturate-[90%] border border-white/10 shadow-lg transition-all duration-300 hover:-translate-y-1 hover:border-[#D5F737]/35 hover:shadow-[0_12px_30px_-10px_rgba(0,0,0,0.6),0_0_20px_rgba(213,247,55,0.12)] flex flex-col justify-between">
+        {/* Middle Card: Stockout Risk (lg:col-span-4) */}
+        <div className="lg:col-span-4 p-5 sm:p-6 rounded-[24px] bg-[rgba(40,40,40,0.45)] backdrop-blur-[20px] saturate-[90%] border border-white/10 shadow-lg transition-all duration-300 hover:-translate-y-1 hover:border-[#D5F737]/35 hover:shadow-[0_12px_30px_-10px_rgba(0,0,0,0.6),0_0_20px_rgba(213,247,55,0.12)] flex flex-col justify-between">
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center gap-2">
+              <h2 className="text-sm sm:text-base font-semibold text-white tracking-tight flex items-center gap-2">
+                <AlertTriangle className="w-4 h-4 text-amber-400" />
+                Stockout Risk
+              </h2>
+              <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-300 border border-amber-500/20">
+                Forecast
+              </span>
+            </div>
+            <Link
+              to="/forecast"
+              className="text-xs text-[#D5F737] hover:underline flex items-center gap-1 font-medium transition-colors"
+            >
+              View forecast
+              <ArrowRight className="w-3.5 h-3.5" />
+            </Link>
+          </div>
+
+          <div className="space-y-2.5 flex-1 flex flex-col justify-center">
+            {stockoutRisks.length === 0 ? (
+              <div className="py-8 text-center text-xs text-[#9A9A9A] bg-[#1C1C1C]/40 rounded-2xl border border-white/5 flex flex-col items-center justify-center gap-1.5 flex-1">
+                <CheckCircle className="w-5 h-5 text-emerald-400/80 mb-0.5" />
+                <span>No forecast data or imminent stockouts</span>
+                <span className="text-[10px] text-[#7A7A7A]">All products have healthy inventory cover</span>
+              </div>
+            ) : (
+              stockoutRisks.slice(0, 3).map((item: any) => {
+                const days = item.daysLeft ?? 0;
+                const barPercent = Math.min(100, Math.max(8, (days / 30) * 100));
+                const isCritical = days <= 3 || item.risk === 'critical';
+                const barColor = isCritical ? 'bg-rose-500' : 'bg-amber-400';
+                const badgeColor = isCritical
+                  ? 'bg-rose-500/15 text-rose-300 border-rose-500/30'
+                  : 'bg-amber-500/15 text-amber-300 border-amber-500/30';
+
+                return (
+                  <div
+                    key={item.productId || item.sku}
+                    className="p-3 rounded-2xl bg-[#1C1C1C] border border-white/5 hover:border-white/15 transition-all duration-200"
+                  >
+                    <div className="flex items-center justify-between mb-1.5">
+                      <div className="min-w-0 pr-2">
+                        <div className="text-xs sm:text-sm font-semibold text-white truncate">
+                          {item.name}
+                        </div>
+                        <div className="text-[10px] text-[#9A9A9A] truncate">
+                          {item.sku} • {item.stock} in stock
+                        </div>
+                      </div>
+                      <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full border whitespace-nowrap ${badgeColor}`}>
+                        ~{days}d left
+                      </span>
+                    </div>
+                    {/* Days-left progress bar */}
+                    <div className="w-full bg-white/10 rounded-full h-1.5 overflow-hidden">
+                      <div
+                        className={`h-full rounded-full transition-all duration-500 ${barColor}`}
+                        style={{ width: `${barPercent}%` }}
+                      />
+                    </div>
+                  </div>
+                );
+              })
+            )}
+          </div>
+        </div>
+
+        {/* Right Card: Stock Health % (lg:col-span-3) */}
+        <div className="lg:col-span-3 p-5 sm:p-6 rounded-[24px] bg-[rgba(40,40,40,0.45)] backdrop-blur-[20px] saturate-[90%] border border-white/10 shadow-lg transition-all duration-300 hover:-translate-y-1 hover:border-[#D5F737]/35 hover:shadow-[0_12px_30px_-10px_rgba(0,0,0,0.6),0_0_20px_rgba(213,247,55,0.12)] flex flex-col justify-between">
           <div className="flex items-center justify-between mb-4">
             <div>
               <h2 className="text-sm sm:text-base font-semibold text-white tracking-tight">
                 Stock Health
               </h2>
               <p className="text-xs text-[#9A9A9A] mt-0.5">
-                Catalog fulfillment reliability
+                Catalog reliability
               </p>
             </div>
             {/* Optimal Target Label */}
-            <span className="text-[11px] font-semibold text-[#D5F737] bg-[#D5F737]/10 px-3 py-1 rounded-full border border-[#D5F737]/25">
-              Optimal Target: 85%
+            <span className="text-[10px] font-semibold text-[#D5F737] bg-[#D5F737]/10 px-2.5 py-1 rounded-full border border-[#D5F737]/25">
+              Target 85%
             </span>
           </div>
 
-          <div className="flex-1 flex flex-col sm:flex-row items-center justify-center gap-6 py-2">
+          <div className="flex-1 flex flex-col items-center justify-center gap-4 py-2 text-center">
             {/* Animated Ring */}
-            <div className="relative w-28 h-28 flex-shrink-0">
+            <div className="relative w-24 h-24 sm:w-28 sm:h-28 flex-shrink-0">
               <svg className="w-full h-full transform -rotate-90" viewBox="0 0 100 100">
                 {/* Track */}
                 <circle
@@ -826,18 +1020,18 @@ export const DashboardPage: React.FC = () => {
             </div>
 
             {/* Target description and status */}
-            <div className="flex flex-col justify-center space-y-2 text-center sm:text-left">
+            <div className="flex flex-col justify-center space-y-1.5 text-center">
               <div className="text-xs font-semibold text-white">
-                Inventory Buffer Ratio
+                Buffer Ratio
               </div>
-              <p className="text-xs text-[#9A9A9A] leading-relaxed max-w-[220px]">
+              <p className="text-[11px] text-[#9A9A9A] leading-relaxed max-w-[200px]">
                 {kpis.totalProducts > 0
-                  ? `${kpis.totalProducts - kpis.lowStock - kpis.outOfStock} of ${kpis.totalProducts} active products in safe buffer inventory.`
-                  : 'No active products in catalog yet.'}
+                  ? `${kpis.totalProducts - kpis.lowStock - kpis.outOfStock} of ${kpis.totalProducts} products in safe buffer.`
+                  : 'No active products in catalog.'}
               </p>
-              <div className="inline-flex items-center justify-center sm:justify-start gap-1.5 text-xs text-emerald-400 font-medium pt-1">
+              <div className="inline-flex items-center justify-center gap-1.5 text-xs text-emerald-400 font-medium pt-0.5">
                 <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-                {kpis.totalProducts > 0 ? 'Stable Order Fulfillment' : 'Catalog Ready'}
+                {kpis.totalProducts > 0 ? 'Fulfillment Stable' : 'Catalog Ready'}
               </div>
             </div>
           </div>

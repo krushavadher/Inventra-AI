@@ -65,6 +65,7 @@ export class ProductController {
                 sellingPrice: p.pricing?.sellingPrice ?? p.sellingPrice ?? 150,
                 stock,
                 minStock,
+                leadTimeDays: p.leadTimeDays ?? 7,
                 status: stock === 0 ? 'OUT_OF_STOCK' : stock <= minStock ? 'LOW_STOCK' : 'IN_STOCK'
               };
             });
@@ -91,6 +92,7 @@ export class ProductController {
             sellingPrice: p.sellingPrice || 150,
             stock,
             minStock,
+            leadTimeDays: p.leadTimeDays ?? 7,
             status: stock === 0 ? 'OUT_OF_STOCK' : stock <= minStock ? 'LOW_STOCK' : 'IN_STOCK'
           };
         });
@@ -133,7 +135,7 @@ export class ProductController {
    */
   static async createProduct(req: Request, res: Response, next: NextFunction) {
     try {
-      const { name, sku, category, supplier, unitCost, sellingPrice, stock, minStock } = req.body;
+      const { name, sku, category, supplier, unitCost, sellingPrice, stock, minStock, leadTimeDays } = req.body;
 
       if (!name) {
         return res.status(400).json({ success: false, error: 'Product name is required' });
@@ -144,6 +146,7 @@ export class ProductController {
       const prodPrice = Number(sellingPrice) || Math.round(prodCost * 1.5);
       const prodStock = Number(stock) || 0;
       const prodMinStock = Number(minStock) || 10;
+      const prodLeadTime = leadTimeDays !== undefined && !isNaN(Number(leadTimeDays)) ? Math.max(0, Number(leadTimeDays)) : 7;
       const prodCategory = category?.trim() || 'General';
       const prodSupplier = supplier?.trim() || 'Direct Vendor';
 
@@ -158,6 +161,7 @@ export class ProductController {
         sellingPrice: prodPrice,
         stock: prodStock,
         minStock: prodMinStock,
+        leadTimeDays: prodLeadTime,
         status: prodStock === 0 ? 'OUT_OF_STOCK' : prodStock <= prodMinStock ? 'LOW_STOCK' : 'IN_STOCK'
       };
 
@@ -173,6 +177,7 @@ export class ProductController {
             barcode: '890' + Math.floor(100000000 + Math.random() * 900000000),
             qrCode: `QR-${newProductObj.sku}`,
             pricing: { unitCost: prodCost, sellingPrice: prodPrice, taxRate: 18 },
+            leadTimeDays: prodLeadTime,
             status: 'ACTIVE'
           });
 
@@ -210,7 +215,7 @@ export class ProductController {
   static async updateProduct(req: Request, res: Response, next: NextFunction) {
     try {
       const { id } = req.params;
-      const { name, sku, category, supplier, unitCost, sellingPrice, stock, minStock } = req.body;
+      const { name, sku, category, supplier, unitCost, sellingPrice, stock, minStock, leadTimeDays } = req.body;
 
       let updatedProduct: any = null;
 
@@ -224,16 +229,24 @@ export class ProductController {
             if (supplier) dbProd.supplier = supplier;
             if (unitCost !== undefined) dbProd.pricing.unitCost = Number(unitCost);
             if (sellingPrice !== undefined) dbProd.pricing.sellingPrice = Number(sellingPrice);
+            if (leadTimeDays !== undefined) (dbProd as any).leadTimeDays = Math.max(0, Number(leadTimeDays));
             await dbProd.save();
 
+            const level = await InventoryLevelModel.findOne({ productId: dbProd._id });
+            let currentStock = level ? level.quantityOnHand : 0;
+            let currentMin = level ? level.minSafetyStock : 10;
+
             if (stock !== undefined || minStock !== undefined) {
-              const level = await InventoryLevelModel.findOne({ productId: dbProd._id });
               if (level) {
                 if (stock !== undefined) {
-                  level.quantityOnHand = Number(stock);
-                  level.quantityAvailable = Number(stock);
+                  currentStock = Number(stock);
+                  level.quantityOnHand = currentStock;
+                  level.quantityAvailable = currentStock;
                 }
-                if (minStock !== undefined) level.minSafetyStock = Number(minStock);
+                if (minStock !== undefined) {
+                  currentMin = Number(minStock);
+                  level.minSafetyStock = currentMin;
+                }
                 await level.save();
               }
             }
@@ -246,8 +259,9 @@ export class ProductController {
               supplier: dbProd.supplier,
               unitCost: dbProd.pricing.unitCost,
               sellingPrice: dbProd.pricing.sellingPrice,
-              stock: stock !== undefined ? Number(stock) : 50,
-              minStock: minStock !== undefined ? Number(minStock) : 10
+              stock: currentStock,
+              minStock: currentMin,
+              leadTimeDays: (dbProd as any).leadTimeDays ?? 7
             };
           }
         } catch (dbErr) {
@@ -271,6 +285,7 @@ export class ProductController {
         if (sellingPrice !== undefined) item.sellingPrice = Number(sellingPrice);
         if (stock !== undefined) item.stock = Number(stock);
         if (minStock !== undefined) item.minStock = Number(minStock);
+        if (leadTimeDays !== undefined) item.leadTimeDays = Math.max(0, Number(leadTimeDays));
         saveSeedData(seedData);
         updatedProduct = item;
       }

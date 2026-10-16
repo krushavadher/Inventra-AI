@@ -340,17 +340,26 @@ export const seedDatabase = async () => {
     fs.mkdirSync(DATA_DIR, { recursive: true });
   }
 
-  const movements = generateStockMovements(REALISTIC_PRODUCTS);
+  let existingSales: any[] = [];
+  try {
+    if (fs.existsSync(SEED_FILE)) {
+      const existing = JSON.parse(fs.readFileSync(SEED_FILE, 'utf-8'));
+      existingSales = existing.sales || [];
+    }
+  } catch (e) {}
+
+  const stockMovements = generateStockMovements(REALISTIC_PRODUCTS);
 
   const seedPayload = {
-    products: REALISTIC_PRODUCTS,
-    movements,
+    products: REALISTIC_PRODUCTS.map(p => ({ ...p, leadTimeDays: 7 })),
+    movements: stockMovements,
+    sales: existingSales,
     generatedAt: new Date().toISOString()
   };
 
   // 1. Write file persistence for offline/standalone repository parity
   fs.writeFileSync(SEED_FILE, JSON.stringify(seedPayload, null, 2), 'utf-8');
-  console.log(`💾 Saved ${REALISTIC_PRODUCTS.length} realistic products & ${movements.length} stock movements to ${SEED_FILE}`);
+  console.log(`💾 Saved ${REALISTIC_PRODUCTS.length} realistic products and ${stockMovements.length} movements to ${SEED_FILE}`);
 
   // 2. If MongoDB is available, seed MongoDB models (WITHOUT DELETING USERS)
   let mongoConnected = false;
@@ -428,6 +437,7 @@ export const seedDatabase = async () => {
           qrCode: `QR-${p.sku}`,
           images: [{ url: 'https://images.unsplash.com/photo-1518770660439-4636190af475?w=150', isPrimary: true }],
           pricing: { unitCost: p.unitCost, sellingPrice: p.sellingPrice, taxRate: 18 },
+          leadTimeDays: 7,
           status: 'ACTIVE'
         });
 
@@ -444,27 +454,7 @@ export const seedDatabase = async () => {
         });
       }
 
-      // Seed Movements
-      for (const m of movements) {
-        const prod = await ProductModel.findOne({ sku: m.sku });
-        if (prod) {
-          await StockMovementModel.create({
-            tenantId: tenant._id,
-            productId: prod._id,
-            movementType: m.movementType,
-            quantity: m.quantity,
-            balanceBefore: m.balanceBefore,
-            balanceAfter: m.balanceAfter,
-            referenceDocType: m.referenceDocType,
-            referenceDocId: m.referenceDocId,
-            reason: m.reason,
-            performedBy: adminUserId || new mongoose.Types.ObjectId(),
-            createdAt: new Date(m.createdAt)
-          });
-        }
-      }
-
-      console.log('✅ Successfully seeded MongoDB collections!');
+      console.log('✅ Successfully seeded products, categories, and inventory levels (no sales fabricated)!');
     } catch (dbErr: any) {
       console.warn('MongoDB seed error:', dbErr.message);
     } finally {
@@ -474,14 +464,17 @@ export const seedDatabase = async () => {
 
   console.log('🎉 Seed complete! Summary:');
   console.log(`- 25 realistic products created (${REALISTIC_PRODUCTS.filter(p => p.stock > 0 && p.stock <= p.minStock).length} low-stock, ${REALISTIC_PRODUCTS.filter(p => p.stock === 0).length} out-of-stock)`);
-  console.log(`- 30 stock movements logged across last 6 months`);
+  console.log(`- Products only seeded (no sales fabricated)`);
   console.log(`- User accounts preserved intact.`);
 };
 
-// Execute if run directly from CLI
-seedDatabase()
-  .then(() => process.exit(0))
-  .catch((e) => {
-    console.error(e);
-    process.exit(0);
-  });
+// Execute only if run directly from CLI
+const isMain = process.argv[1] && (process.argv[1].endsWith('seed-database.ts') || process.argv[1].endsWith('seed-database.js'));
+if (isMain) {
+  seedDatabase()
+    .then(() => process.exit(0))
+    .catch((e) => {
+      console.error(e);
+      process.exit(1);
+    });
+}
