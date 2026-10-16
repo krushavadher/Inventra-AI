@@ -16,9 +16,7 @@ import {
   ArrowRight,
   ArrowUp,
   Sparkles,
-  TrendingUp,
   Activity,
-  ShieldCheck,
   Send,
   CheckCircle2,
   Boxes,
@@ -30,7 +28,6 @@ import { GlassCard } from '@/components/ui/GlassCard';
 import { HeroGridLayer } from '@/components/ui/HeroGridLayer';
 import { AuroraText } from '@/components/ui/aurora-text';
 import { ShimmerButton } from '@/components/ui/shimmer-button';
-import { NumberTicker } from '@/components/ui/number-ticker';
 import { MagicCard } from '@/components/ui/magic-card';
 import { TypingAnimation } from '@/components/ui/typing-animation';
 import { useAuth } from '@/context/AuthContext';
@@ -435,137 +432,7 @@ export const LandingPage: React.FC = () => {
             </motion.div>
           </div>
 
-          {/* Right Floating Cards Column (Hover lift, lime border & soft glow) */}
-          <div className="lg:col-span-5 flex flex-col items-center justify-center relative w-full pt-4 lg:pt-0">
-            <div className="relative w-full max-w-md flex flex-col gap-4">
-              {/* Floating Card 1: Incoming Stock */}
-              <motion.div
-                animate={{ y: [0, -8, 0] }}
-                transition={{ duration: 4.6, repeat: Infinity, ease: 'easeInOut' }}
-                className="w-full"
-              >
-                <GlassCard
-                  tabIndex={0}
-                  className={cn(
-                    'group p-4 sm:p-5 border border-white/15 bg-white/[0.08] backdrop-blur-[18px] rounded-[20px] shadow-xl cursor-pointer transition-all duration-300 ease-out',
-                    'hover:border-[#D5F737]/40 hover:shadow-[0_16px_36px_-8px_rgba(0,0,0,0.6),0_0_24px_rgba(213,247,55,0.12)]',
-                    'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D5F737] focus-visible:ring-offset-2 focus-visible:ring-offset-[#181818]',
-                    prefersReducedMotion ? '' : 'hover:-translate-y-1.5'
-                  )}
-                >
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      <div
-                        className={cn(
-                          'w-10 h-10 rounded-xl bg-[#D5F737]/15 border border-[#D5F737]/30 flex items-center justify-center text-[#D5F737] transition-transform duration-300 ease-out',
-                          prefersReducedMotion ? '' : 'group-hover:scale-[1.08] group-hover:rotate-3'
-                        )}
-                      >
-                        <Package className="w-5 h-5" />
-                      </div>
-                      <div>
-                        <div className="text-xs text-[#9A9A9A] font-medium uppercase tracking-wider">
-                          Incoming Stock
-                        </div>
-                        <div className="text-lg sm:text-xl font-bold text-white flex items-center gap-1.5 mt-0.5">
-                          <NumberTicker value={2480} className="text-white" />
-                          <span className="text-xs font-medium text-[#9A9A9A]">units</span>
-                        </div>
-                      </div>
-                    </div>
-                    <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold bg-[#D5F737]/15 text-[#D5F737] border border-[#D5F737]/25">
-                      In Transit
-                    </span>
-                  </div>
-                </GlassCard>
-              </motion.div>
 
-              {/* Floating Card 2: Stock Health */}
-              <motion.div
-                animate={{ y: [0, -8, 0] }}
-                transition={{ duration: 5.4, repeat: Infinity, ease: 'easeInOut', delay: 0.8 }}
-                className="w-full"
-              >
-                <GlassCard
-                  tabIndex={0}
-                  className={cn(
-                    'group p-4 sm:p-5 border border-white/15 bg-white/[0.08] backdrop-blur-[18px] rounded-[20px] shadow-xl cursor-pointer transition-all duration-300 ease-out',
-                    'hover:border-[#D5F737]/40 hover:shadow-[0_16px_36px_-8px_rgba(0,0,0,0.6),0_0_24px_rgba(213,247,55,0.12)]',
-                    'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D5F737] focus-visible:ring-offset-2 focus-visible:ring-offset-[#181818]',
-                    prefersReducedMotion ? '' : 'hover:-translate-y-1.5'
-                  )}
-                >
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      <div
-                        className={cn(
-                          'w-10 h-10 rounded-xl bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center text-emerald-400 transition-transform duration-300 ease-out',
-                          prefersReducedMotion ? '' : 'group-hover:scale-[1.08] group-hover:rotate-3'
-                        )}
-                      >
-                        <ShieldCheck className="w-5 h-5" />
-                      </div>
-                      <div>
-                        <div className="text-xs text-[#9A9A9A] font-medium uppercase tracking-wider">
-                          Stock Health
-                        </div>
-                        <div className="text-lg sm:text-xl font-bold text-white flex items-center mt-0.5">
-                          <NumberTicker value={92} className="text-white" />
-                          <span>%</span>
-                        </div>
-                      </div>
-                    </div>
-                    <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-500/15 text-emerald-400 border border-emerald-500/25">
-                      Optimal
-                    </span>
-                  </div>
-                </GlassCard>
-              </motion.div>
-
-              {/* Floating Card 3: Sales +26% */}
-              <motion.div
-                animate={{ y: [0, -8, 0] }}
-                transition={{ duration: 6.2, repeat: Infinity, ease: 'easeInOut', delay: 1.6 }}
-                className="w-full"
-              >
-                <GlassCard
-                  tabIndex={0}
-                  className={cn(
-                    'group p-4 sm:p-5 border border-white/15 bg-white/[0.08] backdrop-blur-[18px] rounded-[20px] shadow-xl cursor-pointer transition-all duration-300 ease-out',
-                    'hover:border-[#D5F737]/40 hover:shadow-[0_16px_36px_-8px_rgba(0,0,0,0.6),0_0_24px_rgba(213,247,55,0.12)]',
-                    'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D5F737] focus-visible:ring-offset-2 focus-visible:ring-offset-[#181818]',
-                    prefersReducedMotion ? '' : 'hover:-translate-y-1.5'
-                  )}
-                >
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      <div
-                        className={cn(
-                          'w-10 h-10 rounded-xl bg-cyan-500/15 border border-cyan-500/30 flex items-center justify-center text-cyan-400 transition-transform duration-300 ease-out',
-                          prefersReducedMotion ? '' : 'group-hover:scale-[1.08] group-hover:rotate-3'
-                        )}
-                      >
-                        <TrendingUp className="w-5 h-5" />
-                      </div>
-                      <div>
-                        <div className="text-xs text-[#9A9A9A] font-medium uppercase tracking-wider">
-                          Sales Velocity
-                        </div>
-                        <div className="text-lg sm:text-xl font-bold text-white flex items-center mt-0.5">
-                          <span>+</span>
-                          <NumberTicker value={26} className="text-white" />
-                          <span>%</span>
-                        </div>
-                      </div>
-                    </div>
-                    <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold bg-cyan-500/15 text-cyan-400 border border-cyan-500/25">
-                      This Month
-                    </span>
-                  </div>
-                </GlassCard>
-              </motion.div>
-            </div>
-          </div>
         </div>
       </section>
 
