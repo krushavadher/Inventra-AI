@@ -4,8 +4,10 @@ services:
     env: node
     region: oregon
     plan: starter
-    buildCommand: npm ci && npm run build
-    startCommand: node dist/server.js
+    rootDir: server
+    healthCheckPath: /api/health
+    buildCommand: npm install --include=dev && npm run build
+    startCommand: npm start
     envVars:
       - key: NODE_ENV
         value: production

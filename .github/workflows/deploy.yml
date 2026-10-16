@@ -19,18 +19,43 @@ jobs:
         with:
           node-version: '20'
           cache: 'npm'
+          cache-dependency-path: server/package-lock.json
 
       - name: Install Dependencies
+        working-directory: server
         run: npm ci
 
       - name: Compile TypeScript Code
+        working-directory: server
         run: npm run build
 
       - name: Run Build Verification
         run: echo "Build compiled successfully with exit code 0"
 
+  build-client:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js Environment
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: client/package-lock.json
+
+      - name: Install Dependencies
+        working-directory: client
+        run: npm ci
+
+      - name: Build Frontend
+        working-directory: client
+        run: npm run build
+
   deploy-render:
-    needs: build-and-test
+    needs: [build-and-test, build-client]
     if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
 
