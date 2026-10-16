@@ -1,337 +1,215 @@
+<div align="center">
+
 # Inventra AI
 
-> Enterprise AI-Powered Inventory, Warehouse & Procurement Management Platform
+**AI-powered inventory management. Track stock, get low-stock alerts, and ask an AI assistant what to do next.**
 
-![License](https://img.shields.io/badge/license-MIT-blue.svg)
-![Node.js](https://img.shields.io/badge/Node.js-Express-green)
-![React](https://img.shields.io/badge/React-TypeScript-blue)
-![MongoDB](https://img.shields.io/badge/MongoDB-Atlas-green)
-![OpenAI](https://img.shields.io/badge/AI-OpenAI-purple)
+
+</div>
 
 ---
 
 ## Overview
 
-Inventra AI is a next-generation enterprise inventory and warehouse management platform powered by Artificial Intelligence.
+Inventra AI is a full-stack inventory management web app with a dark, glassmorphism-inspired interface. Businesses can manage their product catalog, record stock movements, watch for shortages, and ask a Gemini-powered assistant for plain-language answers and recommended next steps based on their live data.
 
-Unlike traditional inventory software, Inventra AI not only manages products and warehouses but also helps businesses make intelligent procurement decisions using AI-powered demand forecasting, supplier analysis, inventory optimization, and automated purchase recommendations.
+The project focuses on three things: a **clean, fast dashboard**, **useful alerts**, and an **AI assistant that actually reads your inventory** instead of giving generic answers.
 
-The platform is designed for retailers, warehouses, distributors, manufacturers, hospitals, and logistics companies that need a scalable, modern inventory solution.
+## Features
 
----
+### Landing page
+- Animated grid background with glowing accents
+- Sections for features, the AI assistant, and how it works
+- Smooth scrolling and scroll-triggered reveals
+- Glass-style cards with hover effects
 
-# Key Features
+### Authentication
+- Sign up and log in with email and password
+- Passwords hashed with bcrypt, sessions with JWT
+- Protected routes: app pages redirect to login when signed out
+- Profile menu with name, role and logout
 
-## Inventory Management
+### Dashboard
+- KPI cards: total products, stock value (₹), low stock, out of stock
+- Stock movement chart (stock in vs stock out, last 6 months)
+- Inventory by category breakdown
+- Recent activity feed and a stock health indicator
 
-- Product Management
-- Categories
-- Inventory Tracking
-- Stock In / Stock Out
-- Stock Adjustments
-- Expiry Tracking
-- Damaged Inventory
-- Low Stock Alerts
-- Inventory History
+### Inventory
+- Product catalog with SKU, category, supplier, stock, minimum stock and status
+- Add, edit and delete products
+- **Stock In** and **Stock Out** actions that update stock and write movement records
+- Search, category filter and status filter (All, In Stock, Low, Out)
 
----
+### Alerts
+- Critical (out of stock) and low-stock warnings
+- Search and filter by severity
+- **Ask AI** button that opens the assistant with the product pre-filled as a question
 
-## Warehouse Management
-
-- Multiple Warehouses
-- Warehouse Zones
-- Shelves
-- Inventory Transfers
-- Warehouse Capacity
-- Inventory Allocation
-
----
-
-## Procurement Management
-
-- Supplier Management
-- Purchase Orders
-- Purchase Approvals
-- Goods Received Notes
-- Procurement Dashboard
-- Invoice Management
-
----
-
-## Sales Management
-
-- Customer Management
-- Sales Orders
-- Invoice Generation
-- Dispatch Tracking
-
----
-
-## AI Features
-
-### AI Procurement Assistant
-
-Analyzes
-
-- Current Inventory
-- Sales Trends
-- Seasonal Demand
-- Supplier Ratings
-- Supplier Lead Time
-- Warehouse Capacity
-- Pending Purchase Orders
-- Budget Constraints
-
-Automatically recommends
-
-- What products to purchase
-- Recommended quantities
-- Best suppliers
-- Expected delivery dates
-- Budget impact
-- Procurement risks
-
-Can generate draft purchase orders for manager approval.
-
----
-
-### AI Demand Forecasting
-
-Predicts
-
-- 7-day demand
-- 30-day demand
-- 90-day demand
-
-Using historical sales and inventory movement.
-
----
-
-### AI Inventory Insights
-
-Generates intelligent business insights such as
-
-- Overstock detection
-- Understock detection
-- Expiring products
-- Slow moving inventory
-- Fast moving products
-- Supplier performance analysis
-
----
-
-### AI Product Description Generator
-
-Creates professional product descriptions for inventory records.
-
----
-
-### AI Product Categorization
-
-Automatically predicts product categories from product names.
-
----
-
-### AI Business Chat Assistant
-
-Ask questions like
-
-- Which products need restocking?
-- Which supplier has the fastest delivery?
-- Show products expiring this week.
-- Generate procurement report.
-- Which warehouse is overloaded?
-
----
-
-## Authentication
-
-- JWT Authentication
-- Refresh Tokens
-- Email Verification
-- Forgot Password
-- Role Based Access Control
-- Secure Password Hashing
-
----
-
-## User Roles
-
-- Admin
-- Procurement Manager
-- Warehouse Manager
-- Employee
-- Supplier
-- Viewer
-
----
-
-## Dashboard
-
-- Revenue
-- Inventory Value
-- Warehouse Utilization
-- Low Stock Products
-- Orders
-- Profit
-- Supplier Ratings
-- Forecast Charts
-- Sales Analytics
-- Recent Activity
-
----
-
-## Reports
-
-- Inventory Reports
-- Procurement Reports
-- Warehouse Reports
-- Supplier Reports
-- Sales Reports
-
-Export
-
-- PDF
-- Excel
-- CSV
-
----
-
-## Notifications
-
-- Low Stock Alerts
-- Purchase Approvals
-- Order Status
-- Product Expiry
-- AI Recommendations
-- Email Notifications
-- Real-time Notifications
-
----
+### AI Assistant
+- Powered by Google Gemini Flash
+- Reads a summary of your live inventory from the database before answering
+- Answers briefly and ends with recommended next steps
+- Quick suggestion prompts, copy button and follow-up action
 
 ## Tech Stack
 
-### Frontend
+| Layer | Technology |
+|---|---|
+| Frontend | React, TypeScript, Tailwind CSS, Motion (Framer Motion), Recharts, Lenis |
+| Backend | Node.js, Express |
+| Database | MongoDB with Mongoose |
+| Auth | JWT, bcrypt |
+| AI | Google Gemini API (`@google/genai`) |
 
-- React
-- TypeScript
-- Tailwind CSS
-- Shadcn UI
-- React Router
-- TanStack Query
-- Framer Motion
-
-### Backend
-
-- Node.js
-- Express.js
-- MongoDB
-- Mongoose
-- JWT
-- Bcrypt
-- Multer
-- Cloudinary
-- Socket.io
-- Nodemailer
-
-### AI
-
-- OpenAI API
-
-### DevOps
-
-- Docker
-- GitHub Actions
-- Vercel
-- Render
-- MongoDB Atlas
-
----
+> Adjust this table if your project uses different libraries.
 
 ## Project Structure
 
 ```
-client/
-server/
-
-client/
-├── src
-│   ├── components
-│   ├── pages
-│   ├── layouts
-│   ├── hooks
-│   ├── services
-│   ├── context
-│   └── assets
-
-server/
-├── controllers
-├── models
-├── routes
-├── middlewares
-├── services
-├── config
-├── utils
-├── validations
-└── uploads
+inventra-ai/
+├── client/                 # React + TypeScript frontend
+│   ├── src/
+│   │   ├── components/     # Reusable UI (glass cards, charts, navbar)
+│   │   ├── pages/          # Landing, Login, Signup, Dashboard, Inventory, Alerts, Assistant, Profile
+│   │   ├── context/        # Auth context
+│   │   └── ...
+│   └── package.json
+├── server/                 # Express API
+│   ├── src/
+│   │   ├── models/         # User, Product, StockMovement
+│   │   ├── routes/         # auth, products, stock, alerts, dashboard, assistant
+│   │   ├── middleware/     # JWT auth
+│   │   └── seed/           # Sample data script
+│   └── package.json
+└── README.md
 ```
 
----
+> Update folder names to match your repository.
 
-## Security
+## Getting Started
 
-- JWT Authentication
-- Role-Based Access Control
-- Rate Limiting
-- Helmet
-- Input Validation
-- Secure Cookies
-- Environment Variables
-- Audit Logs
+### Prerequisites
 
----
+- Node.js 18 or newer
+- A MongoDB database (local, or a free MongoDB Atlas cluster)
+- A Gemini API key from [Google AI Studio](https://aistudio.google.com)
 
-## Future Enhancements
+### 1. Clone the repository
 
-- Machine Learning-based demand prediction
-- IoT integration for warehouse sensors
-- RFID tracking
-- Multi-company support
-- Multi-currency
-- Multi-language
-- Mobile Application
-- Voice-enabled AI Assistant
-- Blockchain-based supply chain verification
+```bash
+git clone https://github.com/<your-username>/inventra-ai.git
+cd inventra-ai
+```
 
----
+### 2. Set up the backend
 
-## Target Industries
+```bash
+cd server
+npm install
+```
 
-- Retail
-- Manufacturing
-- Logistics
-- Healthcare
-- Warehousing
-- E-commerce
-- Distribution
-- Pharmaceuticals
+Create a `.env` file in `server/`:
 
----
+```env
+PORT=5000
+MONGO_URI=your_mongodb_connection_string
+JWT_SECRET=a_long_random_secret
+JWT_EXPIRES_IN=7d
+GEMINI_API_KEY=your_gemini_api_key
+```
 
-## Why Inventra AI?
+Add sample data (about 25 products with stock levels and movements):
 
-Inventra AI transforms traditional inventory management into an intelligent decision-making platform by combining enterprise inventory management, warehouse operations, procurement workflows, analytics, and artificial intelligence into a single scalable SaaS application.
+```bash
+npm run seed
+```
 
-The platform enables organizations to reduce stock shortages, optimize procurement decisions, improve supplier performance, minimize operational costs, and gain actionable business insights through AI-powered automation.
+Start the API:
 
----
+```bash
+npm run dev
+```
+
+### 3. Set up the frontend
+
+```bash
+cd ../client
+npm install
+npm run dev
+```
+
+Open the URL shown in the terminal (usually `http://localhost:5173`), create an account, and sign in.
+
+## Environment Variables
+
+| Variable | Description |
+|---|---|
+| `PORT` | Port for the API server |
+| `MONGO_URI` | MongoDB connection string |
+| `JWT_SECRET` | Secret used to sign login tokens |
+| `JWT_EXPIRES_IN` | Token lifetime, for example `7d` |
+| `GEMINI_API_KEY` | Gemini API key (server only, never exposed to the browser) |
+
+Never commit your `.env` file. Make sure `.env` is listed in `.gitignore` and share a `.env.example` with empty values instead.
+
+## API Reference
+
+All routes except health, register and login require the header `Authorization: Bearer <token>`.
+
+| Method | Route | Description |
+|---|---|---|
+| GET | `/api/health` | Health check |
+| POST | `/api/auth/register` | Create an account |
+| POST | `/api/auth/login` | Log in and receive a token |
+| GET | `/api/auth/me` | Current user |
+| PUT | `/api/auth/profile` | Update name and company |
+| GET | `/api/dashboard/summary` | KPI numbers, category split, monthly movement, recent activity |
+| GET, POST | `/api/products` | List or create products |
+| PUT, DELETE | `/api/products/:id` | Update or delete a product |
+| POST | `/api/stock/in` | Record stock received |
+| POST | `/api/stock/out` | Record stock removed |
+| GET | `/api/alerts` | Low-stock and out-of-stock items |
+| POST | `/api/assistant` | Ask the AI assistant a question |
+
+Test the API with Thunder Client or Postman: log in, copy the `token` from the response, and send it as a Bearer token on the protected routes.
+
+## How the AI Assistant Works
+
+1. The user asks a question, for example "What should I reorder?"
+2. The server builds a compact summary from MongoDB: low-stock items, out-of-stock items, top-moving products and total stock value.
+3. The summary and the question are sent to Gemini with instructions to use only the provided data and to end with three recommended next steps.
+4. The reply is returned to the interface and rendered with the steps highlighted.
+
+The API key stays on the server, so it is never visible in the browser.
+
+## Roadmap
+
+- [ ] **Sales and profit tracking:** record sold products when removing stock, store cost and selling price at the time of sale, and calculate revenue, cost of goods, profit and margin
+- [ ] **Sales page** with sales history, monthly revenue vs profit chart, top profit products and CSV export
+- [ ] Revenue and profit cards on the dashboard
+- [ ] AI assistant answers about profit, such as "Which products make the most profit?"
+- [ ] Role-based permissions for admin, manager and staff
+- [ ] Email notifications for critical stock levels
+
+## Contributing
+
+Contributions, issues and feature ideas are welcome. Open an issue to discuss a change, then submit a pull request.
+
+1. Fork the repository
+2. Create a branch: `git checkout -b feature/your-feature`
+3. Commit your changes: `git commit -m "Add your feature"`
+4. Push the branch and open a pull request
 
 ## License
 
-MIT License
+This project is licensed under the MIT License. Add a `LICENSE` file to the repository if you keep this section.
 
----
 
-## Author
 
-Developed as an enterprise-grade full-stack SaaS application for learning, portfolio development, and showcasing modern software engineering practices including AI integration, scalable architecture, cloud deployment, and production-ready development.
+
+<div align="center">
+
+If you find this project useful, consider giving it a star.
+
+</div>
